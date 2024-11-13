@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "findlybot"
+version = "0.1.0"
+description = "telegram bot for findly"
+authors = ["koloideal <sabatt148@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "^3.13.1"
+httpx = "^0.27.2"
+telethon = "^1.37.0"
+aiocache = "^0.12.3"
+requests = "^2.32.3"
+peewee-async = "^1.0.0"
+aio-peewee = "^0.4.1"
+
+
+[tool.poetry.group.dev.dependencies]
+aiohttp = "^3.10.10"
+peewee = "^3.17.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

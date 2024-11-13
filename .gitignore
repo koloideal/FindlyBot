@@ -1,0 +1,17 @@
+.idea
+.venv
+utils/__pycache__
+handlers/routers_for_all/__pycache__
+handlers/routers_for_admin/__pycache__
+handlers/__pycache__
+get_api_data/__pycache__
+database_func/__pycache__
+states/__pycache__
+session.session
+secret_data/logs.log
+database
+local_data/images/*
+local_data/products_data/*
+handlers/search_command_funcs/__pycache__/
+handlers/custom_callback_data/__pycache__
+secret_data/config.toml
