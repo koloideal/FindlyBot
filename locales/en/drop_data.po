@@ -1,0 +1,5 @@
+msgid "unknown_command_msg"
+msgstr "Unknown command, enter /help"
+
+msgid "hope_msg"
+msgstr "<i>I hope everything is fine</i>"

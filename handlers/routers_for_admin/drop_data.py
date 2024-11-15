@@ -2,6 +2,9 @@ from aiogram import types
 from utils.del_data_dirs import del_data_dirs
 from utils.make_dirs import make_dirs
 from utils.get_config import GetConfig
+import polib
+
+en_msgs = polib.pofile('locales/en/drop_data.po')
 
 
 async def drop_data_rout(message: types.Message) -> None:
@@ -9,7 +12,7 @@ async def drop_data_rout(message: types.Message) -> None:
     user_id: int = message.from_user.id
 
     if user_id != creator_id:
-        await message.answer("Unknown command, enter /help")
+        await message.answer(en_msgs.find('unknown_command_msg'))
 
     else:
         try:
@@ -18,6 +21,6 @@ async def drop_data_rout(message: types.Message) -> None:
         except FileNotFoundError:
             pass
         finally:
-            await message.answer("<i>I hope everything is fine</i>")
+            await message.answer(en_msgs.find('hope_msg'))
 
     return

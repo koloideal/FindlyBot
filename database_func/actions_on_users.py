@@ -1,5 +1,3 @@
-import logging
-from aiogram.types import Message, CallbackQuery
 from peewee import ModelSelect
 from .database_objects import (
     BannedUsers,
@@ -51,15 +49,17 @@ class ActionsOnUsers:
             return True
 
     @staticmethod
-    async def user_to_database(message: Message) -> None:
+    async def user_to_database(user_id: int,
+                               first_name: str,
+                               username: str) -> None:
         await users_db.connect_async(reuse_if_open=True)
         users_db.create_tables([Users])
         (
             BannedUsers.insert(
                 {
-                    "id": message.from_user.id,
-                    "first_name": message.from_user.first_name,
-                    "username": message.from_user.username,
+                    "id": user_id,
+                    "first_name": first_name,
+                    "username": username,
                 }
             )
             .on_conflict(action="IGNORE")
@@ -69,12 +69,12 @@ class ActionsOnUsers:
         await users_db.close_async()
 
     @staticmethod
-    async def config_user_to_database(message: Message) -> None:
+    async def config_user_to_database(user_id: int) -> None:
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
         (
-            UsersConfig.insert({"id": message.from_user.id})
+            UsersConfig.insert({"id": user_id})
             .on_conflict(action="IGNORE")
             .execute()
         )
@@ -83,8 +83,8 @@ class ActionsOnUsers:
         await users_config_db.close_async()
 
     @staticmethod
-    async def change_only_new_config(callback: CallbackQuery) -> None:
-        user_id: int = callback.from_user.id
+    async def change_only_new_config(callback_data: str,
+                                     user_id: int) -> None:
         only_new_serialized = {"is_only_new_OFF": True, "is_only_new_ON": False}
 
         await users_config_db.connect_async(reuse_if_open=True)
@@ -92,7 +92,7 @@ class ActionsOnUsers:
 
         (
             UsersConfig.update(
-                {UsersConfig.only_new: only_new_serialized[callback.data]}
+                {UsersConfig.only_new: only_new_serialized[callback_data]}
             )
             .where(UsersConfig.id == user_id)
             .execute()
@@ -126,9 +126,8 @@ class ActionsOnUsers:
         return max_size
 
     @staticmethod
-    async def change_max_size_config(message: Message) -> None:
-        user_id: int = message.from_user.id
-        max_size: int = int(message.text.strip())
+    async def change_max_size_config(user_id: int,
+                                     max_size: int) -> None:
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])

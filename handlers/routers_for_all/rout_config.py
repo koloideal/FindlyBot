@@ -9,11 +9,11 @@ ru_msgs = polib.pofile('locales/en/rout_config.po')
 
 
 async def config_rout(message: types.Message) -> None:
-    await ActionsOnUsers.config_user_to_database(message)
+    user_id = message.from_user.id
 
-    is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(
-        message.from_user.id
-    )
+    await ActionsOnUsers.config_user_to_database(user_id)
+
+    is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(user_id)
     max_size: int = await ActionsOnUsers.get_user_max_size_config(message.from_user.id)
     builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
 

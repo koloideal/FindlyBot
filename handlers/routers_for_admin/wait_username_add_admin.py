@@ -6,6 +6,10 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
+import polib
+
+
+en_msgs = polib.pofile('locales/en/wait_username_add_admin.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -35,7 +39,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         raise InvalidUsernameForAddAdmin(raw_input_username)
 
     except InvalidUsernameForAddAdmin:
-        await message.answer("Invalid username for add admin")
+        await message.answer(en_msgs.find('invalid_username_msg'))
 
     else:
         user_id, username, first_name, last_name = \
@@ -49,7 +53,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
-        await message.answer(f"@{finished_input_username} is now an admin or already was")
+        await message.answer(en_msgs.find('new_admin_msg').format(finished_input_username=finished_input_username))
 
     finally:
         client.disconnect()

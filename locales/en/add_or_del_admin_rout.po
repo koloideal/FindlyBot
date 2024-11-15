@@ -1,0 +1,5 @@
+msgid "unknown_command_msg"
+msgstr "Unknown command, enter /help"
+
+msgid "enter_username_msg"
+msgstr "Enter a username"

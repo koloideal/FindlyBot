@@ -19,7 +19,7 @@ async def search_rout(message: Message, state: FSMContext) -> None:
             disable_web_page_preview=True,
         )
     else:
-        await ActionsOnUsers.config_user_to_database(message)
+        await ActionsOnUsers.config_user_to_database(user_id)
         is_full_responses = await check_responses(user_id)
         if is_full_responses:
             await message.answer(en_msgs.find('full_responses_msg'))

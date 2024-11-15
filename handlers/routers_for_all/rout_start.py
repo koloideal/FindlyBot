@@ -50,4 +50,9 @@ async def start_rout(message: Message) -> None:
             disable_web_page_preview=True,
         )
 
-    await ActionsOnUsers.user_to_database(message)
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+
+    await ActionsOnUsers.user_to_database(user_id=user_id,
+                                          first_name=first_name,
+                                          username=username)

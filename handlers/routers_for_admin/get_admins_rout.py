@@ -4,6 +4,10 @@ from datetime import datetime
 import json
 import os
 from utils.get_config import GetConfig
+import polib
+
+
+en_msgs = polib.pofile('locales/en/get_admins_rout.po')
 
 
 async def get_admins_rout(message: Message) -> None:
@@ -13,13 +17,13 @@ async def get_admins_rout(message: Message) -> None:
     admins_id: list = await ActionsOnAdmin.get_admins()
 
     if user_id != creator_id and user_id not in admins_id:
-        await message.answer("Unknown command, enter /help")
+        await message.answer(en_msgs.find('unknown_command_msg'))
 
     else:
         all_admins: list = await ActionsOnAdmin.get_admins(False)
 
         if not all_admins:
-            await message.answer("Database is empty, add an admin and try again")
+            await message.answer(en_msgs.find('empty_database_msg'))
             return
 
         to_dump_data: dict = {}
@@ -38,9 +42,11 @@ async def get_admins_rout(message: Message) -> None:
             json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
         document: FSInputFile = FSInputFile(full_file_name)
+        caption: str = en_msgs.find('caption_msg').format(date=datetime.now().strftime("%d-%m-%Y"))
 
         await message.answer_document(
-            document=document, caption=f'before {datetime.now().strftime("%d-%m-%Y")}'
+            document=document,
+            caption=caption
         )
 
         os.remove(full_file_name)

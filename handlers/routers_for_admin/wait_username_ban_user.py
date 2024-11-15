@@ -1,4 +1,4 @@
-from aiogram import types
+from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
@@ -7,7 +7,10 @@ from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
 from utils.get_config import GetConfig
 from exceptions.users_exceptions import InvalidUsernameForBan, AttemptToBanAdminOrCreator
+import polib
 
+
+en_msgs = polib.pofile('locales/en/wait_username_ban_user.po')
 
 config: dict = GetConfig.get_bot_config()
 api_id: str = config["Settings"]["api_id"]
@@ -17,7 +20,7 @@ creator_id: int = config["Settings"]["creator_id"]
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
-async def get_username_for_ban_user_rout(message: types.Message,
+async def get_username_for_ban_user_rout(message: Message,
                                          state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
@@ -44,10 +47,10 @@ async def get_username_for_ban_user_rout(message: types.Message,
         raise InvalidUsernameForBan(raw_input_username)
 
     except AttemptToBanAdminOrCreator:
-        await message.answer("You can't ban the admin or the Creator")
+        await message.answer(en_msgs.find("attempt_to_ban_admin_msg"))
 
     except InvalidUsernameForBan:
-        await message.answer("Invalid username for ban")
+        await message.answer(en_msgs.find("invalid_username_msg"))
 
     else:
         if user_id in admins_id:
@@ -57,7 +60,7 @@ async def get_username_for_ban_user_rout(message: types.Message,
                     "username": user_username
                 },
             )
-            await message.answer(f"@{finished_input_username} is no longer an admin")
+            await message.answer(en_msgs.find("del_admin_msg").format(finished_input_username=finished_input_username))
 
         await ActionsOnUsers.ban_user(
             future_ban_user={
@@ -67,7 +70,7 @@ async def get_username_for_ban_user_rout(message: types.Message,
                 "username": user_username,
             },
         )
-        await message.answer(f"<b>@{finished_input_username} is banned</b>")
+        await message.answer(en_msgs.find("user_banned_msg").format(finished_input_username=finished_input_username))
 
     finally:
         client.disconnect()

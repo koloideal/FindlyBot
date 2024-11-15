@@ -111,7 +111,10 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
     match callback.data:
         case "is_only_new_OFF":
-            await ActionsOnUsers.change_only_new_config(callback)
+            callback_data = callback.data
+            user_id = int(callback.from_user.id)
+            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
+                                                        user_id=user_id)
 
             builder.add(
                 InlineKeyboardButton(
@@ -125,7 +128,10 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
             await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
 
         case "is_only_new_ON":
-            await ActionsOnUsers.change_only_new_config(callback)
+            callback_data = callback.data
+            user_id = int(callback.from_user.id)
+            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
+                                                        user_id=user_id)
 
             builder.add(
                 InlineKeyboardButton(
