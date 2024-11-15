@@ -15,3 +15,4 @@ local_data/products_data/*
 handlers/search_command_funcs/__pycache__/
 handlers/custom_callback_data/__pycache__
 secret_data/config.toml
+__pycache__
