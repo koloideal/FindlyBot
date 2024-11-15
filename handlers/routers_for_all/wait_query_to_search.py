@@ -2,7 +2,7 @@ import logging
 import os
 import re
 import time
-
+import polib
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
 from aiogram.types import Message
@@ -14,11 +14,15 @@ from utils.query_to_hash import req_to_hash
 import json
 
 
+en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
+ru_msgs = polib.pofile('locales/ru/wait_query_to_search.po')
+
+
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query_with_plus: str = re.sub(r" ", "+", message.text.strip())
     requestor_id = message.from_user.id
     query_hash = await req_to_hash(query_with_plus)
-    wait_message: Message = await message.answer("<i>Search in progress...</i>")
+    wait_message: Message = await message.answer(en_msgs.find('search_in_progress'))
 
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
@@ -32,7 +36,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         )
         api_json_data = api_data.json()["data"]
         if not api_json_data:
-            await message.answer("<pre>Empty response</pre>")
+            await message.answer(en_msgs.find('empty_response'))
             await state.clear()
             return
         else:
@@ -68,4 +72,3 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         await forming_response(message, query_with_plus, wait_message)
     finally:
         await state.clear()
-    return

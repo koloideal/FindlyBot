@@ -2,6 +2,10 @@ from aiogram import types
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database_func.actions_on_users import ActionsOnUsers
+import polib
+
+en_msgs = polib.pofile('locales/en/rout_config.po')
+ru_msgs = polib.pofile('locales/en/rout_config.po')
 
 
 async def config_rout(message: types.Message) -> None:
@@ -34,7 +38,6 @@ async def config_rout(message: types.Message) -> None:
         )
 
     await message.answer(
-        "Here you can manage: get only new or not products and max size products in response\n\n"
-        f"max products in marketplace: <b><u>{max_size}</u></b>",
+        en_msgs.find("config_rout_msg").format(max_size=max_size),
         reply_markup=builder.as_markup(),
     )

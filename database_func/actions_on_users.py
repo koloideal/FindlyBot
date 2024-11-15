@@ -1,5 +1,6 @@
 import logging
 from aiogram.types import Message, CallbackQuery
+from peewee import ModelSelect
 from .database_objects import (
     BannedUsers,
     Users,
@@ -16,7 +17,7 @@ class ActionsOnUsers:
         await banned_users_db.connect_async(reuse_if_open=True)
 
         banned_users_db.create_tables([BannedUsers])
-        banned_users_data = BannedUsers.select()
+        banned_users_data: ModelSelect = BannedUsers.select()
         banned_users_id: list = [banned_user.id for banned_user in banned_users_data]
 
         await banned_users_db.close_async()
@@ -24,7 +25,7 @@ class ActionsOnUsers:
         return banned_users_id
 
     @staticmethod
-    async def ban_user(message: Message, future_ban_user: dict) -> None:
+    async def ban_user(future_ban_user: dict) -> None:
         await banned_users_db.connect_async(reuse_if_open=True)
 
         banned_users_db.create_tables([BannedUsers])
@@ -33,15 +34,12 @@ class ActionsOnUsers:
 
         await banned_users_db.close_async()
 
-        logging.warning(f"User @{future_ban_user['username']} is banned")
-        await message.answer(f"<b>@{future_ban_user['username']} is banned</b>")
-
     @staticmethod
-    async def unban_user(message: Message, ex_ban_user: dict) -> None:
+    async def unban_user(ex_ban_user: dict) -> bool:
         banned_users: list = await ActionsOnUsers.get_banned_users()
 
         if ex_ban_user["id"] not in banned_users:
-            await message.answer(f"User @{ex_ban_user['username']} was not banned")
+            return False
 
         else:
             await banned_users_db.connect_async(reuse_if_open=True)
@@ -50,9 +48,7 @@ class ActionsOnUsers:
             banned_users_db.commit()
 
             await banned_users_db.close_async()
-
-            logging.warning(f"User @{ex_ban_user['username']} unbanned")
-            await message.answer(f"@{ex_ban_user['username']} unbanned")
+            return True
 
     @staticmethod
     async def user_to_database(message: Message) -> None:
@@ -71,10 +67,6 @@ class ActionsOnUsers:
         )
         users_db.commit()
         await users_db.close_async()
-
-        logging.warning(
-            f"User @{message.from_user.username} has been added to the database or already exists in it"
-        )
 
     @staticmethod
     async def config_user_to_database(message: Message) -> None:

@@ -1,0 +1,3 @@
+msgid "config_rout_msg"
+msgstr "Here you can manage: get only new or not products and max size products in response\n\n"
+       "max products in marketplace: <b><u>{max_size}</u></b>"

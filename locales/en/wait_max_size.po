@@ -1,0 +1,6 @@
+msgid "incorrect_value_msg"
+msgstr "Incorrect value\n"
+       "Max size must be: <b><u>{text}</u></b>"
+
+msgid "change_max_size_msg"
+msgstr "Max size has been changed, now: <b><u>{max_size}</u></b>"

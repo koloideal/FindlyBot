@@ -1,11 +1,9 @@
-import logging
-from aiogram.types import Message
 from .database_objects import AdminUsers, admins_db
 
 
 class ActionsOnAdmin:
     @staticmethod
-    async def add_admin(message: Message, future_admin: dict) -> None:
+    async def add_admin(future_admin: dict) -> None:
         await admins_db.connect_async(reuse_if_open=True)
         admins_db.create_tables([AdminUsers])
         (
@@ -17,15 +15,9 @@ class ActionsOnAdmin:
         admins_db.commit()
         await admins_db.close_async()
 
-        logging.warning(
-            f"User @{future_admin['username']} is now an admin or already was"
-        )
-        await message.answer(
-            f"@{future_admin['username']} is now an admin or already was"
-        )
 
     @staticmethod
-    async def del_admin(message: Message, ex_admin: dict) -> None:
+    async def del_admin(ex_admin: dict) -> None:
 
         await admins_db.connect_async(reuse_if_open=True)
         (
@@ -35,9 +27,6 @@ class ActionsOnAdmin:
         )
         admins_db.commit()
         await admins_db.close_async()
-
-        logging.warning(f"User @{ex_admin['username']} is no longer an admin")
-        await message.answer(f"@{ex_admin['username']} is no longer an admin")
 
     @staticmethod
     async def get_admins(only_ids: bool = True) -> list:

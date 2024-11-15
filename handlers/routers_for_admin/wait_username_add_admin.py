@@ -5,6 +5,7 @@ from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
+from exceptions.users_exceptions import InvalidUsernameForAddAdmin
 
 
 config: dict = GetConfig.get_bot_config()
@@ -16,32 +17,31 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
 async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -> None:
+    raw_input_username: str = message.text
     try:
-        await client.start()
+        client.start()
 
-        if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):
-            raise ValueError
+        if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
+            raise InvalidUsernameForAddAdmin(raw_input_username)
 
-        future_admin_username: str = (
-            message.text if message.text[0] != "@" else message.text[1:]
-        )
+        finished_input_username: str = raw_input_username if raw_input_username[0] != "@" else raw_input_username[1:]
 
-        user: TotalList = await client.get_participants(future_admin_username)
+        user: TotalList = await client.get_participants(finished_input_username)
 
         if user[0].bot or len(user) != 1:
-            raise ValueError
+            raise InvalidUsernameForAddAdmin(raw_input_username)
 
-    except (UsernameInvalidError, ValueError):
-        await message.answer("Invalid username")
+    except UsernameInvalidError:
+        raise InvalidUsernameForAddAdmin(raw_input_username)
+
+    except InvalidUsernameForAddAdmin:
+        await message.answer("Invalid username for add admin")
 
     else:
-        username: str = future_admin_username
-        user_id: int = user[0].id
-        first_name: str = user[0].first_name
-        last_name: str = user[0].last_name
+        user_id, username, first_name, last_name = \
+            user[0].id, user[0].username, user[0].first_name, user[0].last_name
 
         await ActionsOnAdmin.add_admin(
-            message=message,
             future_admin={
                 "id": user_id,
                 "first_name": first_name,
@@ -49,9 +49,8 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
+        await message.answer(f"@{finished_input_username} is now an admin or already was")
 
     finally:
-        await client.disconnect()
+        client.disconnect()
         await state.clear()
-
-    return

@@ -1,5 +1,5 @@
 from peewee import Model, IntegerField, CharField, BooleanField
-from aiopeewee import SqliteDatabaseAsync, PooledSqliteDatabaseAsync
+from aiopeewee import SqliteDatabaseAsync
 
 
 banned_users_db = SqliteDatabaseAsync("database/banned_users.sqlite3", autoconnect=False)
