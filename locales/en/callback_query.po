@@ -1,0 +1,18 @@
+msgid "many_cards_msg"
+msgstr "<i>place</i>:  <b>{current_marketplace}</b>\n\n"
+       '<i>name</i>:  <b><a href="{current_item_link}">{res_name}</a></b>\n\n'
+       "<i>price</i>:  <b>{current_item_price}</b> BYN\n\n"
+       "<i>position</i>:  <b>{current_item_id} <i>of</i> {size_of_products}</b>"
+
+msgid "ch_max_size_msg"
+msgstr "Change Max Size"
+
+msgid "only_new_on_msg"
+msgstr "Only New:  ON ✅"
+
+msgid "only_new_off_msg"
+msgstr "Only New:  OFF ✅"
+
+msgid "max_size_msg"
+msgstr "Enter new max size products in every marketplace\n"
+       "Max size must be: <b><u>{text}</u></b>"

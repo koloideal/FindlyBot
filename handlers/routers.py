@@ -31,7 +31,10 @@ from .callback_query import (
     change_max_size_callback,
 )
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
+import polib
 
+
+en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
 router: Router = Router()
 
 
@@ -139,4 +142,4 @@ async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> N
 
 @router.message()
 async def unknown_command(message: Message) -> None:
-    await message.answer("Unknown command, enter /help")
+    await message.answer(en_msgs.find('unknown_msg'))

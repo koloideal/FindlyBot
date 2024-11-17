@@ -1,0 +1,10 @@
+msgid "many_cards_msg"
+msgstr "<i>place</i>:  <b>{marketplace}</b>\n\n"
+       '<i>name</i>:  <b><a href="{link}">{res_name}</a></b>\n\n'
+       "<i>price</i>:  <b>{price}</b> BYN\n\n"
+       "<i>position</i>:  <b>{ids} <i>of</i> {size_of_products}</b>"
+
+msgid "one_card_msg"
+msgstr "<i>place</i>:  <b>{marketplace}</b>\n\n"
+       '<i>name</i>:  <b><a href="{link}">{res_name}</a></b>\n\n'
+       "<i>price</i>:  <b>{price}</b> BYN"

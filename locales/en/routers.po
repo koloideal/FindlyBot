@@ -1,0 +1,2 @@
+msgid "unknown_msg"
+msgstr "Unknown command, enter /help"

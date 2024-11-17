@@ -5,6 +5,10 @@ from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
+import polib
+
+
+en_msgs = polib.pofile('locales/en/wait_username_ban_user.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -16,9 +20,8 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -> None:
     try:
-        admin_id: list = await ActionsOnAdmin.get_admins()
-
-        await client.start()
+        admin_ids: list = await ActionsOnAdmin.get_admins()
+        client.start()
 
         if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):
             raise ValueError
@@ -29,30 +32,27 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
 
         user: TotalList = await client.get_participants(ex_admin_username)
 
-        user_id: int = user[0].id
-        user_username: str = user[0].username
+        admin_id: int = user[0].id
+        admin_username: str = user[0].username
 
         if len(user) != 1:
             raise ValueError
 
-        if user_id not in admin_id:
+        if admin_id not in admin_ids:
             raise TypeError
 
     except (UsernameInvalidError, ValueError):
-        await message.answer("Invalid username")
+        await message.answer(en_msgs.find("invalid_username_msg"))
 
     except TypeError:
-        await message.answer("The person is not an admin")
+        await message.answer(en_msgs.find("not_admin_msg"))
 
     else:
         await ActionsOnAdmin.del_admin(
-            message=message,
-            ex_admin={"id": user_id, "username": user_username},
+            ex_admin={"id": admin_id, "username": admin_username},
         )
+        await message.answer(en_msgs.find("admin_del_msg").format(admin_username=admin_username))
 
     finally:
-        await client.disconnect()
-
+        client.disconnect()
         await state.clear()
-
-    return

@@ -6,6 +6,10 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from database_func.actions_on_users import ActionsOnUsers
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForUnban
+import polib
+
+
+en_msgs = polib.pofile('locales/en/wait_username_ban_user.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -36,7 +40,7 @@ async def get_username_for_unban_user_rout(message: Message,
         raise InvalidUsernameForUnban(raw_input_username)
 
     except InvalidUsernameForUnban:
-        await message.answer("Invalid username for unban")
+        await message.answer(en_msgs.find("invalid_username_msg"))
 
     else:
         is_banned = await ActionsOnUsers.unban_user(
@@ -49,9 +53,9 @@ async def get_username_for_unban_user_rout(message: Message,
         )
 
         if is_banned:
-            await message.answer(f"@{finished_input_username} unbanned")
+            await message.answer(en_msgs.find("user_unban_msg").format(finished_input_username=finished_input_username))
         else:
-            await message.answer(f"User @{finished_input_username} was not banned")
+            await message.answer(en_msgs.find("user_not_ban_msg").format(finished_input_username=finished_input_username))
 
     finally:
         await client.disconnect()

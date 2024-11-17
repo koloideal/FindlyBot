@@ -5,6 +5,10 @@ from utils.query_to_hash import req_to_hash
 from ..custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 import json
 from utils.reformat_name import reformat_name
+import polib
+
+
+en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
 
 
 async def forming_response(message: Message, query: str, wait_message: Message):
@@ -37,11 +41,13 @@ async def forming_response(message: Message, query: str, wait_message: Message):
                 f"local_data/images/{requestor_id}/{query_hash}/{marketplace}/{name_hash}.jpg"
             )
 
-        if len(api_json_data[marketplace]) > 1:
+        size_of_products = len(api_json_data[marketplace])
+
+        if size_of_products > 1:
             builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
             builder.add(
                 InlineKeyboardButton(
-                    text=">>",
+                    text="➡",
                     callback_data=SwipeItemsCallbackData(
                         marketplace=marketplace,
                         current_item_id=int(ids) + 1,
@@ -51,17 +57,21 @@ async def forming_response(message: Message, query: str, wait_message: Message):
             )
             await message.answer_photo(
                 image,
-                caption=f"<i>place</i>:  <b>{marketplace}</b>\n\n"
-                f'<i>name</i>:  <b><a href="{link}">{res_name}</a></b>\n\n'
-                f"<i>price</i>:  <b>{price}</b> BYN\n\n"
-                f"<i>position</i>:  <b>{ids}</b>",
+                caption=en_msgs.find('many_cards_msg').format(marketplace=marketplace,
+                                                              link=link,
+                                                              res_name=res_name,
+                                                              price=price,
+                                                              ids=ids,
+                                                              size_of_products=size_of_products),
                 reply_markup=builder.as_markup(),
             )
 
         else:
             await message.answer_photo(
                 image,
-                caption=f"<i>place</i>:  <b>{marketplace}</b>\n\n"
-                f'<i>name</i>:  <b><a href="{link}">{res_name}</a></b>\n\n'
-                f"<i>price</i>:  <b>{price}</b> BYN",
+                caption=en_msgs.find('one_card_msg').format(marketplace=marketplace,
+                                                            link=link,
+                                                            res_name=res_name,
+                                                            price=price,
+                                                            ids=ids),
             )
