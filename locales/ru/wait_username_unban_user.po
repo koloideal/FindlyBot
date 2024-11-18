@@ -1,0 +1,8 @@
+msgid "invalid_username_msg"
+msgstr "Invalid username for unban user"
+
+msgid "user_unban_msg"
+msgstr "@{finished_input_username} unbanned"
+
+msgid "user_not_ban_msg"
+msgstr "User @{finished_input_username} was not banned"

@@ -1,0 +1,8 @@
+msgid "unknown_command_msg"
+msgstr "Неизвестная команда, введите /help"
+
+msgid "empty_logs_msg"
+msgstr "Логи пустые, введите /start и повторите"
+
+msgid "caption_msg"
+msgstr "до {date}"

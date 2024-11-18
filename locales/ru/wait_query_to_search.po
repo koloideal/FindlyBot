@@ -1,0 +1,5 @@
+msgid "search_in_progress"
+msgstr "<i>Search in progress...</i>"
+
+msgid "empty_response"
+msgstr "<pre>Empty response</pre>"

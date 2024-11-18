@@ -1,0 +1,18 @@
+msgid "many_cards_msg"
+msgstr "<i>маркетплейс</i>:  <b>{current_marketplace}</b>\n\n"
+       '<i>название</i>:  <b><a href="{current_item_link}">{res_name}</a></b>\n\n'
+       "<i>стоимость</i>:  <b>{current_item_price}</b> BYN\n\n"
+       "<i>позиция</i>:  <b>{current_item_id} <i>of</i> {size_of_products}</b>"
+
+msgid "ch_max_size_msg"
+msgstr "Макс количество"
+
+msgid "only_new_on_msg"
+msgstr "Только новые:  ВКЛ ✅"
+
+msgid "only_new_off_msg"
+msgstr "Только новые:  ВЫКЛ ✅"
+
+msgid "max_size_msg"
+msgstr "Введите макс количество товаров для каждого маркетплейса\n"
+       "Макс количество должно быть: <b><u>{text}</u></b>"

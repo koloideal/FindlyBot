@@ -52,7 +52,5 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\n\033[1m\033[30m\033[45m {} \033[0m".format("End of work..."))
-
         logging.warning("End of work...")
-
         exit()

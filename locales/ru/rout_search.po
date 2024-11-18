@@ -1,0 +1,12 @@
+msgid "banned_rout_search_msg"
+msgstr "Hello, I am a <b>Findly</b>🤖\n\n"
+       "Fast and smart search engine for the best products on marketplaces 💭"
+       "\n\n<u><b>You were blocked</b></u>"
+       "\n\n\nAbout the unban - <a href='https://t.me/kolo_id'>kolo</a>"
+
+msgid "full_responses_msg"
+msgstr "You have reached the limit of saved responses, "
+       "the oldest response has been deleted"
+
+msgid "enter_query_msg"
+msgstr "Enter query for searching"

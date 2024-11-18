@@ -1,0 +1,8 @@
+msgid "invalid_username_msg"
+msgstr "Invalid username for del admin"
+
+msgid "not_admin_msg"
+msgstr "The person is not an admin"
+
+msgid "admin_del_msg"
+msgstr "Admin {admin_username} has been deleted"

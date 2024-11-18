@@ -7,15 +7,9 @@ from .routers_for_all.rout_help import button_to_help_rout
 from .routers_for_all.rout_start import start_rout
 from .routers_for_admin.add_or_del_admin_rout import add_or_del_admin_rout
 from .routers_for_admin.ban_or_unban_user_rout import ban_or_unban_user_rout
-from .routers_for_admin.wait_username_add_admin import (
-    get_username_for_add_admin_rout,
-)
-from .routers_for_admin.wait_username_del_admin import (
-    get_username_for_del_admin_rout,
-)
-from .routers_for_admin.wait_username_ban_user import (
-    get_username_for_ban_user_rout,
-)
+from .routers_for_admin.wait_username_add_admin import get_username_for_add_admin_rout
+from .routers_for_admin.wait_username_del_admin import get_username_for_del_admin_rout
+from .routers_for_admin.wait_username_ban_user import get_username_for_ban_user_rout
 from .routers_for_admin.wait_username_unban_user import get_username_for_unban_user_rout
 from .routers_for_admin.get_logs_rout import get_logs_rout
 from .routers_for_admin.get_admins_rout import get_admins_rout

@@ -1,0 +1,5 @@
+msgid "unknown_command_msg"
+msgstr "Неизвестная команда, введите /help"
+
+msgid "enter_username_msg"
+msgstr "Введите юзернейм"

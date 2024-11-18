@@ -1,0 +1,5 @@
+msgid "invalid_username_msg"
+msgstr "Invalid username for add admin"
+
+msgid "new_admin_msg"
+msgstr "@{finished_input_username} is now an admin or already was"
