@@ -18,12 +18,12 @@ async def get_logs_rout(message: types.Message) -> None:
     admins_id: list = await ActionsOnAdmin.get_admins()
 
     if user_id != creator_id and user_id not in admins_id:
-        await message.answer(en_msgs.find('unknown_command_msg'))
+        await message.answer(en_msgs.find('unknown_command_msg').msgstr)
 
     else:
         full_file_name: str = "secret_data/logs.log"
         document: FSInputFile = FSInputFile(full_file_name)
-        captions: str = en_msgs.find('caption_msg').format(date=datetime.now().strftime("%d-%m-%Y"))
+        captions: str = en_msgs.find('caption_msg').msgstr.format(date=datetime.now().strftime("%d-%m-%Y"))
 
         try:
             await message.answer_document(
@@ -32,6 +32,6 @@ async def get_logs_rout(message: types.Message) -> None:
             )
 
         except TelegramBadRequest:
-            await message.answer(en_msgs.find('empty_logs_msg'))
+            await message.answer(en_msgs.find('empty_logs_msg').msgstr)
 
     return

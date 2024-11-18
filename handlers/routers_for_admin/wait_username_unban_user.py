@@ -41,7 +41,7 @@ async def get_username_for_unban_user_rout(message: Message,
         raise InvalidUsernameForUnban(raw_input_username)
 
     except InvalidUsernameForUnban:
-        await message.answer(en_msgs.find("invalid_username_msg"))
+        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     else:
         is_banned = await ActionsOnUsers.unban_user(
@@ -54,9 +54,15 @@ async def get_username_for_unban_user_rout(message: Message,
         )
 
         if is_banned:
-            await message.answer(en_msgs.find("user_unban_msg").format(finished_input_username=finished_input_username))
+            await message.answer(
+                en_msgs.find("user_unban_msg")
+                .msgstr.format(finished_input_username=finished_input_username)
+            )
         else:
-            await message.answer(en_msgs.find("user_not_ban_msg").format(finished_input_username=finished_input_username))
+            await message.answer(
+                en_msgs.find("user_not_ban_msg")
+                .msgstr.format(finished_input_username=finished_input_username)
+            )
 
     finally:
         await client.disconnect()

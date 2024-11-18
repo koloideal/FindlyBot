@@ -1,6 +1,6 @@
 msgid "many_cards_msg"
 msgstr "<i>place</i>:  <b>{current_marketplace}</b>\n\n"
-       '<i>name</i>:  <b><a href="{current_item_link}">{res_name}</a></b>\n\n'
+       "<i>name</i>:  <b><a href='{current_item_link}'>{res_name}</a></b>\n\n"
        "<i>price</i>:  <b>{current_item_price}</b> BYN\n\n"
        "<i>position</i>:  <b>{current_item_id} <i>of</i> {size_of_products}</b>"
 

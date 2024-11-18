@@ -9,11 +9,12 @@ ru_msgs = polib.pofile('locales/ru/rout_start.po')
 
 
 async def start_rout(message: Message) -> None:
-    creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
-
     user_id: int = message.from_user.id
     admins_id: list = await ActionsOnAdmin.get_admins()
     banned_users_id: list = await ActionsOnUsers.get_banned_users()
+    creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
+
+    await ActionsOnUsers.config_user_to_database(user_id)
 
     case1: bool = user_id in admins_id and user_id == creator_id
     case2: bool = user_id not in admins_id and user_id == creator_id
@@ -30,24 +31,24 @@ async def start_rout(message: Message) -> None:
 
     if creator_case:
         await message.answer(
-            data.find("creator_case_msg")
+            ru_msgs.find("creator_case_msg").msgstr
         )
 
     elif admin_case:
         await message.answer(
-            data.find("admin_case_msg"),
+            ru_msgs.find("admin_case_msg").msgstr,
             disable_web_page_preview=True,
         )
 
     elif user_case:
         await message.answer(
-            data.find("user_case_msg"),
+            ru_msgs.find("user_case_msg").msgstr,
             disable_web_page_preview=True,
         )
 
     elif banned_user_case:
         await message.answer(
-            data.find("banned_user_case_msg"),
+            ru_msgs.find("banned_user_case_msg").msgstr,
             disable_web_page_preview=True,
         )
 

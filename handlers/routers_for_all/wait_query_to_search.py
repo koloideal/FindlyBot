@@ -22,7 +22,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query_with_plus: str = re.sub(r" ", "+", message.text.strip())
     requestor_id = message.from_user.id
     query_hash = await req_to_hash(query_with_plus)
-    wait_message: Message = await message.answer(en_msgs.find('search_in_progress'))
+    wait_message: Message = await message.answer(en_msgs.find('search_in_progress').msgstr)
 
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
@@ -36,7 +36,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         )
         api_json_data = api_data.json()["data"]
         if not api_json_data:
-            await message.answer(en_msgs.find('empty_response'))
+            await message.answer(en_msgs.find('empty_response').msgstr)
             await state.clear()
             return
         else:

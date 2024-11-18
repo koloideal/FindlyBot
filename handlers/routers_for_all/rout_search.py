@@ -15,13 +15,13 @@ async def search_rout(message: Message, state: FSMContext) -> None:
 
     if user_id in banned_users_ids:
         await message.answer(
-            en_msgs.find('banned_rout_search_msg'),
+            en_msgs.find('banned_rout_search_msg').msgstr,
             disable_web_page_preview=True,
         )
     else:
         await ActionsOnUsers.config_user_to_database(user_id)
         is_full_responses = await check_responses(user_id)
         if is_full_responses:
-            await message.answer(en_msgs.find('full_responses_msg'))
-        await message.answer(en_msgs.find('enter_query_msg'))
+            await message.answer(en_msgs.find('full_responses_msg').msgstr)
+        await message.answer(en_msgs.find('enter_query_msg').msgstr)
         await state.set_state(WaitQuery.wait_query)

@@ -137,4 +137,4 @@ async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> N
 
 @router.message()
 async def unknown_command(message: Message) -> None:
-    await message.answer(en_msgs.find('unknown_msg'))
+    await message.answer(en_msgs.find('unknown_msg').msgstr)

@@ -16,10 +16,10 @@ async def add_or_del_admin_rout(
     user_id: int = message.from_user.id
 
     if user_id != creator_id:
-        await message.answer(en_msgs.find('unknown_command_msg'))
+        await message.answer(en_msgs.find('unknown_command_msg').msgstr)
 
     else:
-        await message.answer(en_msgs.find('enter_username_msg'))
+        await message.answer(en_msgs.find('enter_username_msg').msgstr)
 
         match del_or_add:
             case "add":

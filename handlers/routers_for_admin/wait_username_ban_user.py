@@ -48,10 +48,10 @@ async def get_username_for_ban_user_rout(message: Message,
         raise InvalidUsernameForBan(raw_input_username)
 
     except AttemptToBanAdminOrCreator:
-        await message.answer(en_msgs.find("attempt_to_ban_admin_msg"))
+        await message.answer(en_msgs.find("attempt_to_ban_admin_msg").msgstr)
 
     except InvalidUsernameForBan:
-        await message.answer(en_msgs.find("invalid_username_msg"))
+        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     else:
         if user_id in admins_id:
@@ -61,7 +61,10 @@ async def get_username_for_ban_user_rout(message: Message,
                     "username": user_username
                 },
             )
-            await message.answer(en_msgs.find("del_admin_msg").format(finished_input_username=finished_input_username))
+            await message.answer(
+                en_msgs.find("del_admin_msg")
+                .msgstr.format(finished_input_username=finished_input_username)
+            )
 
         await ActionsOnUsers.ban_user(
             future_ban_user={
@@ -71,7 +74,10 @@ async def get_username_for_ban_user_rout(message: Message,
                 "username": user_username,
             },
         )
-        await message.answer(en_msgs.find("user_banned_msg").format(finished_input_username=finished_input_username))
+        await message.answer(
+            en_msgs.find("user_banned_msg")
+            .msgstr.format(finished_input_username=finished_input_username)
+        )
 
     finally:
         client.disconnect()

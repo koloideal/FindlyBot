@@ -6,8 +6,8 @@ from utils.get_config import GetConfig
 import polib
 
 
-en_msgs = polib.pofile('locales/en/ban_or_unban_rout.po')
-ru_msgs = polib.pofile('locales/ru/ban_or_unban_rout.po')
+en_msgs = polib.pofile('locales/en/ban_or_unban_user_rout.po')
+ru_msgs = polib.pofile('locales/ru/ban_or_unban_user_rout.po')
 
 
 async def ban_or_unban_user_rout(
@@ -19,10 +19,10 @@ async def ban_or_unban_user_rout(
     admins_id: list = await ActionsOnAdmin.get_admins()
 
     if user_id != creator_id and user_id not in admins_id:
-        await message.answer(en_msgs.find('unknown_command_msg'))
+        await message.answer(en_msgs.find('unknown_command_msg').msgstr)
 
     else:
-        await message.answer(en_msgs.find('enter_username_msg'))
+        await message.answer(en_msgs.find('enter_username_msg').msgstr)
 
         match ban_or_unban:
             case "ban":

@@ -8,8 +8,8 @@ from telethon.helpers import TotalList
 import polib
 
 
-en_msgs = polib.pofile('locales/en/wait_username_del_user.po')
-ru_msgs = polib.pofile('locales/ru/wait_username_del_user.po')
+en_msgs = polib.pofile('locales/en/wait_username_del_admin.po')
+ru_msgs = polib.pofile('locales/ru/wait_username_del_admin.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -43,16 +43,19 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
             raise TypeError
 
     except (UsernameInvalidError, ValueError):
-        await message.answer(en_msgs.find("invalid_username_msg"))
+        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     except TypeError:
-        await message.answer(en_msgs.find("not_admin_msg"))
+        await message.answer(en_msgs.find("not_admin_msg").msgstr)
 
     else:
         await ActionsOnAdmin.del_admin(
             ex_admin={"id": admin_id, "username": admin_username},
         )
-        await message.answer(en_msgs.find("admin_del_msg").format(admin_username=admin_username))
+        await message.answer(
+            en_msgs.find("admin_del_msg")
+            .msgstr.format(admin_username=admin_username)
+        )
 
     finally:
         client.disconnect()

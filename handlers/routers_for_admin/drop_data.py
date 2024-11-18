@@ -13,7 +13,7 @@ async def drop_data_rout(message: types.Message) -> None:
     user_id: int = message.from_user.id
 
     if user_id != creator_id:
-        await message.answer(en_msgs.find('unknown_command_msg'))
+        await message.answer(en_msgs.find('unknown_command_msg').msgstr)
 
     else:
         try:
@@ -22,6 +22,6 @@ async def drop_data_rout(message: types.Message) -> None:
         except FileNotFoundError:
             pass
         finally:
-            await message.answer(en_msgs.find('hope_msg'))
+            await message.answer(en_msgs.find('hope_msg').msgstr)
 
     return

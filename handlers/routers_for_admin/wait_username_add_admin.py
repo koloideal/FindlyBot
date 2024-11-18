@@ -24,7 +24,7 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -> None:
     raw_input_username: str = message.text
     try:
-        client.start()
+        await client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForAddAdmin(raw_input_username)
@@ -40,7 +40,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         raise InvalidUsernameForAddAdmin(raw_input_username)
 
     except InvalidUsernameForAddAdmin:
-        await message.answer(en_msgs.find('invalid_username_msg'))
+        await message.answer(en_msgs.find('invalid_username_msg').msgstr)
 
     else:
         user_id, username, first_name, last_name = \
@@ -54,8 +54,11 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
-        await message.answer(en_msgs.find('new_admin_msg').format(finished_input_username=finished_input_username))
+        await message.answer(
+            en_msgs.find('new_admin_msg')
+            .msgstr.format(finished_input_username=finished_input_username)
+        )
 
     finally:
-        client.disconnect()
+        await client.disconnect()
         await state.clear()

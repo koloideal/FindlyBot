@@ -32,6 +32,7 @@ class UsersConfig(Model):
     id = IntegerField(unique=True)
     only_new = BooleanField(default=False)
     max_size = IntegerField(default=10)
+    lang = CharField(default='EN', max_length=2)
 
     class Meta:
         database = users_config_db

@@ -100,7 +100,8 @@ async def swipe_items_callback(callback: CallbackQuery,
     await callback.message.edit_media(
         InputMediaPhoto(
             media=image,
-            caption=en_msgs.find('many_cards_msg').format(current_marketplace=current_marketplace,
+            caption=en_msgs.find('many_cards_msg').msgstr
+                                                  .format(current_marketplace=current_marketplace,
                                                           current_item_link=current_item_link,
                                                           res_name=res_name,
                                                           current_item_price=current_item_price,
@@ -123,10 +124,10 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
             builder.add(
                 InlineKeyboardButton(
-                    text=en_msgs.find('ch_max_size_msg'), callback_data="change_max_size"
+                    text=en_msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
                 ),
                 InlineKeyboardButton(
-                    text=en_msgs.find('only_new_on_msg'), callback_data="is_only_new_ON"
+                    text=en_msgs.find('only_new_on_msg').msgstr, callback_data="is_only_new_ON"
                 ),
             )
 
@@ -140,10 +141,10 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
             builder.add(
                 InlineKeyboardButton(
-                    text=en_msgs.find('ch_max_size'), callback_data="change_max_size"
+                    text=en_msgs.find('ch_max_size').msgstr, callback_data="change_max_size"
                 ),
                 InlineKeyboardButton(
-                    text=en_msgs.find('only_new_off_msg'), callback_data="is_only_new_OFF"
+                    text=en_msgs.find('only_new_off_msg').msgstr, callback_data="is_only_new_OFF"
                 ),
             )
 
@@ -152,6 +153,6 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
 async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size < 21")
-    await callback.message.answer(en_msgs.find('max_size_msg').format(text=text))
+    await callback.message.answer(en_msgs.find('max_size_msg').msgstr.format(text=text))
 
     await state.set_state(WaitMaxSize.wait_max_size)

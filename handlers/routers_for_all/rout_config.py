@@ -11,33 +11,31 @@ ru_msgs = polib.pofile('locales/ru/rout_config.po')
 async def config_rout(message: types.Message) -> None:
     user_id = message.from_user.id
 
-    await ActionsOnUsers.config_user_to_database(user_id)
-
     is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(user_id)
-    max_size: int = await ActionsOnUsers.get_user_max_size_config(message.from_user.id)
+    max_size: int = await ActionsOnUsers.get_user_max_size_config(user_id)
     builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
 
     if is_only_new:
         builder.add(
             InlineKeyboardButton(
-                text="Change Max Size", callback_data="change_max_size"
+                text=en_msgs.find("ch_max_size_msg").msgstr, callback_data="change_max_size"
             ),
             InlineKeyboardButton(
-                text="Only New:  ON ✅", callback_data="is_only_new_ON"
+                text=en_msgs.find("only_new_on_msg").msgstr, callback_data="is_only_new_ON"
             ),
         )
 
     else:
         builder.add(
             InlineKeyboardButton(
-                text="Change Max Size", callback_data="change_max_size"
+                text=en_msgs.find("ch_max_size_msg").msgstr, callback_data="change_max_size"
             ),
             InlineKeyboardButton(
-                text="Only New:  OFF ❌", callback_data="is_only_new_OFF"
+                text=en_msgs.find("only_new_off_msg").msgstr, callback_data="is_only_new_OFF"
             ),
         )
 
     await message.answer(
-        en_msgs.find("config_rout_msg").format(max_size=max_size),
+        en_msgs.find("config_rout_msg").msgstr.format(max_size=max_size),
         reply_markup=builder.as_markup(),
     )

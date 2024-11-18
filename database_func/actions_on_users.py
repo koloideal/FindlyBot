@@ -15,6 +15,7 @@ class ActionsOnUsers:
         await banned_users_db.connect_async(reuse_if_open=True)
 
         banned_users_db.create_tables([BannedUsers])
+        banned_users_db.commit()
         banned_users_data: ModelSelect = BannedUsers.select()
         banned_users_id: list = [banned_user.id for banned_user in banned_users_data]
 

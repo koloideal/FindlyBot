@@ -58,7 +58,8 @@ async def forming_response(message: Message, query: str, wait_message: Message):
             )
             await message.answer_photo(
                 image,
-                caption=en_msgs.find('many_cards_msg').format(marketplace=marketplace,
+                caption=en_msgs.find('many_cards_msg').msgstr
+                                                      .format(marketplace=marketplace,
                                                               link=link,
                                                               res_name=res_name,
                                                               price=price,
@@ -70,7 +71,8 @@ async def forming_response(message: Message, query: str, wait_message: Message):
         else:
             await message.answer_photo(
                 image,
-                caption=en_msgs.find('one_card_msg').format(marketplace=marketplace,
+                caption=en_msgs.find('one_card_msg').msgstr
+                                                    .format(marketplace=marketplace,
                                                             link=link,
                                                             res_name=res_name,
                                                             price=price,

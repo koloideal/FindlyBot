@@ -6,6 +6,8 @@ class ActionsOnAdmin:
     async def add_admin(future_admin: dict) -> None:
         await admins_db.connect_async(reuse_if_open=True)
         admins_db.create_tables([AdminUsers])
+        admins_db.commit()
+        print(future_admin)
         (
             AdminUsers
             .insert(future_admin)
