@@ -28,7 +28,8 @@ from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackDa
 import polib
 
 
-en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
+en_msgs = polib.pofile('locales/en/routers.po')
+ru_msgs = polib.pofile('locales/ru/routers.po')
 router: Router = Router()
 
 

@@ -5,6 +5,7 @@ from utils.get_config import GetConfig
 import polib
 
 en_msgs = polib.pofile('locales/en/drop_data.po')
+ru_msgs = polib.pofile('locales/ru/drop_data.po')
 
 
 async def drop_data_rout(message: types.Message) -> None:

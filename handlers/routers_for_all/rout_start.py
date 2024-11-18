@@ -4,7 +4,8 @@ from database_func.action_on_admin import ActionsOnAdmin
 from utils.get_config import GetConfig
 import polib
 
-data = polib.pofile('locales/en/rout_start.po')
+en_msgs = polib.pofile('locales/en/rout_start.po')
+ru_msgs = polib.pofile('locales/ru/rout_start.po')
 
 
 async def start_rout(message: Message) -> None:

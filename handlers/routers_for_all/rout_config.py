@@ -5,7 +5,7 @@ from database_func.actions_on_users import ActionsOnUsers
 import polib
 
 en_msgs = polib.pofile('locales/en/rout_config.po')
-ru_msgs = polib.pofile('locales/en/rout_config.po')
+ru_msgs = polib.pofile('locales/ru/rout_config.po')
 
 
 async def config_rout(message: types.Message) -> None:

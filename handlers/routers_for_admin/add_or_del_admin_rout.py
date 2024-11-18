@@ -4,7 +4,9 @@ from aiogram.fsm.context import FSMContext
 from utils.get_config import GetConfig
 import polib
 
+
 en_msgs = polib.pofile('locales/en/add_or_del_admin_rout.po')
+ru_msgs = polib.pofile('locales/ru/add_or_del_admin_rout.po')
 
 
 async def add_or_del_admin_rout(

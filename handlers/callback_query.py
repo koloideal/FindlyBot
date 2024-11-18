@@ -16,7 +16,8 @@ from html import escape
 import polib
 
 
-en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
+en_msgs = polib.pofile('locales/en/callback_query.po')
+ru_msgs = polib.pofile('locales/ru/callback_query.po')
 
 
 async def swipe_items_callback(callback: CallbackQuery,

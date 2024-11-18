@@ -8,6 +8,7 @@ import polib
 
 
 en_msgs = polib.pofile('locales/en/get_logs_rout.po')
+ru_msgs = polib.pofile('locales/ru/get_logs_rout.po')
 
 
 async def get_logs_rout(message: types.Message) -> None:

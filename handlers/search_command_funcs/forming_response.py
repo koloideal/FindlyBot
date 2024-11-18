@@ -8,7 +8,8 @@ from utils.reformat_name import reformat_name
 import polib
 
 
-en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
+en_msgs = polib.pofile('locales/en/forming_response.po')
+ru_msgs = polib.pofile('locales/ru/forming_response.po')
 
 
 async def forming_response(message: Message, query: str, wait_message: Message):

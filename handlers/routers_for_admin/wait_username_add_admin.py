@@ -10,6 +10,7 @@ import polib
 
 
 en_msgs = polib.pofile('locales/en/wait_username_add_admin.po')
+ru_msgs = polib.pofile('locales/ru/wait_username_add_admin.po')
 
 
 config: dict = GetConfig.get_bot_config()

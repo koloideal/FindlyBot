@@ -7,6 +7,7 @@ import polib
 
 
 en_msgs = polib.pofile('locales/en/ban_or_unban_rout.po')
+ru_msgs = polib.pofile('locales/ru/ban_or_unban_rout.po')
 
 
 async def ban_or_unban_user_rout(

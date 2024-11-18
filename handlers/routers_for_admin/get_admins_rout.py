@@ -8,6 +8,7 @@ import polib
 
 
 en_msgs = polib.pofile('locales/en/get_admins_rout.po')
+ru_msgs = polib.pofile('locales/ru/get_admins_rout.po')
 
 
 async def get_admins_rout(message: Message) -> None:

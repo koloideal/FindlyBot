@@ -11,6 +11,7 @@ import polib
 
 
 en_msgs = polib.pofile('locales/en/wait_username_ban_user.po')
+ru_msgs = polib.pofile('locales/ru/wait_username_ban_user.po')
 
 config: dict = GetConfig.get_bot_config()
 api_id: str = config["Settings"]["api_id"]
