@@ -1,8 +1,8 @@
 msgid "invalid_username_msg"
-msgstr "Invalid username for del admin"
+msgstr "Некорректный юзернейм для удаления админа"
 
 msgid "not_admin_msg"
-msgstr "The person is not an admin"
+msgstr "Юзер не является админом"
 
 msgid "admin_del_msg"
-msgstr "Admin {admin_username} has been deleted"
+msgstr "Админ {admin_username} удалён"

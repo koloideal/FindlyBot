@@ -1,8 +1,8 @@
 msgid "invalid_username_msg"
-msgstr "Invalid username for unban user"
+msgstr "Некорректный юзернейм для разбана юзера"
 
 msgid "user_unban_msg"
-msgstr "@{finished_input_username} unbanned"
+msgstr "@{finished_input_username} разбанен"
 
 msgid "user_not_ban_msg"
-msgstr "User @{finished_input_username} was not banned"
+msgstr "Юзер @{finished_input_username} не был забанен"

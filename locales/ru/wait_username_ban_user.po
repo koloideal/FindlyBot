@@ -1,11 +1,11 @@
 msgid "invalid_username_msg"
-msgstr "Invalid username for ban user"
+msgstr "Некорректный юзернейм для бана юзера"
 
 msgid "attempt_to_ban_admin_msg"
-msgstr "You can't ban the admin or the Creator"
+msgstr "Вы не можете забанить админа или Создателя"
 
 msgid "del_admin_msg"
-msgstr "@{finished_input_username} is no longer an admin"
+msgstr "@{finished_input_username} теперь не админ"
 
 msgid "user_banned_msg"
-msgstr "<b>@{finished_input_username} is banned</b>"
+msgstr "<b>@{finished_input_username} забанен</b>"

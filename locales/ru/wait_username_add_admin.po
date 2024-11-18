@@ -1,5 +1,5 @@
 msgid "invalid_username_msg"
-msgstr "Invalid username for add admin"
+msgstr "Некорректный юзернейм для добавления админа"
 
 msgid "new_admin_msg"
-msgstr "@{finished_input_username} is now an admin or already was"
+msgstr "@{finished_input_username} теперь админ или уже был им"
