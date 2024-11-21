@@ -25,6 +25,15 @@ async def get_username_for_ban_user_rout(message: Message,
                                          state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=admin_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
     admins_id: list = await ActionsOnAdmin.get_admins()
     try:
         client.start()
@@ -48,10 +57,10 @@ async def get_username_for_ban_user_rout(message: Message,
         raise InvalidUsernameForBan(raw_input_username)
 
     except AttemptToBanAdminOrCreator:
-        await message.answer(en_msgs.find("attempt_to_ban_admin_msg").msgstr)
+        await message.answer(msgs.find("attempt_to_ban_admin_msg").msgstr)
 
     except InvalidUsernameForBan:
-        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
+        await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
         if user_id in admins_id:
@@ -62,7 +71,7 @@ async def get_username_for_ban_user_rout(message: Message,
                 },
             )
             await message.answer(
-                en_msgs.find("del_admin_msg")
+                msgs.find("del_admin_msg")
                 .msgstr.format(finished_input_username=finished_input_username)
             )
 
@@ -75,7 +84,7 @@ async def get_username_for_ban_user_rout(message: Message,
             },
         )
         await message.answer(
-            en_msgs.find("user_banned_msg")
+            msgs.find("user_banned_msg")
             .msgstr.format(finished_input_username=finished_input_username)
         )
 

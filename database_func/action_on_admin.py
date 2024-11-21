@@ -7,11 +7,9 @@ class ActionsOnAdmin:
         await admins_db.connect_async(reuse_if_open=True)
         admins_db.create_tables([AdminUsers])
         admins_db.commit()
-        print(future_admin)
         (
             AdminUsers
             .insert(future_admin)
-            .on_conflict(action="IGNORE")
             .execute()
         )
         admins_db.commit()

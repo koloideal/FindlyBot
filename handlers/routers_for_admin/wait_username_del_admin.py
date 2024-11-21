@@ -1,5 +1,7 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+
+from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
@@ -20,6 +22,16 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
 async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -> None:
+    admin_id: int = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=admin_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
     try:
         admin_ids: list = await ActionsOnAdmin.get_admins()
         client.start()
@@ -43,17 +55,17 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
             raise TypeError
 
     except (UsernameInvalidError, ValueError):
-        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
+        await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     except TypeError:
-        await message.answer(en_msgs.find("not_admin_msg").msgstr)
+        await message.answer(msgs.find("not_admin_msg").msgstr)
 
     else:
         await ActionsOnAdmin.del_admin(
             ex_admin={"id": admin_id, "username": admin_username},
         )
         await message.answer(
-            en_msgs.find("admin_del_msg")
+            msgs.find("admin_del_msg")
             .msgstr.format(admin_username=admin_username)
         )
 

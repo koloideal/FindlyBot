@@ -21,8 +21,17 @@ ru_msgs = polib.pofile('locales/ru/wait_query_to_search.po')
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query_with_plus: str = re.sub(r" ", "+", message.text.strip())
     requestor_id = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=requestor_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
     query_hash = await req_to_hash(query_with_plus)
-    wait_message: Message = await message.answer(en_msgs.find('search_in_progress').msgstr)
+    wait_message: Message = await message.answer(msgs.find('search_in_progress').msgstr)
 
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
@@ -36,7 +45,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         )
         api_json_data = api_data.json()["data"]
         if not api_json_data:
-            await message.answer(en_msgs.find('empty_response').msgstr)
+            await message.answer(msgs.find('empty_response').msgstr)
             await state.clear()
             return
         else:

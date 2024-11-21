@@ -25,11 +25,21 @@ async def swipe_items_callback(callback: CallbackQuery,
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
     query = callback_data.query
-    requester_id = callback.from_user.id
+    requestor_id = callback.from_user.id
     hash_query = await req_to_hash(query.replace(" ", "+"))
 
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=requestor_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
+
     with open(
-        f"local_data/products_data/{requester_id}/{hash_query}.json", "r"
+        f"local_data/products_data/{requestor_id}/{hash_query}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -92,7 +102,7 @@ async def swipe_items_callback(callback: CallbackQuery,
         image = FSInputFile("local_data/images/placeholder.jpg")
     else:
         image = FSInputFile(
-            f"local_data/images/{requester_id}/{hash_query}/{current_marketplace}/{current_item_hash_name}.jpg"
+            f"local_data/images/{requestor_id}/{hash_query}/{current_marketplace}/{current_item_hash_name}.jpg"
         )
 
     res_name = await reformat_name(current_item_name.replace("_", " "), query)
@@ -100,7 +110,7 @@ async def swipe_items_callback(callback: CallbackQuery,
     await callback.message.edit_media(
         InputMediaPhoto(
             media=image,
-            caption=en_msgs.find('many_cards_msg').msgstr
+            caption=msgs.find('many_cards_msg').msgstr
                                                   .format(current_marketplace=current_marketplace,
                                                           current_item_link=current_item_link,
                                                           res_name=res_name,
@@ -114,20 +124,29 @@ async def swipe_items_callback(callback: CallbackQuery,
 
 async def callback_query_rout_for_only_new(callback: CallbackQuery):
     builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+    user_id = int(callback.from_user.id)
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
 
     match callback.data:
         case "is_only_new_OFF":
             callback_data = callback.data
-            user_id = int(callback.from_user.id)
             await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
                                                         user_id=user_id)
 
             builder.add(
                 InlineKeyboardButton(
-                    text=en_msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
+                    text=msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
                 ),
                 InlineKeyboardButton(
-                    text=en_msgs.find('only_new_on_msg').msgstr, callback_data="is_only_new_ON"
+                    text=msgs.find('only_new_on_msg').msgstr, callback_data="is_only_new_ON"
                 ),
             )
 
@@ -135,16 +154,15 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
         case "is_only_new_ON":
             callback_data = callback.data
-            user_id = int(callback.from_user.id)
             await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
                                                         user_id=user_id)
 
             builder.add(
                 InlineKeyboardButton(
-                    text=en_msgs.find('ch_max_size').msgstr, callback_data="change_max_size"
+                    text=msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
                 ),
                 InlineKeyboardButton(
-                    text=en_msgs.find('only_new_off_msg').msgstr, callback_data="is_only_new_OFF"
+                    text=msgs.find('only_new_off_msg').msgstr, callback_data="is_only_new_OFF"
                 ),
             )
 
@@ -153,6 +171,15 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
 
 async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size < 21")
-    await callback.message.answer(en_msgs.find('max_size_msg').msgstr.format(text=text))
+    user_id = int(callback.from_user.id)
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
+    await callback.message.answer(msgs.find('max_size_msg').msgstr.format(text=text))
 
     await state.set_state(WaitMaxSize.wait_max_size)

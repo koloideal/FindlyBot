@@ -115,6 +115,18 @@ class ActionsOnUsers:
         return only_new
 
     @staticmethod
+    async def get_user_lang_config(user_id: int) -> str:
+        await users_config_db.connect_async(reuse_if_open=True)
+
+        users_config_db.create_tables([UsersConfig])
+        lang = UsersConfig.select().where(UsersConfig.id == user_id)
+        lang = lang[0].lang
+
+        await users_config_db.close_async()
+
+        return lang
+
+    @staticmethod
     async def get_user_max_size_config(user_id: int) -> bool:
         await users_config_db.connect_async(reuse_if_open=True)
 

@@ -22,6 +22,16 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 async def get_username_for_unban_user_rout(message: Message,
                                            state: FSMContext) -> None:
+    admin_id: int = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=admin_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
     raw_input_username = message.text
     finished_input_username: str = raw_input_username if raw_input_username[0] != "@" else raw_input_username[1:]
     try:
@@ -41,7 +51,7 @@ async def get_username_for_unban_user_rout(message: Message,
         raise InvalidUsernameForUnban(raw_input_username)
 
     except InvalidUsernameForUnban:
-        await message.answer(en_msgs.find("invalid_username_msg").msgstr)
+        await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
         is_banned = await ActionsOnUsers.unban_user(
@@ -55,12 +65,12 @@ async def get_username_for_unban_user_rout(message: Message,
 
         if is_banned:
             await message.answer(
-                en_msgs.find("user_unban_msg")
+                msgs.find("user_unban_msg")
                 .msgstr.format(finished_input_username=finished_input_username)
             )
         else:
             await message.answer(
-                en_msgs.find("user_not_ban_msg")
+                msgs.find("user_not_ban_msg")
                 .msgstr.format(finished_input_username=finished_input_username)
             )
 

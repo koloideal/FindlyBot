@@ -1,8 +1,9 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
-from telethon.errors.rpcerrorlist import UsernameInvalidError
+from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameOccupiedError
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
@@ -36,7 +37,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         if user[0].bot or len(user) != 1:
             raise InvalidUsernameForAddAdmin(raw_input_username)
 
-    except UsernameInvalidError:
+    except (UsernameInvalidError, UsernameOccupiedError, ValueError):
         raise InvalidUsernameForAddAdmin(raw_input_username)
 
     except InvalidUsernameForAddAdmin:
@@ -54,8 +55,18 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
+        my_id = message.from_user.id
+        lang: str = await ActionsOnUsers.get_user_lang_config(user_id=my_id)
+
+        match lang:
+            case "RU":
+                msgs = ru_msgs
+            case "EN":
+                msgs = en_msgs
+            case _:
+                msgs = en_msgs
         await message.answer(
-            en_msgs.find('new_admin_msg')
+            msgs.find('new_admin_msg')
             .msgstr.format(finished_input_username=finished_input_username)
         )
 

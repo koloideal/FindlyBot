@@ -2,6 +2,8 @@ from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
+
+from database_func.actions_on_users import ActionsOnUsers
 from .routers_for_all.rout_config import config_rout
 from .routers_for_all.rout_help import button_to_help_rout
 from .routers_for_all.rout_start import start_rout
@@ -137,4 +139,13 @@ async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> N
 
 @router.message()
 async def unknown_command(message: Message) -> None:
-    await message.answer(en_msgs.find('unknown_msg').msgstr)
+    user_id = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
+    await message.answer(msgs.find('unknown_msg').msgstr)

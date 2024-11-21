@@ -3,6 +3,7 @@ from aiogram.types import FSInputFile, Message
 from datetime import datetime
 import json
 import os
+from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 import polib
 
@@ -14,17 +15,26 @@ ru_msgs = polib.pofile('locales/ru/get_admins_rout.po')
 async def get_admins_rout(message: Message) -> None:
     creator_id: int = GetConfig.get_bot_config()["Settings"]["creator_id"]
     user_id: int = message.from_user.id
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
 
     admins_id: list = await ActionsOnAdmin.get_admins()
 
     if user_id != creator_id and user_id not in admins_id:
-        await message.answer(en_msgs.find('unknown_command_msg').msgstr)
+        await message.answer(msgs.find('unknown_command_msg').msgstr)
 
     else:
         all_admins: list = await ActionsOnAdmin.get_admins(False)
 
         if not all_admins:
-            await message.answer(en_msgs.find('empty_database_msg').msgstr)
+            await message.answer(msgs.find('empty_database_msg').msgstr)
             return
 
         to_dump_data: dict = {}
@@ -43,7 +53,7 @@ async def get_admins_rout(message: Message) -> None:
             json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
         document: FSInputFile = FSInputFile(full_file_name)
-        caption: str = en_msgs.find('caption_msg').msgstr.format(date=datetime.now().strftime("%d-%m-%Y"))
+        caption: str = msgs.find('caption_msg').msgstr.format(date=datetime.now().strftime("%d-%m-%Y"))
 
         await message.answer_document(
             document=document,

@@ -11,7 +11,7 @@ msgid "only_new_on_msg"
 msgstr "Только новые:  ВКЛ ✅"
 
 msgid "only_new_off_msg"
-msgstr "Только новые:  ВЫКЛ ✅"
+msgstr "Только новые:  ВЫКЛ ❌"
 
 msgid "max_size_msg"
 msgstr "Введите макс количество товаров для каждого маркетплейса\n"

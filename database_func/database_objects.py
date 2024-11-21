@@ -9,9 +9,9 @@ users_db = SqliteDatabaseAsync("database/users.sqlite3", autoconnect=False)
 
 class BannedUsers(Model):
     id = IntegerField(unique=True)
-    first_name = CharField(max_length=50)
-    last_name = CharField(max_length=50)
-    username = CharField(max_length=50)
+    first_name = CharField(max_length=50, null=True)
+    last_name = CharField(max_length=50, null=True)
+    username = CharField(max_length=50, null=True)
 
     class Meta:
         database = banned_users_db
@@ -20,8 +20,8 @@ class BannedUsers(Model):
 
 class Users(Model):
     id = IntegerField(unique=True)
-    first_name = CharField(max_length=50)
-    username = CharField(max_length=50)
+    first_name = CharField(max_length=50, null=True)
+    username = CharField(max_length=50, null=True)
 
     class Meta:
         database = users_db
@@ -44,9 +44,9 @@ admins_db = SqliteDatabaseAsync("database/admins.sqlite3", autoconnect=False)
 
 class AdminUsers(Model):
     id = IntegerField(unique=True)
-    first_name = CharField(max_length=50)
-    last_name = CharField(max_length=50)
-    username = CharField(max_length=50)
+    first_name = CharField(max_length=50, null=True)
+    last_name = CharField(max_length=50, null=True)
+    username = CharField(max_length=50, null=True)
 
     class Meta:
         database = admins_db
