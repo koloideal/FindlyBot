@@ -1,3 +1,4 @@
+from _typeshed import SupportsWrite
 from database_func.action_on_admin import ActionsOnAdmin
 from aiogram.types import FSInputFile, Message
 from datetime import datetime
@@ -6,10 +7,11 @@ import os
 from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/get_admins_rout.po')
-ru_msgs = polib.pofile('locales/ru/get_admins_rout.po')
+en_msgs: POFile = polib.pofile('locales/en/get_admins_rout.po')
+ru_msgs: POFile = polib.pofile('locales/ru/get_admins_rout.po')
 
 
 async def get_admins_rout(message: Message) -> None:
@@ -19,19 +21,19 @@ async def get_admins_rout(message: Message) -> None:
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
+            msgs: POFile = en_msgs
 
-    admins_id: list = await ActionsOnAdmin.get_admins()
+    admins_id: list[int] = await ActionsOnAdmin.get_admins()
 
     if user_id != creator_id and user_id not in admins_id:
         await message.answer(msgs.find('unknown_command_msg').msgstr)
 
     else:
-        all_admins: list = await ActionsOnAdmin.get_admins(False)
+        all_admins: list[tuple] = await ActionsOnAdmin.get_admins(False)
 
         if not all_admins:
             await message.answer(msgs.find('empty_database_msg').msgstr)
@@ -49,7 +51,7 @@ async def get_admins_rout(message: Message) -> None:
 
         full_file_name: str = "secret_data/admin_users.json"
 
-        with open(full_file_name, "w", encoding="utf8") as file:
+        with open(full_file_name, "w", encoding="utf8") as file: # type: SupportsWrite[str]
             json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
         document: FSInputFile = FSInputFile(full_file_name)
@@ -61,5 +63,3 @@ async def get_admins_rout(message: Message) -> None:
         )
 
         os.remove(full_file_name)
-
-    return

@@ -2,52 +2,55 @@ from peewee import Model, IntegerField, CharField, BooleanField
 from aiopeewee import SqliteDatabaseAsync
 
 
-banned_users_db = SqliteDatabaseAsync("database/banned_users.sqlite3", autoconnect=False)
-users_config_db = SqliteDatabaseAsync("database/users_config.sqlite3", autoconnect=False)
-users_db = SqliteDatabaseAsync("database/users.sqlite3", autoconnect=False)
+banned_users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/banned_users.sqlite3",
+                                                           autoconnect=False)
+users_config_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users_config.sqlite3",
+                                                           autoconnect=False)
+users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users.sqlite3",
+                                                    autoconnect=False)
 
 
 class BannedUsers(Model):
-    id = IntegerField(unique=True)
-    first_name = CharField(max_length=50, null=True)
-    last_name = CharField(max_length=50, null=True)
-    username = CharField(max_length=50, null=True)
+    id: IntegerField = IntegerField(unique=True)
+    first_name: CharField = CharField(max_length=50, null=True)
+    last_name: CharField = CharField(max_length=50, null=True)
+    username: CharField = CharField(max_length=50, null=True)
 
     class Meta:
-        database = banned_users_db
-        db_table = "banned_users"
+        database: SqliteDatabaseAsync = banned_users_db
+        db_table: str = "banned_users"
 
 
 class Users(Model):
-    id = IntegerField(unique=True)
-    first_name = CharField(max_length=50, null=True)
-    username = CharField(max_length=50, null=True)
+    id: IntegerField = IntegerField(unique=True)
+    first_name: CharField = CharField(max_length=50, null=True)
+    username: CharField = CharField(max_length=50, null=True)
 
     class Meta:
-        database = users_db
-        db_table = "users"
+        database: SqliteDatabaseAsync = users_db
+        db_table: str = "users"
 
 
 class UsersConfig(Model):
-    id = IntegerField(unique=True)
-    only_new = BooleanField(default=False)
-    max_size = IntegerField(default=10)
-    lang = CharField(default='EN', max_length=2)
+    id: IntegerField = IntegerField(unique=True)
+    only_new: BooleanField = BooleanField(default=False)
+    max_size: IntegerField = IntegerField(default=10)
+    lang: CharField = CharField(default='EN', max_length=2)
 
     class Meta:
-        database = users_config_db
-        db_table = "config_users"
+        database: SqliteDatabaseAsync = users_config_db
+        db_table: str = "config_users"
 
 
-admins_db = SqliteDatabaseAsync("database/admins.sqlite3", autoconnect=False)
+admins_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/admins.sqlite3", autoconnect=False)
 
 
 class AdminUsers(Model):
-    id = IntegerField(unique=True)
-    first_name = CharField(max_length=50, null=True)
-    last_name = CharField(max_length=50, null=True)
-    username = CharField(max_length=50, null=True)
+    id: IntegerField = IntegerField(unique=True)
+    first_name: CharField = CharField(max_length=50, null=True)
+    last_name: CharField = CharField(max_length=50, null=True)
+    username: CharField = CharField(max_length=50, null=True)
 
     class Meta:
-        database = admins_db
-        db_table = "admin_users"
+        database: SqliteDatabaseAsync = admins_db
+        db_table: str = "admin_users"

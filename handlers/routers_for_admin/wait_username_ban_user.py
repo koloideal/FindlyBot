@@ -8,10 +8,11 @@ from telethon.helpers import TotalList
 from utils.get_config import GetConfig
 from exceptions.users_exceptions import InvalidUsernameForBan, AttemptToBanAdminOrCreator
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/wait_username_ban_user.po')
-ru_msgs = polib.pofile('locales/ru/wait_username_ban_user.po')
+en_msgs: POFile = polib.pofile('locales/en/wait_username_ban_user.po')
+ru_msgs: POFile = polib.pofile('locales/ru/wait_username_ban_user.po')
 
 config: dict = GetConfig.get_bot_config()
 api_id: str = config["Settings"]["api_id"]
@@ -29,12 +30,12 @@ async def get_username_for_ban_user_rout(message: Message,
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
-    admins_id: list = await ActionsOnAdmin.get_admins()
+            msgs: POFile = en_msgs
+    admins_id: list[int] = await ActionsOnAdmin.get_admins()
     try:
         client.start()
 
@@ -71,8 +72,7 @@ async def get_username_for_ban_user_rout(message: Message,
                 },
             )
             await message.answer(
-                msgs.find("del_admin_msg")
-                .msgstr.format(finished_input_username=finished_input_username)
+                msgs.find("del_admin_msg").msgstr.format(finished_input_username=finished_input_username)
             )
 
         await ActionsOnUsers.ban_user(
@@ -84,8 +84,7 @@ async def get_username_for_ban_user_rout(message: Message,
             },
         )
         await message.answer(
-            msgs.find("user_banned_msg")
-            .msgstr.format(finished_input_username=finished_input_username)
+            msgs.find("user_banned_msg").msgstr.format(finished_input_username=finished_input_username)
         )
 
     finally:

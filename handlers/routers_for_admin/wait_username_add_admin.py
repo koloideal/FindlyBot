@@ -3,15 +3,17 @@ from aiogram.fsm.context import FSMContext
 from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
-from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameOccupiedError
+from telethon.errors.rpcerrorlist import (UsernameInvalidError,
+                                          UsernameOccupiedError)
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/wait_username_add_admin.po')
-ru_msgs = polib.pofile('locales/ru/wait_username_add_admin.po')
+en_msgs: POFile = polib.pofile('locales/en/wait_username_add_admin.po')
+ru_msgs: POFile = polib.pofile('locales/ru/wait_username_add_admin.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -22,7 +24,8 @@ creator_id: str = config["Settings"]["creator_id"]
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
-async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -> None:
+async def get_username_for_add_admin_rout(message: Message,
+                                          state: FSMContext) -> None:
     raw_input_username: str = message.text
     try:
         await client.start()
@@ -55,19 +58,18 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
-        my_id = message.from_user.id
+        my_id: int = message.from_user.id
         lang: str = await ActionsOnUsers.get_user_lang_config(user_id=my_id)
 
         match lang:
             case "RU":
-                msgs = ru_msgs
+                msgs: POFile = ru_msgs
             case "EN":
-                msgs = en_msgs
+                msgs: POFile = en_msgs
             case _:
-                msgs = en_msgs
+                msgs: POFile = en_msgs
         await message.answer(
-            msgs.find('new_admin_msg')
-            .msgstr.format(finished_input_username=finished_input_username)
+            msgs.find('new_admin_msg').msgstr.format(finished_input_username=finished_input_username)
         )
 
     finally:

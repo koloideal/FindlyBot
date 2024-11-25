@@ -1,15 +1,15 @@
 from aiogram import types
-
 from database_func.actions_on_users import ActionsOnUsers
 from states.admin_states import AdminState
 from aiogram.fsm.context import FSMContext
 from database_func.action_on_admin import ActionsOnAdmin
 from utils.get_config import GetConfig
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/ban_or_unban_user_rout.po')
-ru_msgs = polib.pofile('locales/ru/ban_or_unban_user_rout.po')
+en_msgs: POFile = polib.pofile('locales/en/ban_or_unban_user_rout.po')
+ru_msgs: POFile = polib.pofile('locales/ru/ban_or_unban_user_rout.po')
 
 
 async def ban_or_unban_user_rout(message: types.Message,
@@ -21,15 +21,15 @@ async def ban_or_unban_user_rout(message: types.Message,
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
+            msgs: POFile = en_msgs
 
-    admins_id: list = await ActionsOnAdmin.get_admins()
+    admins_id: list[int] = await ActionsOnAdmin.get_admins()
 
-    if user_id != creator_id and user_id not in admins_id:
+    if (user_id != creator_id) and (user_id not in admins_id):
         await message.answer(msgs.find('unknown_command_msg').msgstr)
 
     else:
@@ -40,4 +40,3 @@ async def ban_or_unban_user_rout(message: types.Message,
                 await state.set_state(AdminState.waiting_for_ban_user)
             case "unban":
                 await state.set_state(AdminState.waiting_for_unban_user)
-    return

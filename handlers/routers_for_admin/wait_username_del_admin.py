@@ -1,6 +1,6 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-
+from polib import POFile
 from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
@@ -10,8 +10,8 @@ from telethon.helpers import TotalList
 import polib
 
 
-en_msgs = polib.pofile('locales/en/wait_username_del_admin.po')
-ru_msgs = polib.pofile('locales/ru/wait_username_del_admin.po')
+en_msgs: POFile = polib.pofile('locales/en/wait_username_del_admin.po')
+ru_msgs: POFile = polib.pofile('locales/ru/wait_username_del_admin.po')
 
 
 config: dict = GetConfig.get_bot_config()
@@ -21,19 +21,20 @@ api_hash: str = config["Settings"]["api_hash"]
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
-async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -> None:
+async def get_username_for_del_admin_rout(message: Message,
+                                          state: FSMContext) -> None:
     admin_id: int = message.from_user.id
     lang: str = await ActionsOnUsers.get_user_lang_config(user_id=admin_id)
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
+            msgs: POFile = en_msgs
     try:
-        admin_ids: list = await ActionsOnAdmin.get_admins()
+        admin_ids: list[int] = await ActionsOnAdmin.get_admins()
         client.start()
 
         if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):
@@ -65,8 +66,7 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
             ex_admin={"id": admin_id, "username": admin_username},
         )
         await message.answer(
-            msgs.find("admin_del_msg")
-            .msgstr.format(admin_username=admin_username)
+            msgs.find("admin_del_msg").msgstr.format(admin_username=admin_username)
         )
 
     finally:

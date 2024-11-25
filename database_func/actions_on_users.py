@@ -1,3 +1,4 @@
+from typing import Any
 from peewee import ModelSelect
 from .database_objects import (
     BannedUsers,
@@ -11,42 +12,46 @@ from .database_objects import (
 
 class ActionsOnUsers:
     @staticmethod
-    async def get_banned_users() -> list:
+    async def get_banned_users() -> list[int]:
         await banned_users_db.connect_async(reuse_if_open=True)
-
         banned_users_db.create_tables([BannedUsers])
         banned_users_db.commit()
+
         banned_users_data: ModelSelect = BannedUsers.select()
-        banned_users_id: list = [banned_user.id for banned_user in banned_users_data]
+        banned_users_id: list[int] = [banned_user.id for banned_user in banned_users_data]
 
         await banned_users_db.close_async()
-
         return banned_users_id
 
     @staticmethod
-    async def ban_user(future_ban_user: dict) -> None:
+    async def ban_user(future_ban_user: dict[str, Any]) -> None:
         await banned_users_db.connect_async(reuse_if_open=True)
-
         banned_users_db.create_tables([BannedUsers])
-        (BannedUsers.insert(future_ban_user).on_conflict(action="IGNORE").execute())
+        (
+            BannedUsers
+            .insert(future_ban_user)
+            .on_conflict(action="IGNORE")
+            .execute()
+        )
         banned_users_db.commit()
-
         await banned_users_db.close_async()
 
     @staticmethod
-    async def unban_user(ex_ban_user: dict) -> bool:
+    async def unban_user(ex_ban_user: dict[str, Any]) -> bool:
         banned_users: list = await ActionsOnUsers.get_banned_users()
-
         if ex_ban_user["id"] not in banned_users:
             return False
-
         else:
             await banned_users_db.connect_async(reuse_if_open=True)
-
-            (BannedUsers.delete().where(BannedUsers.id == ex_ban_user["id"]).execute())
+            (
+                BannedUsers
+                .delete()
+                .where(BannedUsers.id == ex_ban_user["id"])
+                .execute()
+            )
             banned_users_db.commit()
-
             await banned_users_db.close_async()
+
             return True
 
     @staticmethod
@@ -56,7 +61,8 @@ class ActionsOnUsers:
         await users_db.connect_async(reuse_if_open=True)
         users_db.create_tables([Users])
         (
-            BannedUsers.insert(
+            BannedUsers
+            .insert(
                 {
                     "id": user_id,
                     "first_name": first_name,
@@ -73,32 +79,32 @@ class ActionsOnUsers:
     async def config_user_to_database(user_id: int) -> None:
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
-
         (
-            UsersConfig.insert({"id": user_id})
+            UsersConfig
+            .insert({"id": user_id})
             .on_conflict(action="IGNORE")
             .execute()
         )
-
         users_config_db.commit()
         await users_config_db.close_async()
 
     @staticmethod
     async def change_only_new_config(callback_data: str,
                                      user_id: int) -> None:
-        only_new_serialized = {"is_only_new_OFF": True, "is_only_new_ON": False}
+        only_new_serialized: dict[str, bool] = {"is_only_new_OFF": True,
+                                                "is_only_new_ON": False}
+        new_only_new: bool = only_new_serialized[callback_data]
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
         (
-            UsersConfig.update(
-                {UsersConfig.only_new: only_new_serialized[callback_data]}
-            )
+            UsersConfig.update({
+                UsersConfig.only_new: new_only_new
+            })
             .where(UsersConfig.id == user_id)
             .execute()
         )
-
         users_config_db.commit()
         await users_config_db.close_async()
 
@@ -106,11 +112,10 @@ class ActionsOnUsers:
     async def change_lang_config(callback_data: str,
                                  user_id: int) -> None:
 
-        lang = 'RU' if callback_data == 'lang_RU' else 'EN'
+        lang: str = 'RU' if callback_data == 'lang_RU' else 'EN'
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
-
         (
             UsersConfig.update(
                 {UsersConfig.lang: lang}
@@ -118,7 +123,6 @@ class ActionsOnUsers:
             .where(UsersConfig.id == user_id)
             .execute()
         )
-
         users_config_db.commit()
         await users_config_db.close_async()
 
@@ -127,11 +131,12 @@ class ActionsOnUsers:
         await users_config_db.connect_async(reuse_if_open=True)
 
         users_config_db.create_tables([UsersConfig])
-        only_new = UsersConfig.select().where(UsersConfig.id == user_id)
-        only_new = only_new[0].only_new
+        only_new: ModelSelect = (UsersConfig
+                                .select()
+                                .where(UsersConfig.id == user_id))
+        only_new: bool = only_new[0].only_new
 
         await users_config_db.close_async()
-
         return only_new
 
     @staticmethod
@@ -139,23 +144,25 @@ class ActionsOnUsers:
         await users_config_db.connect_async(reuse_if_open=True)
 
         users_config_db.create_tables([UsersConfig])
-        lang = UsersConfig.select().where(UsersConfig.id == user_id)
-        lang = lang[0].lang
+        lang: ModelSelect = (UsersConfig
+                             .select().
+                             where(UsersConfig.id == user_id))
+        lang: str = lang[0].lang
 
         await users_config_db.close_async()
-
         return lang
 
     @staticmethod
-    async def get_user_max_size_config(user_id: int) -> bool:
+    async def get_user_max_size_config(user_id: int) -> int:
         await users_config_db.connect_async(reuse_if_open=True)
 
         users_config_db.create_tables([UsersConfig])
-        data = UsersConfig.select().where(UsersConfig.id == user_id)
-        max_size = data[0].max_size
+        data: ModelSelect = (UsersConfig
+                             .select()
+                             .where(UsersConfig.id == user_id))
+        max_size: int = data[0].max_size
 
         await users_config_db.close_async()
-
         return max_size
 
     @staticmethod

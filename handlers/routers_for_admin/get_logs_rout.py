@@ -1,4 +1,4 @@
-from aiogram import types
+from aiogram.types import Message
 from database_func.action_on_admin import ActionsOnAdmin
 from aiogram.types import FSInputFile
 from datetime import datetime
@@ -6,28 +6,29 @@ from aiogram.exceptions import TelegramBadRequest
 from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/get_logs_rout.po')
-ru_msgs = polib.pofile('locales/ru/get_logs_rout.po')
+en_msgs: POFile = polib.pofile('locales/en/get_logs_rout.po')
+ru_msgs: POFile = polib.pofile('locales/ru/get_logs_rout.po')
 
 
-async def get_logs_rout(message: types.Message) -> None:
+async def get_logs_rout(message: Message) -> None:
     creator_id: int = GetConfig.get_bot_config()["Settings"]["creator_id"]
     user_id: int = message.from_user.id
     lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
+            msgs: POFile = en_msgs
 
-    admins_id: list = await ActionsOnAdmin.get_admins()
+    admins_id: list[int] = await ActionsOnAdmin.get_admins()
 
-    if user_id != creator_id and user_id not in admins_id:
+    if (user_id != creator_id) and (user_id not in admins_id):
         await message.answer(msgs.find('unknown_command_msg').msgstr)
 
     else:
@@ -40,8 +41,5 @@ async def get_logs_rout(message: types.Message) -> None:
                 document=document,
                 caption=captions
             )
-
         except TelegramBadRequest:
             await message.answer(msgs.find('empty_logs_msg').msgstr)
-
-    return

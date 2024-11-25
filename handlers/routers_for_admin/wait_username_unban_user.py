@@ -7,11 +7,11 @@ from database_func.actions_on_users import ActionsOnUsers
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForUnban
 import polib
+from polib import POFile
 
 
-en_msgs = polib.pofile('locales/en/wait_username_unban_user.po')
-ru_msgs = polib.pofile('locales/ru/wait_username_unban_user.po')
-
+en_msgs: POFile = polib.pofile('locales/en/wait_username_unban_user.po')
+ru_msgs: POFile = polib.pofile('locales/ru/wait_username_unban_user.po')
 
 config: dict = GetConfig.get_bot_config()
 api_id: str = config["Settings"]["api_id"]
@@ -27,12 +27,12 @@ async def get_username_for_unban_user_rout(message: Message,
 
     match lang:
         case "RU":
-            msgs = ru_msgs
+            msgs: POFile = ru_msgs
         case "EN":
-            msgs = en_msgs
+            msgs: POFile = en_msgs
         case _:
-            msgs = en_msgs
-    raw_input_username = message.text
+            msgs: POFile = en_msgs
+    raw_input_username: str = message.text
     finished_input_username: str = raw_input_username if raw_input_username[0] != "@" else raw_input_username[1:]
     try:
         client.start()
@@ -54,7 +54,7 @@ async def get_username_for_unban_user_rout(message: Message,
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
-        is_banned = await ActionsOnUsers.unban_user(
+        is_banned: bool = await ActionsOnUsers.unban_user(
             ex_ban_user={
                 "id": user_id,
                 "first_name": user_first_name,
