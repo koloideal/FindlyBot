@@ -9,4 +9,10 @@ msgid "only_new_on_msg"
 msgstr "Only New:  ON ✅"
 
 msgid "only_new_off_msg"
-msgstr "Only New:  OFF ✅"
+msgstr "Only New:  OFF ❌"
+
+msgid "lang_ru_msg"
+msgstr "Language:  RU 🇷🇺"
+
+msgid "lang_en_msg"
+msgstr "Language: EN 🇱🇷"

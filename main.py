@@ -39,7 +39,6 @@ async def main() -> None:
 if __name__ == "__main__":
     try:
         print("\n\033[1m\033[30m\033[44m {} \033[0m".format("Starting FindlyBot..."))
-
         logger = logging.getLogger(__name__)
         logging.basicConfig(
             level=logging.WARNING,

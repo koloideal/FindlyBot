@@ -103,6 +103,26 @@ class ActionsOnUsers:
         await users_config_db.close_async()
 
     @staticmethod
+    async def change_lang_config(callback_data: str,
+                                 user_id: int) -> None:
+
+        lang = 'RU' if callback_data == 'lang_RU' else 'EN'
+
+        await users_config_db.connect_async(reuse_if_open=True)
+        users_config_db.create_tables([UsersConfig])
+
+        (
+            UsersConfig.update(
+                {UsersConfig.lang: lang}
+            )
+            .where(UsersConfig.id == user_id)
+            .execute()
+        )
+
+        users_config_db.commit()
+        await users_config_db.close_async()
+
+    @staticmethod
     async def get_user_only_new_config(user_id: int) -> bool:
         await users_config_db.connect_async(reuse_if_open=True)
 

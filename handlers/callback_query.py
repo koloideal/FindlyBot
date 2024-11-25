@@ -5,6 +5,7 @@ from aiogram.types import (
     FSInputFile,
     InputMediaPhoto,
     InlineKeyboardButton,
+    InlineKeyboardMarkup,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from states.user_states import WaitMaxSize
@@ -122,10 +123,12 @@ async def swipe_items_callback(callback: CallbackQuery,
     )
 
 
-async def callback_query_rout_for_only_new(callback: CallbackQuery):
-    builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+async def callback_query_change_only_new(callback: CallbackQuery):
+    callback_data = callback.data
     user_id = int(callback.from_user.id)
     lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
+                                                user_id=user_id)
 
     match lang:
         case "RU":
@@ -135,38 +138,64 @@ async def callback_query_rout_for_only_new(callback: CallbackQuery):
         case _:
             msgs = en_msgs
 
-    match callback.data:
-        case "is_only_new_OFF":
-            callback_data = callback.data
-            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
-                                                        user_id=user_id)
+    lang_msg = msgs.find("lang_ru_msg").msgstr if lang == 'RU' else msgs.find("lang_en_msg").msgstr
+    lang_callback_data = 'lang_EN' if lang == 'RU' else 'lang_RU'
 
-            builder.add(
-                InlineKeyboardButton(
-                    text=msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
-                ),
-                InlineKeyboardButton(
-                    text=msgs.find('only_new_on_msg').msgstr, callback_data="is_only_new_ON"
-                ),
-            )
+    is_only_new_msg = msgs.find("only_new_on_msg").msgstr if callback_data == 'is_only_new_OFF' else msgs.find("only_new_off_msg").msgstr
+    is_only_new_callback_data = "is_only_new_ON" if callback_data == 'is_only_new_OFF' else "is_only_new_OFF"
 
-            await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
+    buttons: list = [
+        [
+            InlineKeyboardButton(text=is_only_new_msg, callback_data=is_only_new_callback_data),
+            InlineKeyboardButton(text=lang_msg, callback_data=lang_callback_data)
+        ],
+        [
+            InlineKeyboardButton(text=msgs.find("ch_max_size_msg").msgstr, callback_data="change_max_size")
+        ]
+    ]
 
-        case "is_only_new_ON":
-            callback_data = callback.data
-            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
-                                                        user_id=user_id)
+    keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-            builder.add(
-                InlineKeyboardButton(
-                    text=msgs.find('ch_max_size_msg').msgstr, callback_data="change_max_size"
-                ),
-                InlineKeyboardButton(
-                    text=msgs.find('only_new_off_msg').msgstr, callback_data="is_only_new_OFF"
-                ),
-            )
+    await callback.message.edit_reply_markup(reply_markup=keyboard)
 
-            await callback.message.edit_reply_markup(reply_markup=builder.as_markup())
+
+async def callback_query_change_lang(callback: CallbackQuery):
+    callback_data = callback.data
+    user_id = int(callback.from_user.id)
+    await ActionsOnUsers.change_lang_config(callback_data=callback_data,
+                                            user_id=user_id)
+    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    max_size: int = await ActionsOnUsers.get_user_max_size_config(user_id)
+
+    match lang:
+        case "RU":
+            msgs = ru_msgs
+        case "EN":
+            msgs = en_msgs
+        case _:
+            msgs = en_msgs
+
+    lang_msg = msgs.find("lang_ru_msg").msgstr if lang == 'RU' else msgs.find("lang_en_msg").msgstr
+    lang_callback_data = 'lang_RU' if callback_data == 'lang_EN' else 'lang_EN'
+
+    is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(user_id)
+    is_only_new_msg = msgs.find("only_new_on_msg").msgstr if is_only_new else msgs.find("only_new_off_msg").msgstr
+    is_only_new_callback_data = "is_only_new_ON" if is_only_new else "is_only_new_OFF"
+
+    text = msgs.find("edit_lang_msg").msgstr.format(max_size=max_size)
+    
+    buttons: list = [
+        [
+            InlineKeyboardButton(text=is_only_new_msg, callback_data=is_only_new_callback_data),
+            InlineKeyboardButton(text=lang_msg, callback_data=lang_callback_data)
+        ],
+        [
+            InlineKeyboardButton(text=msgs.find("ch_max_size_msg").msgstr, callback_data="change_max_size")
+        ]
+    ]
+
+    keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(inline_keyboard=buttons)
+    await callback.message.edit_text(text=text,reply_markup=keyboard)
 
 
 async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):

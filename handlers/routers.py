@@ -2,7 +2,6 @@ from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
-
 from database_func.actions_on_users import ActionsOnUsers
 from .routers_for_all.rout_config import config_rout
 from .routers_for_all.rout_help import button_to_help_rout
@@ -23,8 +22,8 @@ from .routers_for_all.wait_query_to_search import get_query_to_search_rout
 from .routers_for_all.wait_max_size import get_max_size_rout
 from .callback_query import (
     swipe_items_callback,
-    callback_query_rout_for_only_new,
-    change_max_size_callback,
+    callback_query_change_only_new,
+    change_max_size_callback, callback_query_change_lang,
 )
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 import polib
@@ -129,7 +128,12 @@ async def swipe_items(
 
 @router.callback_query(F.data.startswith("is_only_new"))
 async def change_only_new(callback_query: CallbackQuery) -> None:
-    await callback_query_rout_for_only_new(callback_query)
+    await callback_query_change_only_new(callback_query)
+
+
+@router.callback_query(F.data.startswith("lang"))
+async def change_lang(callback_query: CallbackQuery) -> None:
+    await callback_query_change_lang(callback_query)
 
 
 @router.callback_query(F.data == "change_max_size")
