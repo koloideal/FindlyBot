@@ -1,4 +1,4 @@
-from _typeshed import SupportsWrite
+import typing
 from database_func.action_on_admin import ActionsOnAdmin
 from aiogram.types import FSInputFile, Message
 from datetime import datetime
@@ -8,6 +8,8 @@ from database_func.actions_on_users import ActionsOnUsers
 from utils.get_config import GetConfig
 import polib
 from polib import POFile
+if typing.TYPE_CHECKING:
+    from _typeshed import SupportsWrite
 
 
 en_msgs: POFile = polib.pofile('locales/en/get_admins_rout.po')

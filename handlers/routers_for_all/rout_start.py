@@ -14,6 +14,7 @@ async def start_rout(message: Message) -> None:
     banned_users_id: list = await ActionsOnUsers.get_banned_users()
     creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
 
+    await ActionsOnUsers.config_user_to_database(user_id)
     lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
 
     match lang:
@@ -23,8 +24,6 @@ async def start_rout(message: Message) -> None:
             msgs = en_msgs
         case _:
             msgs = en_msgs
-
-    await ActionsOnUsers.config_user_to_database(user_id)
 
     case1: bool = user_id in admins_id and user_id == creator_id
     case2: bool = user_id not in admins_id and user_id == creator_id
