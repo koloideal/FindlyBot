@@ -76,7 +76,7 @@ async def forming_response(message: Message, query: str, wait_message: Message):
                         link=link,
                         res_name=res_name,
                         price=price,
-                        ids=ids,
+                        ids=str(int(ids) + 1),
                         size_of_products=size_of_products),
                 reply_markup=builder.as_markup(),
             )
