@@ -41,7 +41,9 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
     try:
         api_data: Response = await get_api_data(
-            query_with_plus, max_size=max_size, only_new=only_new
+            query_with_plus,
+            max_size=max_size,
+            only_new=only_new
         )
         api_json_data = api_data.json()["data"]
         if not api_json_data:
