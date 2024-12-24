@@ -1,10 +1,10 @@
-from peewee import Model, IntegerField, CharField, BooleanField
+from peewee import Model, IntegerField, CharField
 from aiopeewee import SqliteDatabaseAsync
 
 
 banned_users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/banned_users.sqlite3",
                                                            autoconnect=False)
-users_config_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users_config.sqlite3",
+users_config_db: SqliteDatabaseAsync = SqliteDatabaseAsync("../database/users_config.sqlite3",
                                                            autoconnect=False)
 users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users.sqlite3",
                                                     autoconnect=False)
@@ -33,8 +33,11 @@ class Users(Model):
 
 class UsersConfig(Model):
     id: IntegerField = IntegerField(unique=True)
-    only_new: BooleanField = BooleanField(default=False)
+    only_new: CharField = CharField(default='on')
     max_size: IntegerField = IntegerField(default=10)
+    name_filter: CharField = CharField(default='on')
+    price_filter: CharField = CharField(default='on')
+    exclusion_words: CharField = CharField(default=None)
     lang: CharField = CharField(default='EN', max_length=2)
 
     class Meta:

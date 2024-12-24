@@ -29,7 +29,8 @@ async def swipe_items_callback(callback: CallbackQuery,
     requestor_id = callback.from_user.id
     hash_query = await req_to_hash(query.replace(" ", "+"))
 
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=requestor_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":
@@ -126,7 +127,9 @@ async def swipe_items_callback(callback: CallbackQuery,
 async def callback_query_change_only_new(callback: CallbackQuery):
     callback_data = callback.data
     user_id = int(callback.from_user.id)
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
+
     await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
                                                 user_id=user_id)
 
@@ -164,8 +167,9 @@ async def callback_query_change_lang(callback: CallbackQuery):
     user_id = int(callback.from_user.id)
     await ActionsOnUsers.change_lang_config(callback_data=callback_data,
                                             user_id=user_id)
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
-    max_size: int = await ActionsOnUsers.get_user_max_size_config(user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
+    max_size: int = user_config['max_size']
 
     match lang:
         case "RU":
@@ -201,7 +205,9 @@ async def callback_query_change_lang(callback: CallbackQuery):
 async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size < 21")
     user_id = int(callback.from_user.id)
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
+
     match lang:
         case "RU":
             msgs = ru_msgs

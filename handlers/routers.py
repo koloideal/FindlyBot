@@ -144,7 +144,8 @@ async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> N
 @router.message()
 async def unknown_command(message: Message) -> None:
     user_id = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
     match lang:
         case "RU":
             msgs = ru_msgs

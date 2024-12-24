@@ -21,7 +21,8 @@ ru_msgs = polib.pofile('locales/ru/wait_query_to_search.po')
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query_with_plus: str = re.sub(r" ", "+", message.text.strip())
     requestor_id = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=requestor_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

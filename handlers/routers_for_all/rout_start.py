@@ -15,7 +15,8 @@ async def start_rout(message: Message) -> None:
     creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
 
     await ActionsOnUsers.config_user_to_database(user_id)
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

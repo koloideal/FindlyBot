@@ -19,7 +19,8 @@ async def forming_response(message: Message, query: str, wait_message: Message):
     requestor_id: int = message.from_user.id
     query_hash: str = await req_to_hash(query)
 
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=requestor_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

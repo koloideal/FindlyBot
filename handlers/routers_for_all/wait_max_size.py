@@ -10,7 +10,8 @@ ru_msgs = polib.pofile('locales/ru/wait_max_size.po')
 
 async def get_max_size_rout(message: Message, state: FSMContext) -> None:
     user_id = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

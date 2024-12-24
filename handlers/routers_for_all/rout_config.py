@@ -9,7 +9,8 @@ ru_msgs = polib.pofile('locales/ru/rout_config.po')
 
 async def config_rout(message: types.Message) -> None:
     user_id = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":
@@ -22,11 +23,11 @@ async def config_rout(message: types.Message) -> None:
     lang_msg = msgs.find("lang_ru_msg").msgstr if lang == 'RU' else msgs.find("lang_en_msg").msgstr
     lang_callback_data = 'lang_EN' if lang == 'RU' else 'lang_RU'
 
-    is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(user_id)
-    is_only_new_msg = msgs.find("only_new_on_msg").msgstr if is_only_new else msgs.find("only_new_off_msg").msgstr
-    is_only_new_callback_data = "is_only_new_ON" if is_only_new else "is_only_new_OFF"
+    is_only_new: str = user_config['only_new']
+    is_only_new_msg = msgs.find(f"only_new_{is_only_new}_msg").msgstr
+    is_only_new_callback_data = "is_only_new_" + is_only_new.upper()
 
-    max_size: int = await ActionsOnUsers.get_user_max_size_config(user_id)
+    max_size: int = user_config['max_size']
 
     buttons: list = [
         [

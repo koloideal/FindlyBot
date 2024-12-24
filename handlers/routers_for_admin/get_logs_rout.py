@@ -16,7 +16,8 @@ ru_msgs: POFile = polib.pofile('locales/ru/get_logs_rout.po')
 async def get_logs_rout(message: Message) -> None:
     creator_id: int = GetConfig.get_bot_config()["Settings"]["creator_id"]
     user_id: int = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

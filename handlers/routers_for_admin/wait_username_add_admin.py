@@ -28,7 +28,7 @@ async def get_username_for_add_admin_rout(message: Message,
                                           state: FSMContext) -> None:
     raw_input_username: str = message.text
     try:
-        await client.start()
+        client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForAddAdmin(raw_input_username)
@@ -59,7 +59,8 @@ async def get_username_for_add_admin_rout(message: Message,
             },
         )
         my_id: int = message.from_user.id
-        lang: str = await ActionsOnUsers.get_user_lang_config(user_id=my_id)
+        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=my_id)
+        lang: str = user_config['language']
 
         match lang:
             case "RU":
@@ -73,5 +74,5 @@ async def get_username_for_add_admin_rout(message: Message,
         )
 
     finally:
-        await client.disconnect()
+        client.disconnect()
         await state.clear()

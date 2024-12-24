@@ -26,7 +26,8 @@ async def get_username_for_ban_user_rout(message: Message,
                                          state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=admin_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

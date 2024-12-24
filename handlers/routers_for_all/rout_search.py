@@ -13,7 +13,8 @@ async def search_rout(message: Message, state: FSMContext) -> None:
     banned_users_ids: list = await ActionsOnUsers.get_banned_users()
     user_id = message.from_user.id
 
-    lang: str = await ActionsOnUsers.get_user_lang_config(user_id=user_id)
+    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+    lang: str = user_config['language']
 
     match lang:
         case "RU":

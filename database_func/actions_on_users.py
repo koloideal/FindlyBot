@@ -1,6 +1,7 @@
 from typing import Any
+import asyncio
 from peewee import ModelSelect
-from .database_objects import (
+from database_func.database_objects import (
     BannedUsers,
     Users,
     UsersConfig,
@@ -127,43 +128,23 @@ class ActionsOnUsers:
         await users_config_db.close_async()
 
     @staticmethod
-    async def get_user_only_new_config(user_id: int) -> bool:
+    async def get_all_configs(user_id: int) -> dict:
         await users_config_db.connect_async(reuse_if_open=True)
 
         users_config_db.create_tables([UsersConfig])
-        only_new: ModelSelect = (UsersConfig
-                                .select()
-                                .where(UsersConfig.id == user_id))
-        only_new: bool = only_new[0].only_new
-
-        await users_config_db.close_async()
-        return only_new
-
-    @staticmethod
-    async def get_user_lang_config(user_id: int) -> str:
-        await users_config_db.connect_async(reuse_if_open=True)
-
-        users_config_db.create_tables([UsersConfig])
-        lang: ModelSelect = (UsersConfig
-                             .select().
-                             where(UsersConfig.id == user_id))
-        lang: str = lang[0].lang
-
-        await users_config_db.close_async()
-        return lang
-
-    @staticmethod
-    async def get_user_max_size_config(user_id: int) -> int:
-        await users_config_db.connect_async(reuse_if_open=True)
-
-        users_config_db.create_tables([UsersConfig])
-        data: ModelSelect = (UsersConfig
+        all_config: ModelSelect = (UsersConfig
                              .select()
                              .where(UsersConfig.id == user_id))
-        max_size: int = data[0].max_size
+        all_configs: UsersConfig = all_config[0]
+
+        all_configs_dict = {
+            'only_new': all_configs.only_new,
+            'max_size': all_configs.max_size,
+            'language': all_configs.lang
+        }
 
         await users_config_db.close_async()
-        return max_size
+        return all_configs_dict
 
     @staticmethod
     async def change_max_size_config(user_id: int,
@@ -180,3 +161,6 @@ class ActionsOnUsers:
 
         users_config_db.commit()
         await users_config_db.close_async()
+
+res = asyncio.run(ActionsOnUsers.get_all_configs(1234344567))
+print(res)
