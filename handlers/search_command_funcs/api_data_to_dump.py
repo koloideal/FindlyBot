@@ -13,7 +13,8 @@ from utils.query_to_hash import req_to_hash
 @cached(ttl=5 * 60, serializer=PickleSerializer())
 async def api_data_to_dump(api_json_data: dict, requestor_id: int, query_hash) -> dict:
     to_dump_data: dict = {}
-    max_size: int = await ActionsOnUsers.get_user_max_size_config(requestor_id)
+    all_configs: dict = await ActionsOnUsers.get_all_configs(requestor_id)
+    max_size: int = all_configs['max_size']
 
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 

@@ -5,7 +5,7 @@ from utils.get_config import GetConfig
 
 async def get_api_data(query: str,
                        max_size: int,
-                       only_new: bool,
+                       only_new: str,
                        price_filter: str,
                        name_filter: str,
                        exclusion_words: str = None) -> Response | Any:

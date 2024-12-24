@@ -1,5 +1,4 @@
 from typing import Any
-import asyncio
 from peewee import ModelSelect
 from database_func.database_objects import (
     BannedUsers,
@@ -92,9 +91,9 @@ class ActionsOnUsers:
     @staticmethod
     async def change_only_new_config(callback_data: str,
                                      user_id: int) -> None:
-        only_new_serialized: dict[str, bool] = {"is_only_new_OFF": True,
-                                                "is_only_new_ON": False}
-        new_only_new: bool = only_new_serialized[callback_data]
+        only_new_serialized: dict[str, str] = {"is_only_new_OFF": 'on',
+                                                "is_only_new_ON": 'off'}
+        new_only_new: str = only_new_serialized[callback_data]
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
@@ -140,7 +139,10 @@ class ActionsOnUsers:
         all_configs_dict = {
             'only_new': all_configs.only_new,
             'max_size': all_configs.max_size,
-            'language': all_configs.lang
+            'language': all_configs.lang,
+            'price_filter': all_configs.price_filter,
+            'name_filter': all_configs.name_filter,
+            'exclusion_words': all_configs.exclusion_words
         }
 
         await users_config_db.close_async()
@@ -161,6 +163,3 @@ class ActionsOnUsers:
 
         users_config_db.commit()
         await users_config_db.close_async()
-
-res = asyncio.run(ActionsOnUsers.get_all_configs(1234344567))
-print(res)

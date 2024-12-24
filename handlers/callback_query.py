@@ -182,9 +182,11 @@ async def callback_query_change_lang(callback: CallbackQuery):
     lang_msg = msgs.find("lang_ru_msg").msgstr if lang == 'RU' else msgs.find("lang_en_msg").msgstr
     lang_callback_data = 'lang_RU' if callback_data == 'lang_EN' else 'lang_EN'
 
-    is_only_new: bool = await ActionsOnUsers.get_user_only_new_config(user_id)
-    is_only_new_msg = msgs.find("only_new_on_msg").msgstr if is_only_new else msgs.find("only_new_off_msg").msgstr
-    is_only_new_callback_data = "is_only_new_ON" if is_only_new else "is_only_new_OFF"
+    all_configs: dict = await ActionsOnUsers.get_all_configs(user_id)
+    is_only_new: str = all_configs['only_new']
+
+    is_only_new_msg = msgs.find(f"only_new_{is_only_new}_msg").msgstr
+    is_only_new_callback_data = f"is_only_new_{is_only_new.upper()}"
 
     text = msgs.find("edit_lang_msg").msgstr.format(max_size=max_size)
     

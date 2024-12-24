@@ -2,6 +2,8 @@ import logging
 import os
 import re
 import time
+from pprint import pprint
+
 import polib
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
@@ -37,16 +39,23 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 
-    max_size: int = await ActionsOnUsers.get_user_max_size_config(requestor_id)
-    only_new: bool = await ActionsOnUsers.get_user_only_new_config(requestor_id)
+    max_size: int = user_config['max_size']
+    only_new: str = user_config['only_new']
+    price_filter: str = user_config['price_filter']
+    name_filter: str = user_config['name_filter']
+    exclusion_words: None | str = user_config['exclusion_words']
 
     try:
         api_data: Response = await get_api_data(
             query_with_plus,
             max_size=max_size,
-            only_new=only_new
+            only_new=only_new,
+            price_filter=price_filter,
+            name_filter=name_filter,
+            exclusion_words=exclusion_words
         )
-        api_json_data = api_data.json()["data"]
+        api_json_data = api_data.json()["products_data"]
+        pprint(api_data.json()['request_metadata'])
         if not api_json_data:
             await message.answer(msgs.find('empty_response').msgstr)
             await state.clear()
