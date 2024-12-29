@@ -38,7 +38,7 @@ class UsersConfig(Model):
     name_filter: CharField = CharField(default='on')
     price_filter: CharField = CharField(default='on')
     exclusion_words: CharField = CharField(default=None, null=True)
-    lang: CharField = CharField(default='EN', max_length=2)
+    language: CharField = CharField(default='EN', max_length=2)
 
     class Meta:
         database: SqliteDatabaseAsync = users_config_db

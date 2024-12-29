@@ -36,7 +36,7 @@ async def get_username_for_unban_user_rout(message: Message,
     raw_input_username: str = message.text
     finished_input_username: str = raw_input_username if raw_input_username[0] != "@" else raw_input_username[1:]
     try:
-        client.start()
+        await client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForUnban(raw_input_username)

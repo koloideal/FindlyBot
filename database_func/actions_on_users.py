@@ -61,7 +61,7 @@ class ActionsOnUsers:
         await users_db.connect_async(reuse_if_open=True)
         users_db.create_tables([Users])
         (
-            BannedUsers
+            Users
             .insert(
                 {
                     "id": user_id,
@@ -81,7 +81,13 @@ class ActionsOnUsers:
         users_config_db.create_tables([UsersConfig])
         (
             UsersConfig
-            .insert({"id": user_id})
+            .insert({'id': user_id,
+                    'only_new': 'on',
+                    'max_size': '10',
+                    'language': 'EN',
+                    'price_filter': 'on',
+                    'name_filter': 'on',
+                    'exclusion_words': None})
             .on_conflict(action="IGNORE")
             .execute()
         )
@@ -118,7 +124,7 @@ class ActionsOnUsers:
         users_config_db.create_tables([UsersConfig])
         (
             UsersConfig.update(
-                {UsersConfig.lang: lang}
+                {UsersConfig.language: lang}
             )
             .where(UsersConfig.id == user_id)
             .execute()
@@ -136,17 +142,17 @@ class ActionsOnUsers:
                              .where(UsersConfig.id == user_id))
         all_configs: UsersConfig = all_config[0]
 
-        all_configs_dict = {
+        config_dict = {
             'only_new': all_configs.only_new,
             'max_size': all_configs.max_size,
-            'language': all_configs.lang,
+            'language': all_configs.language,
             'price_filter': all_configs.price_filter,
             'name_filter': all_configs.name_filter,
             'exclusion_words': all_configs.exclusion_words
         }
 
         await users_config_db.close_async()
-        return all_configs_dict
+        return config_dict
 
     @staticmethod
     async def change_max_size_config(user_id: int,

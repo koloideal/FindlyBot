@@ -36,7 +36,7 @@ async def get_username_for_del_admin_rout(message: Message,
             msgs: POFile = en_msgs
     try:
         admin_ids: list[int] = await ActionsOnAdmin.get_admins()
-        client.start()
+        await client.start()
 
         if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):
             raise ValueError

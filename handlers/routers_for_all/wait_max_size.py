@@ -22,10 +22,10 @@ async def get_max_size_rout(message: Message, state: FSMContext) -> None:
             msgs = en_msgs
     try:
         max_size: int = int(message.text.strip())
-        if not 0 < max_size < 21:
+        if not 0 < max_size <= 40:
             raise ValueError
     except ValueError:
-        text: str = escape("0 < max_size < 21")
+        text: str = escape("0 < max_size <= 40")
         await message.answer(msgs.find('incorrect_value_msg').msgstr.format(text=text))
     else:
         user_id = message.from_user.id

@@ -38,7 +38,7 @@ async def get_username_for_ban_user_rout(message: Message,
             msgs: POFile = en_msgs
     admins_id: list[int] = await ActionsOnAdmin.get_admins()
     try:
-        client.start()
+        await client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForBan(raw_input_username)

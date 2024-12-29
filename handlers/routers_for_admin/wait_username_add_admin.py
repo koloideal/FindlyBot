@@ -28,7 +28,7 @@ async def get_username_for_add_admin_rout(message: Message,
                                           state: FSMContext) -> None:
     raw_input_username: str = message.text
     try:
-        client.start()
+        await client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForAddAdmin(raw_input_username)
