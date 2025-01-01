@@ -1,4 +1,6 @@
 import json
+import os
+
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     CallbackQuery,
@@ -25,10 +27,11 @@ async def swipe_items_callback(callback: CallbackQuery,
                                callback_data: SwipeItemsCallbackData):
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
-    query_path_hash = callback_data.query_path_hash
-    query = callback_data.query
     requestor_id = callback.from_user.id
-    print(query_path_hash)
+
+    part_of_query_path_hash = callback_data.part_of_query_path_hash
+    query_path_hash = list(filter(lambda x: x.startswith(part_of_query_path_hash), os.listdir(f'local_data/products_data/{requestor_id}')))[0][:-5]
+    query = callback_data.query
 
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
     lang: str = user_config['language']
@@ -64,7 +67,7 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id - 1,
-                    query_path_hash=query_path_hash,
+                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query
                 ).pack(),
             ),
@@ -75,7 +78,7 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id + 1,
-                    query_path_hash=query_path_hash,
+                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query
                 ).pack(),
             ),
@@ -88,7 +91,7 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=1,
-                    query_path_hash=query_path_hash,
+                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query
                 ).pack(),
             ),
@@ -101,7 +104,7 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=max_item_id - 1,
-                    query_path_hash=query_path_hash,
+                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query
                 ).pack(),
             ),

@@ -65,7 +65,7 @@ async def forming_response(message: Message,
                     callback_data=SwipeItemsCallbackData(
                         marketplace=marketplace,
                         current_item_id=int(ids) + 1,
-                        query_path_hash=query_path_hash,
+                        part_of_query_path_hash=query_path_hash[:10],
                         query=query
                     ).pack(),
                 ),
