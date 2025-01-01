@@ -2,14 +2,14 @@ from aiogram.types import Message
 import polib
 from database_func.actions_on_users import ActionsOnUsers
 
-en_msgs = polib.pofile('locales/en/rout_help.po')
-ru_msgs = polib.pofile('locales/ru/rout_help.po')
+en_msgs = polib.pofile("locales/en/rout_help.po")
+ru_msgs = polib.pofile("locales/ru/rout_help.po")
 
 
 async def button_to_help_rout(message: Message) -> None:
     user_id = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -21,5 +21,5 @@ async def button_to_help_rout(message: Message) -> None:
     await message.answer(
         msgs.find("help_rout_msg").msgstr,
         parse_mode="HTML",
-        disable_web_page_preview=True
+        disable_web_page_preview=True,
     )

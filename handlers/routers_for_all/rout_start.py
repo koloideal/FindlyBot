@@ -4,8 +4,8 @@ from database_func.action_on_admin import ActionsOnAdmin
 from utils.get_config import GetConfig
 import polib
 
-en_msgs = polib.pofile('locales/en/rout_start.po')
-ru_msgs = polib.pofile('locales/ru/rout_start.po')
+en_msgs = polib.pofile("locales/en/rout_start.po")
+ru_msgs = polib.pofile("locales/ru/rout_start.po")
 
 
 async def start_rout(message: Message) -> None:
@@ -18,7 +18,7 @@ async def start_rout(message: Message) -> None:
 
     await ActionsOnUsers.config_user_to_database(user_id)
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -42,9 +42,7 @@ async def start_rout(message: Message) -> None:
     )
 
     if creator_case:
-        await message.answer(
-            msgs.find("creator_case_msg").msgstr
-        )
+        await message.answer(msgs.find("creator_case_msg").msgstr)
 
     elif admin_case:
         await message.answer(
@@ -67,6 +65,6 @@ async def start_rout(message: Message) -> None:
     username = message.from_user.username
     first_name = message.from_user.first_name
 
-    await ActionsOnUsers.user_to_database(user_id=user_id,
-                                          first_name=first_name,
-                                          username=username)
+    await ActionsOnUsers.user_to_database(
+        user_id=user_id, first_name=first_name, username=username
+    )

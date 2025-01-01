@@ -10,8 +10,8 @@ from telethon.helpers import TotalList
 import polib
 
 
-en_msgs: POFile = polib.pofile('locales/en/wait_username_del_admin.po')
-ru_msgs: POFile = polib.pofile('locales/ru/wait_username_del_admin.po')
+en_msgs: POFile = polib.pofile("locales/en/wait_username_del_admin.po")
+ru_msgs: POFile = polib.pofile("locales/ru/wait_username_del_admin.po")
 
 
 config: dict = GetConfig.get_bot_config()
@@ -21,11 +21,10 @@ api_hash: str = config["Settings"]["api_hash"]
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
-async def get_username_for_del_admin_rout(message: Message,
-                                          state: FSMContext) -> None:
+async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -> None:
     admin_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":

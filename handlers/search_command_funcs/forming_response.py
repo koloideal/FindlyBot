@@ -1,6 +1,4 @@
 import json
-import re
-
 import polib
 from aiogram.types import Message, InlineKeyboardButton, FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -10,17 +8,16 @@ from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from ..custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 
-en_msgs = polib.pofile('locales/en/forming_response.po')
-ru_msgs = polib.pofile('locales/ru/forming_response.po')
+en_msgs = polib.pofile("locales/en/forming_response.po")
+ru_msgs = polib.pofile("locales/ru/forming_response.po")
 
 
-async def forming_response(message: Message,
-                           query_path_hash: str,
-                           query: str,
-                           wait_message: Message):
+async def forming_response(
+    message: Message, query_path_hash: str, query: str, wait_message: Message
+):
     requestor_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -31,7 +28,7 @@ async def forming_response(message: Message,
             msgs = en_msgs
 
     with open(
-            f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
+        f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -66,31 +63,31 @@ async def forming_response(message: Message,
                         marketplace=marketplace,
                         current_item_id=int(ids) + 1,
                         part_of_query_path_hash=query_path_hash[:10],
-                        query=query
+                        query=query,
                     ).pack(),
                 ),
             )
             await message.answer_photo(
                 image,
-                caption=msgs.find('many_cards_msg')
-                            .msgstr
-                            .format(marketplace=marketplace,
-                                    link=link,
-                                    res_name=res_name,
-                                    price=price,
-                                    ids=str(int(ids) + 1),
-                                    size_of_products=size_of_products),
+                caption=msgs.find("many_cards_msg").msgstr.format(
+                    marketplace=marketplace,
+                    link=link,
+                    res_name=res_name,
+                    price=price,
+                    ids=str(int(ids) + 1),
+                    size_of_products=size_of_products,
+                ),
                 reply_markup=builder.as_markup(),
             )
 
         else:
             await message.answer_photo(
                 image,
-                caption=msgs.find('one_card_msg')
-                .msgstr
-                .format(marketplace=marketplace,
-                        link=link,
-                        res_name=res_name,
-                        price=price,
-                        ids=ids),
+                caption=msgs.find("one_card_msg").msgstr.format(
+                    marketplace=marketplace,
+                    link=link,
+                    res_name=res_name,
+                    price=price,
+                    ids=ids,
+                ),
             )

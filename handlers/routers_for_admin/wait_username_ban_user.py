@@ -6,13 +6,16 @@ from database_func.actions_on_users import ActionsOnUsers
 from database_func.action_on_admin import ActionsOnAdmin
 from telethon.helpers import TotalList
 from utils.get_config import GetConfig
-from exceptions.users_exceptions import InvalidUsernameForBan, AttemptToBanAdminOrCreator
+from exceptions.users_exceptions import (
+    InvalidUsernameForBan,
+    AttemptToBanAdminOrCreator,
+)
 import polib
 from polib import POFile
 
 
-en_msgs: POFile = polib.pofile('locales/en/wait_username_ban_user.po')
-ru_msgs: POFile = polib.pofile('locales/ru/wait_username_ban_user.po')
+en_msgs: POFile = polib.pofile("locales/en/wait_username_ban_user.po")
+ru_msgs: POFile = polib.pofile("locales/ru/wait_username_ban_user.po")
 
 config: dict = GetConfig.get_bot_config()
 api_id: str = config["Settings"]["api_id"]
@@ -22,12 +25,11 @@ creator_id: int = config["Settings"]["creator_id"]
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
-async def get_username_for_ban_user_rout(message: Message,
-                                         state: FSMContext) -> None:
+async def get_username_for_ban_user_rout(message: Message, state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -40,16 +42,28 @@ async def get_username_for_ban_user_rout(message: Message,
     try:
         await client.start()
 
-        if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
+        if raw_input_username.startswith("t.me/") or raw_input_username.startswith(
+            "https://t.me/"
+        ):
             raise InvalidUsernameForBan(raw_input_username)
 
-        finished_input_username: str = raw_input_username if raw_input_username[0] != "@" else raw_input_username[1:]
+        finished_input_username: str = (
+            raw_input_username
+            if raw_input_username[0] != "@"
+            else raw_input_username[1:]
+        )
 
         user: TotalList = await client.get_participants(finished_input_username)
-        user_id, user_username, user_first_name, user_last_name =\
-            user[0].id, user[0].username, user[0].first_name, user[0].last_name
+        user_id, user_username, user_first_name, user_last_name = (
+            user[0].id,
+            user[0].username,
+            user[0].first_name,
+            user[0].last_name,
+        )
 
-        if ((user_id in admins_id) or (user_id == creator_id)) and admin_id != creator_id:
+        if (
+            (user_id in admins_id) or (user_id == creator_id)
+        ) and admin_id != creator_id:
             raise AttemptToBanAdminOrCreator(finished_input_username)
 
         if len(user) != 1:
@@ -64,13 +78,12 @@ async def get_username_for_ban_user_rout(message: Message,
     else:
         if user_id in admins_id:
             await ActionsOnAdmin.del_admin(
-                ex_admin={
-                    "id": user_id,
-                    "username": user_username
-                },
+                ex_admin={"id": user_id, "username": user_username},
             )
             await message.answer(
-                msgs.find("del_admin_msg").msgstr.format(finished_input_username=finished_input_username)
+                msgs.find("del_admin_msg").msgstr.format(
+                    finished_input_username=finished_input_username
+                )
             )
         await ActionsOnUsers.ban_user(
             future_ban_user={
@@ -81,7 +94,9 @@ async def get_username_for_ban_user_rout(message: Message,
             },
         )
         await message.answer(
-            msgs.find("user_banned_msg").msgstr.format(finished_input_username=finished_input_username)
+            msgs.find("user_banned_msg").msgstr.format(
+                finished_input_username=finished_input_username
+            )
         )
 
     finally:

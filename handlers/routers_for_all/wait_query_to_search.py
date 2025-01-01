@@ -2,8 +2,6 @@ import logging
 import os
 import re
 import time
-from pprint import pprint
-
 import polib
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
@@ -16,15 +14,15 @@ from utils.query_to_hash import req_to_hash
 import json
 
 
-en_msgs = polib.pofile('locales/en/wait_query_to_search.po')
-ru_msgs = polib.pofile('locales/ru/wait_query_to_search.po')
+en_msgs = polib.pofile("locales/en/wait_query_to_search.po")
+ru_msgs = polib.pofile("locales/ru/wait_query_to_search.po")
 
 
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query_with_plus: str = re.sub(r" ", "+", message.text.strip())
     requestor_id = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -33,16 +31,16 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             msgs = en_msgs
         case _:
             msgs = en_msgs
-    wait_message: Message = await message.answer(msgs.find('search_in_progress').msgstr)
+    wait_message: Message = await message.answer(msgs.find("search_in_progress").msgstr)
 
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 
-    max_size: int = user_config['max_size']
-    only_new: str = user_config['only_new']
-    price_filter: str = user_config['price_filter']
-    name_filter: str = user_config['name_filter']
-    exclusion_words: None | str = user_config['exclusion_words']
+    max_size: int = user_config["max_size"]
+    only_new: str = user_config["only_new"]
+    price_filter: str = user_config["price_filter"]
+    name_filter: str = user_config["name_filter"]
+    exclusion_words: None | str = user_config["exclusion_words"]
 
     try:
         api_data: Response = await get_api_data(
@@ -51,20 +49,19 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             only_new=only_new,
             price_filter=price_filter,
             name_filter=name_filter,
-            exclusion_words=exclusion_words
+            exclusion_words=exclusion_words,
         )
         api_data_to_json = api_data.json()
 
         products_data: dict[str, dict] = api_data_to_json["products_data"]
         metadata: dict[str | dict] = api_data_to_json["request_metadata"]
-        pprint(metadata)
 
-        raw_query_path: str = metadata['request_url']
-        query_path = raw_query_path[raw_query_path.find('?'):]
+        raw_query_path: str = metadata["request_url"]
+        query_path = raw_query_path[raw_query_path.find("?") :]
         query_path_hash = await req_to_hash(query_path)
 
         if not products_data:
-            await message.answer(msgs.find('empty_response').msgstr)
+            await message.answer(msgs.find("empty_response").msgstr)
             await state.clear()
             return
         else:
@@ -97,9 +94,11 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     except HTTPError as e:
         logging.error(e, exc_info=True)
     else:
-        await forming_response(message=message,
-                               query_path_hash=query_path_hash,
-                               query=metadata['request_args']['query'],
-                               wait_message=wait_message)
+        await forming_response(
+            message=message,
+            query_path_hash=query_path_hash,
+            query=metadata["request_args"]["query"],
+            wait_message=wait_message,
+        )
     finally:
         await state.clear()

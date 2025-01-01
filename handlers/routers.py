@@ -23,14 +23,15 @@ from .routers_for_all.wait_max_size import get_max_size_rout
 from .callback_query import (
     swipe_items_callback,
     callback_query_change_only_new,
-    change_max_size_callback, callback_query_change_lang,
+    change_max_size_callback,
+    callback_query_change_lang,
 )
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 import polib
 
 
-en_msgs = polib.pofile('locales/en/routers.po')
-ru_msgs = polib.pofile('locales/ru/routers.po')
+en_msgs = polib.pofile("locales/en/routers.po")
+ru_msgs = polib.pofile("locales/ru/routers.po")
 router: Router = Router()
 
 
@@ -145,7 +146,7 @@ async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> N
 async def unknown_command(message: Message) -> None:
     user_id = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
     match lang:
         case "RU":
             msgs = ru_msgs
@@ -153,4 +154,4 @@ async def unknown_command(message: Message) -> None:
             msgs = en_msgs
         case _:
             msgs = en_msgs
-    await message.answer(msgs.find('unknown_msg').msgstr)
+    await message.answer(msgs.find("unknown_msg").msgstr)

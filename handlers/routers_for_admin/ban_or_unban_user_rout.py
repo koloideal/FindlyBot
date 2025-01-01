@@ -8,17 +8,17 @@ import polib
 from polib import POFile
 
 
-en_msgs: POFile = polib.pofile('locales/en/ban_or_unban_user_rout.po')
-ru_msgs: POFile = polib.pofile('locales/ru/ban_or_unban_user_rout.po')
+en_msgs: POFile = polib.pofile("locales/en/ban_or_unban_user_rout.po")
+ru_msgs: POFile = polib.pofile("locales/ru/ban_or_unban_user_rout.po")
 
 
-async def ban_or_unban_user_rout(message: types.Message,
-                                 ban_or_unban: str,
-                                 state: FSMContext) -> None:
+async def ban_or_unban_user_rout(
+    message: types.Message, ban_or_unban: str, state: FSMContext
+) -> None:
     creator_id: int = GetConfig.get_bot_config()["Settings"]["creator_id"]
     user_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -31,10 +31,10 @@ async def ban_or_unban_user_rout(message: types.Message,
     admins_id: list[int] = await ActionsOnAdmin.get_admins()
 
     if (user_id != creator_id) and (user_id not in admins_id):
-        await message.answer(msgs.find('unknown_command_msg').msgstr)
+        await message.answer(msgs.find("unknown_command_msg").msgstr)
 
     else:
-        await message.answer(msgs.find('enter_username_msg').msgstr)
+        await message.answer(msgs.find("enter_username_msg").msgstr)
 
         match ban_or_unban:
             case "ban":

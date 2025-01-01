@@ -2,12 +2,15 @@ from peewee import Model, IntegerField, CharField
 from aiopeewee import SqliteDatabaseAsync
 
 
-banned_users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/banned_users.sqlite3",
-                                                           autoconnect=False)
-users_config_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users_config.sqlite3",
-                                                           autoconnect=False)
-users_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/users.sqlite3",
-                                                    autoconnect=False)
+banned_users_db: SqliteDatabaseAsync = SqliteDatabaseAsync(
+    "database/banned_users.sqlite3", autoconnect=False
+)
+users_config_db: SqliteDatabaseAsync = SqliteDatabaseAsync(
+    "database/users_config.sqlite3", autoconnect=False
+)
+users_db: SqliteDatabaseAsync = SqliteDatabaseAsync(
+    "database/users.sqlite3", autoconnect=False
+)
 
 
 class BannedUsers(Model):
@@ -33,19 +36,21 @@ class Users(Model):
 
 class UsersConfig(Model):
     id: IntegerField = IntegerField(unique=True)
-    only_new: CharField = CharField(default='on')
+    only_new: CharField = CharField(default="on")
     max_size: IntegerField = IntegerField(default=10)
-    name_filter: CharField = CharField(default='on')
-    price_filter: CharField = CharField(default='on')
+    name_filter: CharField = CharField(default="on")
+    price_filter: CharField = CharField(default="on")
     exclusion_words: CharField = CharField(default=None, null=True)
-    language: CharField = CharField(default='EN', max_length=2)
+    language: CharField = CharField(default="EN", max_length=2)
 
     class Meta:
         database: SqliteDatabaseAsync = users_config_db
         db_table: str = "config_users"
 
 
-admins_db: SqliteDatabaseAsync = SqliteDatabaseAsync("database/admins.sqlite3", autoconnect=False)
+admins_db: SqliteDatabaseAsync = SqliteDatabaseAsync(
+    "database/admins.sqlite3", autoconnect=False
+)
 
 
 class AdminUsers(Model):

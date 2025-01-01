@@ -7,17 +7,17 @@ import polib
 from polib import POFile
 
 
-en_msgs: POFile = polib.pofile('locales/en/add_or_del_admin_rout.po')
-ru_msgs: POFile = polib.pofile('locales/ru/add_or_del_admin_rout.po')
+en_msgs: POFile = polib.pofile("locales/en/add_or_del_admin_rout.po")
+ru_msgs: POFile = polib.pofile("locales/ru/add_or_del_admin_rout.po")
 
 
-async def add_or_del_admin_rout(message: types.Message,
-                                del_or_add: str,
-                                state: FSMContext) -> None:
+async def add_or_del_admin_rout(
+    message: types.Message, del_or_add: str, state: FSMContext
+) -> None:
     creator_id: int = GetConfig.get_bot_config()["Settings"]["creator_id"]
     user_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config['language']
+    lang: str = user_config["language"]
 
     match lang:
         case "RU":
@@ -28,9 +28,9 @@ async def add_or_del_admin_rout(message: types.Message,
             msgs: POFile = en_msgs
 
     if user_id != creator_id:
-        await message.answer(msgs.find('unknown_command_msg').msgstr)
+        await message.answer(msgs.find("unknown_command_msg").msgstr)
     else:
-        await message.answer(msgs.find('enter_username_msg').msgstr)
+        await message.answer(msgs.find("enter_username_msg").msgstr)
         match del_or_add:
             case "add":
                 await state.set_state(AdminState.waiting_for_add_admin)
