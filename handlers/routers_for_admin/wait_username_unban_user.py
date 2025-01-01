@@ -2,10 +2,9 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
-from telethon.errors.rpcerrorlist import UsernameInvalidError
+from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameNotOccupiedError
 from database_func.actions_on_users import ActionsOnUsers
 from telethon.helpers import TotalList
-from exceptions.users_exceptions import InvalidUsernameForUnban
 import polib
 from polib import POFile
 
@@ -39,19 +38,16 @@ async def get_username_for_unban_user_rout(message: Message,
         await client.start()
 
         if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
-            raise InvalidUsernameForUnban(raw_input_username)
+            raise UsernameInvalidError
 
         user: TotalList = await client.get_participants(finished_input_username)
         user_id, user_username, user_first_name, user_last_name = \
             user[0].id, user[0].username, user[0].first_name, user[0].last_name
 
         if len(user) != 1:
-            raise InvalidUsernameForUnban(raw_input_username)
+            raise UsernameInvalidError
 
-    except UsernameInvalidError:
-        raise InvalidUsernameForUnban(raw_input_username)
-
-    except InvalidUsernameForUnban:
+    except (UsernameInvalidError, ValueError, UsernameNotOccupiedError):
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:

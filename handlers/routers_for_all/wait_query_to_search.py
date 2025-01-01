@@ -33,7 +33,6 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             msgs = en_msgs
         case _:
             msgs = en_msgs
-    query_hash = await req_to_hash(query_with_plus)
     wait_message: Message = await message.answer(msgs.find('search_in_progress').msgstr)
 
     os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
@@ -54,14 +53,22 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             name_filter=name_filter,
             exclusion_words=exclusion_words
         )
-        api_json_data = api_data.json()["products_data"]
-        pprint(api_data.json()['request_metadata'])
-        if not api_json_data:
+        api_data_to_json = api_data.json()
+
+        products_data: dict[str, dict] = api_data_to_json["products_data"]
+        metadata: dict[str | dict] = api_data_to_json["request_metadata"]
+        pprint(metadata)
+
+        raw_query_path: str = metadata['request_url']
+        query_path = raw_query_path[raw_query_path.find('?'):]
+        query_path_hash = await req_to_hash(query_path)
+
+        if not products_data:
             await message.answer(msgs.find('empty_response').msgstr)
             await state.clear()
             return
         else:
-            current_response = {"name": query_hash, "date": time.time()}
+            current_response = {"name": query_path_hash, "date": time.time()}
             if os.path.exists(f"local_data/images/{requestor_id}/responses.json"):
                 data = json.load(
                     open(f"local_data/images/{requestor_id}/responses.json")
@@ -79,17 +86,20 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
                     json.dump(data, file, indent=4)
 
             to_dump_data: dict = await api_data_to_dump(
-                api_json_data, requestor_id, query_hash
+                products_data, requestor_id, query_path_hash
             )
 
             with open(
-                f"local_data/products_data/{requestor_id}/{query_hash}.json", "w"
+                f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "w"
             ) as file:
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
     except HTTPError as e:
         logging.error(e, exc_info=True)
     else:
-        await forming_response(message, query_with_plus, wait_message)
+        await forming_response(message=message,
+                               query_path_hash=query_path_hash,
+                               query=metadata['request_args']['query'],
+                               wait_message=wait_message)
     finally:
         await state.clear()

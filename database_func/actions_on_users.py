@@ -6,7 +6,7 @@ from database_func.database_objects import (
     UsersConfig,
     banned_users_db,
     users_config_db,
-    users_db,
+    users_db, admins_db,
 )
 
 
@@ -15,7 +15,6 @@ class ActionsOnUsers:
     async def get_banned_users() -> list[int]:
         await banned_users_db.connect_async(reuse_if_open=True)
         banned_users_db.create_tables([BannedUsers])
-        banned_users_db.commit()
 
         banned_users_data: ModelSelect = BannedUsers.select()
         banned_users_id: list[int] = [banned_user.id for banned_user in banned_users_data]
@@ -25,6 +24,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def ban_user(future_ban_user: dict[str, Any]) -> None:
+        await admins_db.close_async()
         await banned_users_db.connect_async(reuse_if_open=True)
         banned_users_db.create_tables([BannedUsers])
         (
@@ -51,7 +51,6 @@ class ActionsOnUsers:
             )
             banned_users_db.commit()
             await banned_users_db.close_async()
-
             return True
 
     @staticmethod
@@ -98,7 +97,7 @@ class ActionsOnUsers:
     async def change_only_new_config(callback_data: str,
                                      user_id: int) -> None:
         only_new_serialized: dict[str, str] = {"is_only_new_OFF": 'on',
-                                                "is_only_new_ON": 'off'}
+                                               "is_only_new_ON": 'off'}
         new_only_new: str = only_new_serialized[callback_data]
 
         await users_config_db.connect_async(reuse_if_open=True)

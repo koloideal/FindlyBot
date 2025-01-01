@@ -6,14 +6,6 @@ class InvalidUsernameForBan(Exception):
         return f"Invalid username for ban: {self.__invalid_username}"
 
 
-class InvalidUsernameForUnban(Exception):
-    def __init__(self, invalid_username: str) -> None:
-        self.__invalid_username: str = invalid_username
-
-    def __str__(self) -> str:
-        return f"Invalid username for unban: {self.__invalid_username}"
-
-
 class AttemptToBanAdminOrCreator(Exception):
     def __init__(self, invalid_username: str) -> None:
         self.__invalid_username: str = invalid_username

@@ -11,7 +11,7 @@ from utils.query_to_hash import req_to_hash
 
 
 @cached(ttl=5 * 60, serializer=PickleSerializer())
-async def api_data_to_dump(api_json_data: dict, requestor_id: int, query_hash) -> dict:
+async def api_data_to_dump(api_json_data: dict, requestor_id: int, query_path_hash) -> dict:
     to_dump_data: dict = {}
     all_configs: dict = await ActionsOnUsers.get_all_configs(requestor_id)
     max_size: int = all_configs['max_size']
@@ -20,7 +20,7 @@ async def api_data_to_dump(api_json_data: dict, requestor_id: int, query_hash) -
 
     for marketplace in api_json_data:
         os.makedirs(
-            f"local_data/images/{requestor_id}/{query_hash}/{marketplace}",
+            f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}",
             exist_ok=True,
         )
         items: list = []
@@ -33,11 +33,11 @@ async def api_data_to_dump(api_json_data: dict, requestor_id: int, query_hash) -
                 items.append(res_item)
 
                 if res_item["image"] != "images/placeholder.png" and not path.isfile(
-                    f"local_data/images/{requestor_id}/{query_hash}/{marketplace}/{hash_name}.jpg"
+                    f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{hash_name}.jpg"
                 ):
                     data = requests.get(res_item["image"])
                     with open(
-                        f"local_data/images/{requestor_id}/{query_hash}/{marketplace}/{hash_name}.jpg",
+                        f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{hash_name}.jpg",
                         "wb",
                     ) as f:
                         f.write(data.content)

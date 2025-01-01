@@ -55,13 +55,10 @@ async def get_username_for_ban_user_rout(message: Message,
         if len(user) != 1:
             raise InvalidUsernameForBan(raw_input_username)
 
-    except UsernameInvalidError:
-        raise InvalidUsernameForBan(raw_input_username)
-
     except AttemptToBanAdminOrCreator:
         await message.answer(msgs.find("attempt_to_ban_admin_msg").msgstr)
 
-    except InvalidUsernameForBan:
+    except (InvalidUsernameForBan, UsernameInvalidError, ValueError):
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
@@ -75,7 +72,6 @@ async def get_username_for_ban_user_rout(message: Message,
             await message.answer(
                 msgs.find("del_admin_msg").msgstr.format(finished_input_username=finished_input_username)
             )
-
         await ActionsOnUsers.ban_user(
             future_ban_user={
                 "id": user_id,

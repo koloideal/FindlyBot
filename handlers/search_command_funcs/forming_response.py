@@ -14,11 +14,11 @@ en_msgs = polib.pofile('locales/en/forming_response.po')
 ru_msgs = polib.pofile('locales/ru/forming_response.po')
 
 
-async def forming_response(message: Message, query: str, wait_message: Message):
-    query_without_plus: str = re.sub(r"\+", " ", query)
+async def forming_response(message: Message,
+                           query_path_hash: str,
+                           query: str,
+                           wait_message: Message):
     requestor_id: int = message.from_user.id
-    query_hash: str = await req_to_hash(query)
-
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
     lang: str = user_config['language']
 
@@ -31,7 +31,7 @@ async def forming_response(message: Message, query: str, wait_message: Message):
             msgs = en_msgs
 
     with open(
-            f"local_data/products_data/{requestor_id}/{query_hash}.json", "r"
+            f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -46,13 +46,13 @@ async def forming_response(message: Message, query: str, wait_message: Message):
         price = item["price"]
         ids = item["id"]
 
-        res_name = await reformat_name(name.replace("_", " "), query_without_plus)
+        res_name = await reformat_name(name.replace("_", " "), query)
 
         if image_link == "images/placeholder.png":
             image = FSInputFile("local_data/images/placeholder.jpg")
         else:
             image = FSInputFile(
-                f"local_data/images/{requestor_id}/{query_hash}/{marketplace}/{name_hash}.jpg"
+                f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{name_hash}.jpg"
             )
 
         size_of_products = len(api_json_data[marketplace])
@@ -65,7 +65,8 @@ async def forming_response(message: Message, query: str, wait_message: Message):
                     callback_data=SwipeItemsCallbackData(
                         marketplace=marketplace,
                         current_item_id=int(ids) + 1,
-                        query=query_without_plus,
+                        query_path_hash=query_path_hash,
+                        query=query
                     ).pack(),
                 ),
             )

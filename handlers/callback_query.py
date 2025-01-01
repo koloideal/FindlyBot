@@ -25,9 +25,10 @@ async def swipe_items_callback(callback: CallbackQuery,
                                callback_data: SwipeItemsCallbackData):
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
+    query_path_hash = callback_data.query_path_hash
     query = callback_data.query
     requestor_id = callback.from_user.id
-    hash_query = await req_to_hash(query.replace(" ", "+"))
+    print(query_path_hash)
 
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
     lang: str = user_config['language']
@@ -41,7 +42,7 @@ async def swipe_items_callback(callback: CallbackQuery,
             msgs = en_msgs
 
     with open(
-        f"local_data/products_data/{requestor_id}/{hash_query}.json", "r"
+        f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -63,7 +64,8 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id - 1,
-                    query=query,
+                    query_path_hash=query_path_hash,
+                    query=query
                 ).pack(),
             ),
         )
@@ -73,7 +75,8 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id + 1,
-                    query=query,
+                    query_path_hash=query_path_hash,
+                    query=query
                 ).pack(),
             ),
         )
@@ -83,7 +86,10 @@ async def swipe_items_callback(callback: CallbackQuery,
             InlineKeyboardButton(
                 text="➡",
                 callback_data=SwipeItemsCallbackData(
-                    marketplace=current_marketplace, current_item_id=1, query=query
+                    marketplace=current_marketplace,
+                    current_item_id=1,
+                    query_path_hash=query_path_hash,
+                    query=query
                 ).pack(),
             ),
         )
@@ -95,7 +101,8 @@ async def swipe_items_callback(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=max_item_id - 1,
-                    query=query,
+                    query_path_hash=query_path_hash,
+                    query=query
                 ).pack(),
             ),
         )
@@ -104,7 +111,7 @@ async def swipe_items_callback(callback: CallbackQuery,
         image = FSInputFile("local_data/images/placeholder.jpg")
     else:
         image = FSInputFile(
-            f"local_data/images/{requestor_id}/{hash_query}/{current_marketplace}/{current_item_hash_name}.jpg"
+            f"local_data/images/{requestor_id}/{query_path_hash}/{current_marketplace}/{current_item_hash_name}.jpg"
         )
 
     res_name = await reformat_name(current_item_name.replace("_", " "), query)
@@ -205,7 +212,7 @@ async def callback_query_change_lang(callback: CallbackQuery):
 
 
 async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
-    text: str = escape("0 < max_size < 21")
+    text: str = escape("0 < max_size <= 40")
     user_id = int(callback.from_user.id)
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
     lang: str = user_config['language']

@@ -8,7 +8,6 @@ class ActionsOnAdmin:
     async def add_admin(future_admin: dict[str, Any]) -> None:
         await admins_db.connect_async(reuse_if_open=True)
         admins_db.create_tables([AdminUsers])
-        admins_db.commit()
         (
             AdminUsers
             .insert(future_admin)
@@ -21,6 +20,7 @@ class ActionsOnAdmin:
     @staticmethod
     async def del_admin(ex_admin: dict[str, Any]) -> None:
         await admins_db.connect_async(reuse_if_open=True)
+        admins_db.create_tables([AdminUsers])
         (
             AdminUsers
             .delete()
@@ -43,5 +43,5 @@ class ActionsOnAdmin:
                 admins_data: list[tuple] = [(admin.id, admin.first_name, admin.last_name, admin.username)
                                      for admin in data]
                 return admins_data
-
+        admins_db.commit()
         await admins_db.close_async()
