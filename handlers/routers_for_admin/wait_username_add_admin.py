@@ -44,10 +44,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         if user[0].bot or len(user) != 1:
             raise InvalidUsernameForAddAdmin(raw_input_username)
 
-    except (UsernameInvalidError, UsernameOccupiedError, ValueError):
-        raise InvalidUsernameForAddAdmin(raw_input_username)
-
-    except InvalidUsernameForAddAdmin:
+    except (UsernameInvalidError, UsernameOccupiedError, ValueError, InvalidUsernameForAddAdmin):
         await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     else:

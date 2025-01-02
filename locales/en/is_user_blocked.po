@@ -1,0 +1,5 @@
+msgid "banned_user_case_msg"
+msgstr "Hello, I am a <b>Findly</b>🤖\n\n"
+       "Fast and smart search engine for the best products on marketplaces 💭"
+       "\n\n<u><b>You were blocked</b></u>"
+       "\n\n\nAbout the unban to <a href='https://t.me/kolo_id'>kolo</a>"

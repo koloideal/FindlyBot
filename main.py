@@ -27,10 +27,11 @@ dp: Dispatcher = Dispatcher(storage=storage)
 
 async def main() -> None:
     await make_dirs()
-    from handlers.routers import router
+    from handlers.routers import router_for_all, router_for_admin
 
     logging.warning("Starting FindlyBot...")
-    dp.include_router(router)
+    dp.include_router(router_for_all)
+    dp.include_router(router_for_admin)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
