@@ -11,6 +11,12 @@ msgstr "Only New:  ON ✅"
 msgid "only_new_off_msg"
 msgstr "Only New:  OFF ❌"
 
+msgid "name_filter_on_msg"
+msgstr "Name Filter:  ON ✅"
+
+msgid "name_filter_off_msg"
+msgstr "Name Filter:  OFF ❌"
+
 msgid "lang_ru_msg"
 msgstr "Language:  RU 🇷🇺"
 

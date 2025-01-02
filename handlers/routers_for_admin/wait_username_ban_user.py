@@ -2,16 +2,18 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
+from telethon.helpers import TotalList
+import polib
+from polib import POFile
+
 from database_func.actions_on_users import ActionsOnUsers
 from database_func.action_on_admin import ActionsOnAdmin
-from telethon.helpers import TotalList
 from utils.get_config import GetConfig
+from utils.del_user_searching_data import del_user_searching_data
 from exceptions.users_exceptions import (
     InvalidUsernameForBan,
     AttemptToBanAdminOrCreator,
 )
-import polib
-from polib import POFile
 
 
 en_msgs: POFile = polib.pofile("locales/en/wait_username_ban_user.po")
@@ -76,6 +78,7 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
+        await del_user_searching_data(user_id)
         if user_id in admins_id:
             await ActionsOnAdmin.del_admin(
                 ex_admin={"id": user_id, "username": user_username},

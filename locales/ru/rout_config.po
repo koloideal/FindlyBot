@@ -6,10 +6,16 @@ msgid "ch_max_size_msg"
 msgstr "Максимум"
 
 msgid "only_new_on_msg"
-msgstr "Новые:  ВКЛ ✅"
+msgstr "Только Новые:  ВКЛ ✅"
 
 msgid "only_new_off_msg"
-msgstr "Новые:  ВЫКЛ ❌"
+msgstr "Только Новые:  ВЫКЛ ❌"
+
+msgid "name_filter_on_msg"
+msgstr "Фильтр По Названию:  ВКЛ ✅"
+
+msgid "name_filter_off_msg"
+msgstr "Фильтр По Названию:  ВЫКЛ ❌"
 
 msgid "lang_ru_msg"
 msgstr "Язык:  RU 🇷🇺"

@@ -31,19 +31,32 @@ async def config_rout(message: types.Message) -> None:
     is_only_new_msg = msgs.find(f"only_new_{is_only_new}_msg").msgstr
     is_only_new_callback_data = "is_only_new_" + is_only_new.upper()
 
+    name_filter: str = user_config["name_filter"]
+    name_filter_msg = msgs.find(f"name_filter_{name_filter}_msg").msgstr
+    name_filter_callback_data = "name_filter_" + name_filter.upper()
+
     max_size: int = user_config["max_size"]
+    max_size_msg = msgs.find("ch_max_size_msg").msgstr
 
     buttons: list = [
         [
             InlineKeyboardButton(
                 text=is_only_new_msg, callback_data=is_only_new_callback_data
-            ),
-            InlineKeyboardButton(text=lang_msg, callback_data=lang_callback_data),
+            )
         ],
         [
             InlineKeyboardButton(
-                text=msgs.find("ch_max_size_msg").msgstr,
-                callback_data="change_max_size",
+                text=name_filter_msg, callback_data=name_filter_callback_data
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=lang_msg, callback_data=lang_callback_data
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=max_size_msg, callback_data="change_max_size",
             )
         ],
     ]
