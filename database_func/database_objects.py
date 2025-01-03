@@ -40,7 +40,6 @@ class UsersConfig(Model):
     max_size: IntegerField = IntegerField(default=10)
     name_filter: CharField = CharField(default="on")
     price_filter: CharField = CharField(default="on")
-    exclusion_words: CharField = CharField(default=None, null=True)
     language: CharField = CharField(default="EN", max_length=2)
 
     class Meta:

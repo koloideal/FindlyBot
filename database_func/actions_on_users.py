@@ -76,8 +76,7 @@ class ActionsOnUsers:
                     "max_size": "10",
                     "language": "EN",
                     "price_filter": "on",
-                    "name_filter": "on",
-                    "exclusion_words": None,
+                    "name_filter": "on"
                 }
             )
             .on_conflict(action="IGNORE")
@@ -88,17 +87,40 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_only_new_config(callback_data: str, user_id: int) -> None:
-        only_new_serialized: dict[str, str] = {
-            "is_only_new_OFF": "on",
-            "is_only_new_ON": "off",
-        }
-        new_only_new: str = only_new_serialized[callback_data]
-
+        only_new: str = callback_data[9:].lower()
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
         (
-            UsersConfig.update({UsersConfig.only_new: new_only_new})
+            UsersConfig.update({UsersConfig.only_new: only_new})
+            .where(UsersConfig.id == user_id)
+            .execute()
+        )
+        users_config_db.commit()
+        await users_config_db.close_async()
+
+    @staticmethod
+    async def change_name_filter_config(callback_data: str, user_id: int) -> None:
+        name_filter: str = callback_data[12:].lower()
+        await users_config_db.connect_async(reuse_if_open=True)
+        users_config_db.create_tables([UsersConfig])
+
+        (
+            UsersConfig.update({UsersConfig.name_filter: name_filter})
+            .where(UsersConfig.id == user_id)
+            .execute()
+        )
+        users_config_db.commit()
+        await users_config_db.close_async()
+
+    @staticmethod
+    async def change_price_filter_config(callback_data: str, user_id: int) -> None:
+        price_filter: str = callback_data[13:].lower()
+        await users_config_db.connect_async(reuse_if_open=True)
+        users_config_db.create_tables([UsersConfig])
+
+        (
+            UsersConfig.update({UsersConfig.price_filter: price_filter})
             .where(UsersConfig.id == user_id)
             .execute()
         )
@@ -107,7 +129,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_lang_config(callback_data: str, user_id: int) -> None:
-        lang: str = "RU" if callback_data == "lang_RU" else "EN"
+        lang: str = callback_data[-2:]
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
@@ -132,8 +154,7 @@ class ActionsOnUsers:
             "max_size": all_configs.max_size,
             "language": all_configs.language,
             "price_filter": all_configs.price_filter,
-            "name_filter": all_configs.name_filter,
-            "exclusion_words": all_configs.exclusion_words,
+            "name_filter": all_configs.name_filter
         }
 
         await users_config_db.close_async()

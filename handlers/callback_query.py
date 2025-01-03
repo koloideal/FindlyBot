@@ -23,9 +23,8 @@ en_msgs = polib.pofile("locales/en/callback_query.po")
 ru_msgs = polib.pofile("locales/ru/callback_query.po")
 
 
-async def swipe_items_callback(
-    callback: CallbackQuery, callback_data: SwipeItemsCallbackData
-):
+async def callback_query_swipe_items(callback: CallbackQuery,
+                                     callback_data: SwipeItemsCallbackData):
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
     requestor_id = callback.from_user.id
@@ -143,15 +142,34 @@ async def swipe_items_callback(
     )
 
 
-async def callback_query_change_only_new(callback: CallbackQuery):
+async def callback_query_change_config(callback: CallbackQuery):
     callback_data = callback.data
-    user_id = int(callback.from_user.id)
+    user_id = callback.from_user.id
+    match '_'.join(callback_data.split('_')[:-1]):
+        case 'only_new':
+            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
+                                                        user_id=user_id)
+        case 'lang':
+            await ActionsOnUsers.change_lang_config(callback_data=callback_data,
+                                                    user_id=user_id)
+        case 'name_filter':
+            await ActionsOnUsers.change_name_filter_config(callback_data=callback_data,
+                                                           user_id=user_id)
+        case 'price_filter':
+            await ActionsOnUsers.change_price_filter_config(callback_data=callback_data,
+                                                            user_id=user_id)
+
+    on_or_off: dict = {
+        'ON': 'OFF',
+        'OFF': 'ON'
+    }
+    en_or_ru: dict = {
+        'EN': 'lang_RU',
+        'RU': 'lang_EN'
+    }
+
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
     lang: str = user_config["language"]
-
-    await ActionsOnUsers.change_only_new_config(
-        callback_data=callback_data, user_id=user_id
-    )
 
     match lang:
         case "RU":
@@ -161,95 +179,56 @@ async def callback_query_change_only_new(callback: CallbackQuery):
         case _:
             msgs = en_msgs
 
-    lang_msg = (
-        msgs.find("lang_ru_msg").msgstr
-        if lang == "RU"
-        else msgs.find("lang_en_msg").msgstr
-    )
-    lang_callback_data = "lang_EN" if lang == "RU" else "lang_RU"
+    lang_msg = msgs.find(f"lang_msg").msgstr
+    lang_callback_data = en_or_ru[lang]
 
-    is_only_new_msg = (
-        msgs.find("only_new_on_msg").msgstr
-        if callback_data == "is_only_new_OFF"
-        else msgs.find("only_new_off_msg").msgstr
-    )
-    is_only_new_callback_data = (
-        "is_only_new_ON" if callback_data == "is_only_new_OFF" else "is_only_new_OFF"
-    )
+    only_new: str = user_config["only_new"]
+    only_new_msg = msgs.find(f"only_new_{only_new}_msg").msgstr
+    only_new_callback_data = "only_new_" + on_or_off[only_new.upper()]
+
+    name_filter: str = user_config["name_filter"]
+    name_filter_msg = msgs.find(f"name_filter_{name_filter}_msg").msgstr
+    name_filter_callback_data = "name_filter_" + on_or_off[name_filter.upper()]
+
+    price_filter: str = user_config["price_filter"]
+    price_filter_msg = msgs.find(f"price_filter_{price_filter}_msg").msgstr
+    price_filter_callback_data = "price_filter_" + on_or_off[price_filter.upper()]
+
+    max_size_msg = msgs.find("ch_max_size_msg").msgstr
 
     buttons: list = [
         [
             InlineKeyboardButton(
-                text=is_only_new_msg, callback_data=is_only_new_callback_data
-            ),
-            InlineKeyboardButton(text=lang_msg, callback_data=lang_callback_data),
+                text=only_new_msg, callback_data=only_new_callback_data
+            )
         ],
         [
             InlineKeyboardButton(
-                text=msgs.find("ch_max_size_msg").msgstr,
-                callback_data="change_max_size",
+                text=name_filter_msg, callback_data=name_filter_callback_data
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=price_filter_msg, callback_data=price_filter_callback_data
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=lang_msg, callback_data=lang_callback_data
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=max_size_msg, callback_data="change_max_size",
             )
         ],
     ]
 
     keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(inline_keyboard=buttons)
-
     await callback.message.edit_reply_markup(reply_markup=keyboard)
 
 
-async def callback_query_change_lang(callback: CallbackQuery):
-    callback_data = callback.data
-    user_id = int(callback.from_user.id)
-    await ActionsOnUsers.change_lang_config(
-        callback_data=callback_data, user_id=user_id
-    )
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
-    max_size: int = user_config["max_size"]
-
-    match lang:
-        case "RU":
-            msgs = ru_msgs
-        case "EN":
-            msgs = en_msgs
-        case _:
-            msgs = en_msgs
-
-    lang_msg = (
-        msgs.find("lang_ru_msg").msgstr
-        if lang == "RU"
-        else msgs.find("lang_en_msg").msgstr
-    )
-    lang_callback_data = "lang_RU" if callback_data == "lang_EN" else "lang_EN"
-
-    all_configs: dict = await ActionsOnUsers.get_all_configs(user_id)
-    is_only_new: str = all_configs["only_new"]
-
-    is_only_new_msg = msgs.find(f"only_new_{is_only_new}_msg").msgstr
-    is_only_new_callback_data = f"is_only_new_{is_only_new.upper()}"
-
-    text = msgs.find("edit_lang_msg").msgstr.format(max_size=max_size)
-
-    buttons: list = [
-        [
-            InlineKeyboardButton(
-                text=is_only_new_msg, callback_data=is_only_new_callback_data
-            ),
-            InlineKeyboardButton(text=lang_msg, callback_data=lang_callback_data),
-        ],
-        [
-            InlineKeyboardButton(
-                text=msgs.find("ch_max_size_msg").msgstr,
-                callback_data="change_max_size",
-            )
-        ],
-    ]
-
-    keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(inline_keyboard=buttons)
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
-
-
-async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
+async def callback_query_max_size(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size <= 40")
     user_id = int(callback.from_user.id)
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
@@ -263,5 +242,4 @@ async def change_max_size_callback(callback: CallbackQuery, state: FSMContext):
         case _:
             msgs = en_msgs
     await callback.message.answer(msgs.find("max_size_msg").msgstr.format(text=text))
-
     await state.set_state(WaitMaxSize.wait_max_size)

@@ -1,4 +1,4 @@
-msgid "config_rout_msg"
+msgid "config_msg"
 msgstr "Здесь вы можете настраивать: получать все или только новые товары, а также максимальное количество товаров\n\n"
        "Максимальное количество товаров с каждого маркетплейса: <b><u>{max_size}</u></b>"
 
@@ -17,8 +17,11 @@ msgstr "Фильтр По Названию:  ВКЛ ✅"
 msgid "name_filter_off_msg"
 msgstr "Фильтр По Названию:  ВЫКЛ ❌"
 
-msgid "lang_ru_msg"
-msgstr "Язык:  RU 🇷🇺"
+msgid "price_filter_on_msg"
+msgstr "Фильтр По Цене:  ВКЛ ✅"
 
-msgid "lang_en_msg"
-msgstr "Язык: EN 🇱🇷"
+msgid "price_filter_off_msg"
+msgstr "Фильтр По Цене:  ВЫКЛ ❌"
+
+msgid "lang_msg"
+msgstr "Язык:  RU 🇷🇺"

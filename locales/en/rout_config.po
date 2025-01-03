@@ -1,4 +1,4 @@
-msgid "config_rout_msg"
+msgid "config_msg"
 msgstr "Here you can manage: get only new or not products and max size products in response\n\n"
        "max products in marketplace: <b><u>{max_size}</u></b>"
 
@@ -17,8 +17,11 @@ msgstr "Name Filter:  ON ✅"
 msgid "name_filter_off_msg"
 msgstr "Name Filter:  OFF ❌"
 
-msgid "lang_ru_msg"
-msgstr "Language:  RU 🇷🇺"
+msgid "price_filter_on_msg"
+msgstr "Price Filter:  ON ✅"
 
-msgid "lang_en_msg"
+msgid "price_filter_off_msg"
+msgstr "Price Filter:  OFF ❌"
+
+msgid "lang_msg"
 msgstr "Language: EN 🇱🇷"

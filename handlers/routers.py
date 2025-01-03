@@ -21,10 +21,9 @@ from .routers_for_all.unknown_command import unknown_command
 from .routers_for_all.wait_query_to_search import get_query_to_search_rout
 from .routers_for_all.wait_max_size import get_max_size_rout
 from .callback_query import (
-    swipe_items_callback,
-    callback_query_change_only_new,
-    change_max_size_callback,
-    callback_query_change_lang,
+    callback_query_swipe_items,
+    callback_query_change_config,
+    callback_query_max_size
 )
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 from middlewares.is_user_blocked import RejectBlockedUserMiddleware
@@ -124,25 +123,19 @@ async def get_max_size(message: Message, state: FSMContext) -> None:
 
 
 @router.callback_query(SwipeItemsCallbackData.filter())
-async def swipe_items(
-    callback_query: CallbackQuery, callback_data: SwipeItemsCallbackData
-) -> None:
-    await swipe_items_callback(callback_query, callback_data)
+async def swipe_items(callback_query: CallbackQuery,
+                      callback_data: SwipeItemsCallbackData) -> None:
+    await callback_query_swipe_items(callback_query, callback_data)
 
 
-@router.callback_query(F.data.startswith("is_only_new"))
-async def change_only_new(callback_query: CallbackQuery) -> None:
-    await callback_query_change_only_new(callback_query)
-
-
-@router.callback_query(F.data.startswith("lang"))
-async def change_lang(callback_query: CallbackQuery) -> None:
-    await callback_query_change_lang(callback_query)
+@router.callback_query(F.data[-2:].in_(['ON', 'FF', 'EN', 'RU']))
+async def change_config(callback_query: CallbackQuery) -> None:
+    await callback_query_change_config(callback_query)
 
 
 @router.callback_query(F.data == "change_max_size")
 async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> None:
-    await change_max_size_callback(callback_query, state)
+    await callback_query_max_size(callback_query, state)
 
 
 @router.message()

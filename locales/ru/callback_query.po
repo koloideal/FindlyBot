@@ -13,11 +13,20 @@ msgstr "Новые:  ВКЛ ✅"
 msgid "only_new_off_msg"
 msgstr "Новые:  ВЫКЛ ❌"
 
-msgid "lang_ru_msg"
-msgstr "Язык:  RU 🇷🇺"
+msgid "name_filter_on_msg"
+msgstr "Фильтр По Названию:  ВКЛ ✅"
 
-msgid "lang_en_msg"
-msgstr "Язык: EN 🇱🇷"
+msgid "name_filter_off_msg"
+msgstr "Фильтр По Названию:  ВЫКЛ ❌"
+
+msgid "price_filter_on_msg"
+msgstr "Фильтр По Цене:  ВКЛ ✅"
+
+msgid "price_filter_off_msg"
+msgstr "Фильтр По Цене:  ВЫКЛ ❌"
+
+msgid "lang_msg"
+msgstr "Язык:  RU 🇷🇺"
 
 msgid "edit_lang_msg"
 msgstr "Здесь вы можете настраивать: получать все или только новые товары, а также максимальное количество товаров\n\n"
