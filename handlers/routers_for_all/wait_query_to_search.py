@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import time
+import typing
 import polib
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
@@ -12,6 +13,8 @@ from httpx import Response, HTTPError
 from get_api_data.get_api_data import get_api_data
 from utils.query_to_hash import req_to_hash
 import json
+if typing.TYPE_CHECKING:
+    from _typeshed import SupportsWrite
 
 
 en_msgs = polib.pofile("locales/en/wait_query_to_search.po")
@@ -40,7 +43,6 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     only_new: str = user_config["only_new"]
     price_filter: str = user_config["price_filter"]
     name_filter: str = user_config["name_filter"]
-    exclusion_words: None | str = user_config["exclusion_words"]
 
     try:
         api_data: Response = await get_api_data(
@@ -48,8 +50,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             max_size=max_size,
             only_new=only_new,
             price_filter=price_filter,
-            name_filter=name_filter,
-            exclusion_words=exclusion_words,
+            name_filter=name_filter
         )
         api_data_to_json = api_data.json()
 
@@ -67,18 +68,16 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         else:
             current_response = {"name": query_path_hash, "date": time.time()}
             if os.path.exists(f"local_data/images/{requestor_id}/responses.json"):
-                data = json.load(
-                    open(f"local_data/images/{requestor_id}/responses.json")
-                )
+                data = json.load(open(f"local_data/images/{requestor_id}/responses.json"))
                 data["responses"].append(current_response)
                 with open(
                     f"local_data/images/{requestor_id}/responses.json", "w"
-                ) as file:
+                ) as file: # type: SupportsWrite[str]
                     json.dump(data, file, indent=4)
             else:
                 with open(
                     f"local_data/images/{requestor_id}/responses.json", "w"
-                ) as file:
+                ) as file: # type: SupportsWrite[str]
                     data = {"responses": [current_response]}
                     json.dump(data, file, indent=4)
 
@@ -88,7 +87,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
             with open(
                 f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "w"
-            ) as file:
+            ) as file: # type: SupportsWrite[str]
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
     except HTTPError as e:
