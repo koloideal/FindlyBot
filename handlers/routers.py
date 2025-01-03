@@ -29,122 +29,122 @@ from .callback_query import (
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 from middlewares.is_user_blocked import RejectBlockedUserMiddleware
 from middlewares.is_user_admin import RejectNotAdminMiddleware
+from middlewares.is_user_creator import RejectNotCreatorMiddleware
 
 
-router_for_all: Router = Router()
-router_for_all.message.middleware(RejectBlockedUserMiddleware())
+router: Router = Router()
+router.message.middleware(RejectBlockedUserMiddleware())
+router.message.middleware(RejectNotAdminMiddleware())
+router.message.middleware(RejectNotCreatorMiddleware())
 
-router_for_admin: Router = Router()
-router_for_admin.message.middleware(RejectNotAdminMiddleware())
 
-
-@router_for_all.message(Command("start"))
+@router.message(Command("start"))
 async def start_routing(message: Message) -> None:
     await start_rout(message)
 
 
-@router_for_all.message(Command("help"))
+@router.message(Command("help"))
 async def help_routing(message: Message) -> None:
     await button_to_help_rout(message)
 
 
-@router_for_all.message(Command("add_admin"))
+@router.message(Command("add_admin"))
 async def add_admin_routing(message: Message, state: FSMContext) -> None:
     await add_or_del_admin_rout(message, "add", state)
 
 
-@router_for_all.message(Command("del_admin"))
+@router.message(Command("del_admin"))
 async def del_admin_routing(message: Message, state: FSMContext) -> None:
     await add_or_del_admin_rout(message, "del", state)
 
 
-@router_for_admin.message(Command("ban_user"))
+@router.message(Command("ban_user"))
 async def ban_user_routing(message: Message, state: FSMContext) -> None:
     await ban_or_unban_user_rout(message, "ban", state)
 
 
-@router_for_admin.message(Command("unban_user"))
+@router.message(Command("unban_user"))
 async def unban_user_routing(message: Message, state: FSMContext) -> None:
     await ban_or_unban_user_rout(message, "unban", state)
 
 
-@router_for_admin.message(Command("get_logs"))
+@router.message(Command("get_logs"))
 async def get_logs_routing(message: Message) -> None:
     await get_logs_rout(message)
 
 
-@router_for_all.message(Command("get_admins"))
+@router.message(Command("get_admins"))
 async def get_admin_bd_routing(message: Message) -> None:
     await get_admins_rout(message)
 
 
-@router_for_all.message(Command("search"))
+@router.message(Command("search"))
 async def search_routing(message: Message, state: FSMContext) -> None:
     await search_rout(message, state)
 
 
-@router_for_all.message(Command("config"))
+@router.message(Command("config"))
 async def config_routing(message: Message) -> None:
     await config_rout(message)
 
 
-@router_for_all.message(F.text == "drop data")
+@router.message(F.text == "drop data")
 async def drop_data_routing(message: Message) -> None:
     await drop_data_rout(message)
 
 
-@router_for_all.message(AdminState.waiting_for_add_admin)
+@router.message(AdminState.waiting_for_add_admin)
 async def get_username_for_add_admin(message: Message, state: FSMContext) -> None:
     await get_username_for_add_admin_rout(message, state)
 
 
-@router_for_all.message(AdminState.waiting_for_del_admin)
+@router.message(AdminState.waiting_for_del_admin)
 async def get_username_for_del_admin(message: Message, state: FSMContext) -> None:
     await get_username_for_del_admin_rout(message, state)
 
 
-@router_for_all.message(AdminState.waiting_for_ban_user)
+@router.message(AdminState.waiting_for_ban_user)
 async def get_username_for_ban_user(message: Message, state: FSMContext) -> None:
     await get_username_for_ban_user_rout(message, state)
 
 
-@router_for_all.message(AdminState.waiting_for_unban_user)
+@router.message(AdminState.waiting_for_unban_user)
 async def get_username_for_unban_user(message: Message, state: FSMContext) -> None:
     await get_username_for_unban_user_rout(message, state)
 
 
-@router_for_all.message(WaitQuery.wait_query)
+@router.message(WaitQuery.wait_query)
 async def get_query_to_search(message: Message, state: FSMContext) -> None:
     await get_query_to_search_rout(message, state)
 
 
-@router_for_all.message(WaitMaxSize.wait_max_size)
+@router.message(WaitMaxSize.wait_max_size)
 async def get_max_size(message: Message, state: FSMContext) -> None:
     await get_max_size_rout(message, state)
 
 
-@router_for_all.callback_query(SwipeItemsCallbackData.filter())
+@router.callback_query(SwipeItemsCallbackData.filter())
 async def swipe_items(
     callback_query: CallbackQuery, callback_data: SwipeItemsCallbackData
 ) -> None:
     await swipe_items_callback(callback_query, callback_data)
 
 
-@router_for_all.callback_query(F.data.startswith("is_only_new"))
+@router.callback_query(F.data.startswith("is_only_new"))
 async def change_only_new(callback_query: CallbackQuery) -> None:
     await callback_query_change_only_new(callback_query)
 
 
-@router_for_all.callback_query(F.data.startswith("lang"))
+@router.callback_query(F.data.startswith("lang"))
 async def change_lang(callback_query: CallbackQuery) -> None:
     await callback_query_change_lang(callback_query)
 
 
-@router_for_all.callback_query(F.data == "change_max_size")
+@router.callback_query(F.data == "change_max_size")
 async def change_max_size(callback_query: CallbackQuery, state: FSMContext) -> None:
     await change_max_size_callback(callback_query, state)
 
 
-@router_for_all.message()
+@router.message()
 async def unknown_command_routing(message: Message) -> None:
     await unknown_command(message)

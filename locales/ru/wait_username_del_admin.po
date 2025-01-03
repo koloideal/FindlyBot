@@ -5,4 +5,4 @@ msgid "not_admin_msg"
 msgstr "Юзер не является админом"
 
 msgid "admin_del_msg"
-msgstr "Админ {admin_username} удалён"
+msgstr "Админ @{admin_username} удалён"

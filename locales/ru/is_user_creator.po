@@ -1,0 +1,2 @@
+msgid "unknown_command_msg"
+msgstr "Неизвестная команда, введите /help"
