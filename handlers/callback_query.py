@@ -194,6 +194,7 @@ async def callback_query_change_config(callback: CallbackQuery):
     price_filter_msg = msgs.find(f"price_filter_{price_filter}_msg").msgstr
     price_filter_callback_data = "price_filter_" + on_or_off[price_filter.upper()]
 
+    max_size: int = user_config["max_size"]
     max_size_msg = msgs.find("ch_max_size_msg").msgstr
 
     buttons: list = [
@@ -225,7 +226,8 @@ async def callback_query_change_config(callback: CallbackQuery):
     ]
 
     keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(inline_keyboard=buttons)
-    await callback.message.edit_reply_markup(reply_markup=keyboard)
+    await callback.message.edit_text(text=msgs.find("config_msg").msgstr.format(max_size=max_size),
+                                     reply_markup=keyboard)
 
 
 async def callback_query_max_size(callback: CallbackQuery, state: FSMContext):
