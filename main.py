@@ -7,6 +7,7 @@ import asyncio
 from telethon import TelegramClient
 import logging
 from utils.get_config import GetConfig
+from utils.create_loggers import create_main_logger
 
 
 storage: MemoryStorage = MemoryStorage()
@@ -23,33 +24,23 @@ client.disconnect()
 
 bot: Bot = Bot(token=api_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp: Dispatcher = Dispatcher(storage=storage)
+main_logger: logging.Logger = create_main_logger()
 
 
 async def main() -> None:
     await make_dirs()
     from handlers.routers import router
 
-    logging.warning("Starting FindlyBot...")
+    main_logger.warning("Starting FindlyBot...")
     dp.include_router(router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
+    print("\n\033[1m\033[30m\033[45m {} \033[0m".format("End of work..."))
+    main_logger.warning("End of work...")
+    exit(130)
 
 if __name__ == "__main__":
-    try:
-        print("\n\033[1m\033[30m\033[44m {} \033[0m".format("Starting FindlyBot..."))
-        logger = logging.getLogger(__name__)
-        logging.basicConfig(
-            level=logging.WARNING,
-            filename="secret_data/logs.log",
-            filemode="a",
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s\n\n\n",
-        )
-
-        asyncio.run(main())
-
-    except KeyboardInterrupt:
-        print("\n\033[1m\033[30m\033[45m {} \033[0m".format("End of work..."))
-        logging.warning("End of work...")
-        exit()
+    print("\n\033[1m\033[30m\033[44m {} \033[0m".format("Starting FindlyBot..."))
+    asyncio.run(main())

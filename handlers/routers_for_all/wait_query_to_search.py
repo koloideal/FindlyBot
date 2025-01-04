@@ -1,4 +1,4 @@
-import logging
+from main import main_logger
 import os
 import re
 import time
@@ -91,7 +91,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
     except HTTPError as e:
-        logging.error(e, exc_info=True)
+        main_logger.error(e, exc_info=True)
     else:
         await forming_response(
             message=message,

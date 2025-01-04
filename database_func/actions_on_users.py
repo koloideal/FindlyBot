@@ -87,7 +87,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_only_new_config(callback_data: str, user_id: int) -> None:
-        only_new: str = callback_data[9:].lower()
+        only_new: str = callback_data.split('_')[-1].lower()
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
@@ -101,7 +101,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_name_filter_config(callback_data: str, user_id: int) -> None:
-        name_filter: str = callback_data[12:].lower()
+        name_filter: str = callback_data.split('_')[-1].lower()
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
@@ -115,7 +115,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_price_filter_config(callback_data: str, user_id: int) -> None:
-        price_filter: str = callback_data[13:].lower()
+        price_filter: str = callback_data.split('_')[-1].lower()
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])
 
@@ -129,7 +129,7 @@ class ActionsOnUsers:
 
     @staticmethod
     async def change_lang_config(callback_data: str, user_id: int) -> None:
-        lang: str = callback_data[-2:]
+        lang: str = callback_data.split('_')[-1]
 
         await users_config_db.connect_async(reuse_if_open=True)
         users_config_db.create_tables([UsersConfig])

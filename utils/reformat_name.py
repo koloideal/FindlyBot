@@ -7,7 +7,10 @@ async def reformat_name(name: str, query: str) -> str:
     low_name, spl_name = name.lower(), name.split()
     low_q, spl_q = query.lower(), query.split()
 
-    idx_max = low_name.split().index(low_q.split()[-1])
+    try:
+        idx_max = low_name.split().index(low_q.split()[-1])
+    except ValueError:
+        return name
 
     if (len(spl_name) - len(spl_q)) > 1:
         res = " ".join(spl_name[: idx_max + 3])
