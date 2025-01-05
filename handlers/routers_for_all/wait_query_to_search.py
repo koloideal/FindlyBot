@@ -1,4 +1,4 @@
-from main import main_logger
+from logging import Logger, getLogger
 import os
 import re
 import time
@@ -19,6 +19,9 @@ if typing.TYPE_CHECKING:
 
 en_msgs = polib.pofile("locales/en/wait_query_to_search.po")
 ru_msgs = polib.pofile("locales/ru/wait_query_to_search.po")
+
+main_logger: Logger = getLogger('main_logger')
+action_logger: Logger = getLogger('action_logger')
 
 
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
@@ -56,6 +59,8 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
         products_data: dict[str, dict] = api_data_to_json["products_data"]
         metadata: dict[str | dict] = api_data_to_json["request_metadata"]
+
+        action_logger.warning(f"Request from $ {requestor_id} $ with $ {metadata['size_of_products']['all']} $ products")
 
         raw_query_path: str = metadata["request_url"]
         query_path = raw_query_path[raw_query_path.find("?") :]

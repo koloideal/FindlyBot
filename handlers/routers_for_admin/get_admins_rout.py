@@ -54,7 +54,5 @@ async def get_admins_rout(message: Message) -> None:
     caption: str = msgs.find("caption_msg").msgstr.format(
         date=datetime.now().strftime("%d-%m-%Y")
     )
-
     await message.answer_document(document=document, caption=caption)
-
     os.remove(full_file_name)

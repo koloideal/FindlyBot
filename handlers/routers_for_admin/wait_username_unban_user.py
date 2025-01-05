@@ -1,3 +1,5 @@
+from logging import Logger, getLogger
+
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from utils.get_config import GetConfig
@@ -17,6 +19,8 @@ api_id: str = config["Settings"]["api_id"]
 api_hash: str = config["Settings"]["api_hash"]
 
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
+
+action_logger: Logger = getLogger('action_logger')
 
 
 async def get_username_for_unban_user_rout(message: Message, state: FSMContext) -> None:
@@ -44,7 +48,7 @@ async def get_username_for_unban_user_rout(message: Message, state: FSMContext) 
             raise UsernameInvalidError
 
         user: TotalList = await client.get_participants(finished_input_username)
-        user_id, user_username, user_first_name, user_last_name = (
+        user_id, username, first_name, last_name = (
             user[0].id,
             user[0].username,
             user[0].first_name,
@@ -61,9 +65,9 @@ async def get_username_for_unban_user_rout(message: Message, state: FSMContext) 
         is_banned: bool = await ActionsOnUsers.unban_user(
             ex_ban_user={
                 "id": user_id,
-                "first_name": user_first_name,
-                "last_name": user_last_name,
-                "username": user_username,
+                "first_name": first_name,
+                "last_name": last_name,
+                "username": username,
             },
         )
 
@@ -74,6 +78,7 @@ async def get_username_for_unban_user_rout(message: Message, state: FSMContext) 
                 )
             )
         else:
+            action_logger.warning(f"User $ @{username} $ unbanned by admin $ {user_id} $")
             await message.answer(
                 msgs.find("user_not_ban_msg").msgstr.format(
                     finished_input_username=finished_input_username

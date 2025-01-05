@@ -1,6 +1,10 @@
+from logging import getLogger, Logger
 from typing import Any
 from httpx import AsyncClient, Response
 from utils.get_config import GetConfig
+
+
+action_logger: Logger = getLogger('action_logger')
 
 
 async def get_api_data(
@@ -26,4 +30,5 @@ async def get_api_data(
     async with AsyncClient(timeout=20) as client:
         api_data: Response = await client.get(api_url)
 
+    action_logger.warning(f"Successful API request, url: $ {api_url} $")
     return api_data

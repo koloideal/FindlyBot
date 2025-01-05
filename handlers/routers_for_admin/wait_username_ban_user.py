@@ -1,3 +1,5 @@
+from logging import Logger, getLogger
+
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from telethon.sync import TelegramClient
@@ -26,12 +28,20 @@ creator_id: int = config["Settings"]["creator_id"]
 
 client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
+action_logger: Logger = getLogger('action_logger')
+
 
 async def get_username_for_ban_user_rout(message: Message, state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
     lang: str = user_config["language"]
+
+    finished_input_username: str = (
+        raw_input_username
+        if raw_input_username[0] != "@"
+        else raw_input_username[1:]
+    )
 
     match lang:
         case "RU":
@@ -49,14 +59,8 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
         ):
             raise InvalidUsernameForBan(raw_input_username)
 
-        finished_input_username: str = (
-            raw_input_username
-            if raw_input_username[0] != "@"
-            else raw_input_username[1:]
-        )
-
         user: TotalList = await client.get_participants(finished_input_username)
-        user_id, user_username, user_first_name, user_last_name = (
+        user_id, username, first_name, last_name = (
             user[0].id,
             user[0].username,
             user[0].first_name,
@@ -72,16 +76,18 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
             raise InvalidUsernameForBan(raw_input_username)
 
     except AttemptToBanAdminOrCreator:
+        action_logger.critical(f"Admin $ {admin_id} $ tried to block admin or creator $ @{finished_input_username} $")
         await message.answer(msgs.find("attempt_to_ban_admin_msg").msgstr)
 
     except (InvalidUsernameForBan, UsernameInvalidError, ValueError):
+        action_logger.warning(f"Incorrect username $ @{finished_input_username} $ when trying to ban by admin $ {admin_id} $")
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
         await del_user_searching_data(user_id)
         if user_id in admins_id:
             await ActionsOnAdmin.del_admin(
-                ex_admin={"id": user_id, "username": user_username},
+                ex_admin={"id": user_id, "username": username},
             )
             await message.answer(
                 msgs.find("del_admin_msg").msgstr.format(
@@ -91,11 +97,12 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
         await ActionsOnUsers.ban_user(
             future_ban_user={
                 "id": user_id,
-                "first_name": user_first_name,
-                "last_name": user_last_name,
-                "username": user_username,
+                "first_name": first_name,
+                "last_name": last_name,
+                "username": username,
             },
         )
+        action_logger.warning(f"User $ @{finished_input_username} $ banned by admin $ {admin_id} $")
         await message.answer(
             msgs.find("user_banned_msg").msgstr.format(
                 finished_input_username=finished_input_username

@@ -1,3 +1,4 @@
+from logging import getLogger, Logger
 from aiogram.types import Message
 from aiogram.types import FSInputFile
 from datetime import datetime
@@ -9,6 +10,8 @@ from polib import POFile
 
 en_msgs: POFile = polib.pofile("locales/en/get_logs_rout.po")
 ru_msgs: POFile = polib.pofile("locales/ru/get_logs_rout.po")
+
+action_logger: Logger = getLogger('action_logger')
 
 
 async def get_logs_rout(message: Message) -> None:
@@ -31,6 +34,8 @@ async def get_logs_rout(message: Message) -> None:
     )
 
     try:
+        action_logger.warning("Bot logs have been successfully requested")
         await message.answer_document(document=document, caption=captions)
     except TelegramBadRequest:
+        action_logger.warning("Bot logs have been unsuccessfully requested")
         await message.answer(msgs.find("empty_logs_msg").msgstr)
