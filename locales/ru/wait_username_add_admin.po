@@ -3,3 +3,9 @@ msgstr "Некорректный юзернейм для добавления а
 
 msgid "new_admin_msg"
 msgstr "@{finished_input_username} теперь админ или уже был им"
+
+msgid "congratulations_msg"
+msgstr "<b>Поздравляем, вы стали админом FindlyBot</b>"
+
+msgid "blocked_bot_msg"
+msgstr "@{finished_input_username} заблокировал бота в личных сообщениях"

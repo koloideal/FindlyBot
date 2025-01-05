@@ -1,3 +1,4 @@
+from aiogram.exceptions import TelegramForbiddenError
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from database_func.actions_on_users import ActionsOnUsers
@@ -24,13 +25,11 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 
 async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -> None:
+    from main import bot
     raw_input_username: str = message.text
     try:
         await client.start()
-
-        if raw_input_username.startswith("t.me/") or raw_input_username.startswith(
-            "https://t.me/"
-        ):
+        if raw_input_username.startswith("t.me/") or raw_input_username.startswith("https://t.me/"):
             raise InvalidUsernameForAddAdmin(raw_input_username)
 
         finished_input_username: str = (
@@ -63,9 +62,14 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 "username": username,
             },
         )
+
         my_id: int = message.from_user.id
-        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=my_id)
-        lang: str = user_config["language"]
+        my_config: dict = await ActionsOnUsers.get_all_configs(user_id=my_id)
+        lang: str = my_config["language"]
+
+        await ActionsOnUsers.config_user_to_database(user_id=user_id)
+        new_admin_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
+        new_admin_lang: str = new_admin_config['language']
 
         match lang:
             case "RU":
@@ -74,6 +78,22 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 msgs: POFile = en_msgs
             case _:
                 msgs: POFile = en_msgs
+
+        match new_admin_lang:
+            case "RU":
+                new_admin_msgs: POFile = ru_msgs
+            case "EN":
+                new_admin_msgs: POFile = en_msgs
+            case _:
+                new_admin_msgs: POFile = en_msgs
+        try:
+            await bot.send_message(user_id, new_admin_msgs.find("congratulations_msg").msgstr)
+        except TelegramForbiddenError:
+            await message.answer(msgs.find("blocked_bot_msg").msgstr.format(
+                    finished_input_username=finished_input_username
+                )
+            )
+
         await message.answer(
             msgs.find("new_admin_msg").msgstr.format(
                 finished_input_username=finished_input_username

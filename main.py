@@ -15,8 +15,7 @@ api_token: str = config["Config"]["test_api_token"]
 api_id: int = int(config["Settings"]["api_id"])
 api_hash: str = config["Settings"]["api_hash"]
 
-client: TelegramClient = TelegramClient("session", api_id, api_hash)
-client.start()
+client: TelegramClient = TelegramClient("session", api_id, api_hash).start()
 client.disconnect()
 
 bot: Bot = Bot(token=api_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))

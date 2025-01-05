@@ -8,7 +8,12 @@ class ActionsOnAdmin:
     async def add_admin(future_admin: dict[str, Any]) -> None:
         await admins_db.connect_async(reuse_if_open=True)
         admins_db.create_tables([AdminUsers])
-        (AdminUsers.insert(future_admin).execute())
+        (
+            AdminUsers
+            .insert(future_admin)
+            .on_conflict(action="IGNORE")
+            .execute()
+        )
         admins_db.commit()
         await admins_db.close_async()
 

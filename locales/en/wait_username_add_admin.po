@@ -3,3 +3,9 @@ msgstr "Invalid username for add admin"
 
 msgid "new_admin_msg"
 msgstr "@{finished_input_username} is now an admin or already was"
+
+msgid "congratulations_msg"
+msgstr "<b>Congratulations, you have become the admin of the FindlyBot</b>"
+
+msgid "blocked_bot_msg"
+msgstr "@{finished_input_username} blocked the chat with the bot"

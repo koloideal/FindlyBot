@@ -4,6 +4,7 @@ import re
 import time
 import typing
 import polib
+from exceptions.request_exceptions import TooLongQueryForSearchError
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
 from aiogram.types import Message
@@ -25,29 +26,33 @@ action_logger: Logger = getLogger('action_logger')
 
 
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
-    query_with_plus: str = re.sub(r" ", "+", message.text.strip())
+    query: str = message.text.strip()
     requestor_id = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-    lang: str = user_config["language"]
-
-    match lang:
-        case "RU":
-            msgs = ru_msgs
-        case "EN":
-            msgs = en_msgs
-        case _:
-            msgs = en_msgs
-    wait_message: Message = await message.answer(msgs.find("search_in_progress").msgstr)
-
-    os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
-    os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
-
-    max_size: int = user_config["max_size"]
-    only_new: str = user_config["only_new"]
-    price_filter: str = user_config["price_filter"]
-    name_filter: str = user_config["name_filter"]
-
     try:
+        if len(query) > 25:
+            raise TooLongQueryForSearchError(len(query))
+        query_with_plus: str = re.sub(r" ", "+", query)
+        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
+        lang: str = user_config["language"]
+
+        match lang:
+            case "RU":
+                msgs = ru_msgs
+            case "EN":
+                msgs = en_msgs
+            case _:
+                msgs = en_msgs
+        wait_message: Message = await message.answer(msgs.find("search_in_progress").msgstr)
+
+        os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
+        os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
+
+        max_size: int = user_config["max_size"]
+        only_new: str = user_config["only_new"]
+        price_filter: str = user_config["price_filter"]
+        name_filter: str = user_config["name_filter"]
+
+
         api_data: Response = await get_api_data(
             query_with_plus,
             max_size=max_size,
@@ -97,6 +102,9 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
     except HTTPError as e:
         main_logger.error(e, exc_info=True)
+    except TooLongQueryForSearchError as e:
+        action_logger.error(f"{e} from user {requestor_id}")
+        await message.answer(str(e))
     else:
         await forming_response(
             message=message,
