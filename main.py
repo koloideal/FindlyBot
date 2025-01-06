@@ -6,13 +6,15 @@ from aiogram.client.bot import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 from aiogram import Bot, Dispatcher
 import asyncio
+from utils.telethon_authorized import telethon_authorized
 from utils.get_config import GetConfig
 from utils.create_loggers import create_main_logger, create_action_logger
 
 
 config: dict = GetConfig.get_bot_config()
+is_authorized_telethon: bool = config["Config"]["is_authorized"]
 api_token: str = config["Config"]["api_token"]
-api_id: int = int(config["Settings"]["api_id"])
+api_id: int = config["Settings"]["api_id"]
 api_hash: str = config["Settings"]["api_hash"]
 
 session = AiohttpSession()
@@ -26,6 +28,10 @@ action_logger: Logger = create_action_logger()
 
 async def main() -> None:
     await make_dirs()
+
+    if not is_authorized_telethon:
+        await telethon_authorized(api_id, api_hash)
+
     from handlers.routers import router
 
     main_logger.warning("Starting FindlyBot...")

@@ -19,6 +19,11 @@ polib = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 peewee = "^3.17.7"
+ruff = "^0.8.6"
+
+
+[tool.poetry.group.intest.dependencies]
+tomlkit = "^0.13.2"
 
 [build-system]
 requires = ["poetry-core"]

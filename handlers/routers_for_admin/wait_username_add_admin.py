@@ -101,5 +101,5 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         )
 
     finally:
-        client.disconnect()
+        await client.disconnect()
         await state.clear()
