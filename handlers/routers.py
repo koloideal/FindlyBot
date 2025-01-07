@@ -67,8 +67,13 @@ async def unban_user_routing(message: Message, state: FSMContext) -> None:
     await ban_or_unban_user_rout(message, "unban", state)
 
 
-@router.message(Command("get_logs"))
-async def get_logs_routing(message: Message) -> None:
+@router.message(Command("get_main_logs"))
+async def get_main_logs_routing(message: Message) -> None:
+    await get_logs_rout(message)
+
+
+@router.message(Command("get_action_logs"))
+async def get_action_logs_routing(message: Message) -> None:
     await get_logs_rout(message)
 
 

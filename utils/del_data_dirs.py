@@ -13,3 +13,6 @@ async def del_data_dirs() -> None:
 
     for path in paths:
         shutil.rmtree(path, ignore_errors=True)
+
+    os.remove('secret_data/main_logs.log')
+    os.remove('secret_data/action_logs.log')

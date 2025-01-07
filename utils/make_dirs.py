@@ -4,6 +4,7 @@ import os
 async def make_dirs() -> None:
     paths = (
         "database",
+        "local_data/images",
         "local_data/products_data",
     )
 

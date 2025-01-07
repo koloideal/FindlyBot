@@ -2,7 +2,7 @@ from logging import getLogger, Logger
 from aiogram.types import Message
 from aiogram.types import FSInputFile
 from datetime import datetime
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
 from database_func.actions_on_users import ActionsOnUsers
 import polib
 from polib import POFile
@@ -16,6 +16,7 @@ action_logger: Logger = getLogger('action_logger')
 
 async def get_logs_rout(message: Message) -> None:
     user_id: int = message.from_user.id
+    command: str = message.text.strip()
     user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
     lang: str = user_config["language"]
 
@@ -27,15 +28,28 @@ async def get_logs_rout(message: Message) -> None:
         case _:
             msgs: POFile = en_msgs
 
-    full_file_name: str = "secret_data/logs.log"
-    document: FSInputFile = FSInputFile(full_file_name)
-    captions: str = msgs.find("caption_msg").msgstr.format(
-        date=datetime.now().strftime("%d-%m-%Y")
-    )
+    match command:
+        case '/get_main_logs':
+            file_name: str = "secret_data/main_logs.log"
+        case '/get_action_logs':
+            file_name: str = "secret_data/action_logs.log"
+        case _:
+            file_name: str = "secret_data/main_logs.log"
+    document: FSInputFile = FSInputFile(file_name)
+    captions: str = msgs.find("caption_msg").msgstr.format(date=datetime.now().strftime("%d-%m-%Y"))
 
     try:
-        action_logger.warning("Bot logs have been successfully requested")
+        match command:
+            case '/get_main_logs':
+                action_logger.warning("Main bot logs have been successfully requested")
+            case '/get_action_logs':
+                action_logger.warning("Action bot logs have been successfully requested")
         await message.answer_document(document=document, caption=captions)
-    except TelegramBadRequest:
-        action_logger.warning("Bot logs have been unsuccessfully requested")
+
+    except (TelegramBadRequest, TelegramNetworkError):
+        match command:
+            case '/get_main_logs':
+                action_logger.warning("Main bot logs have been unsuccessfully requested")
+            case '/get_action_logs':
+                action_logger.warning("Action bot logs have been unsuccessfully requested")
         await message.answer(msgs.find("empty_logs_msg").msgstr)
