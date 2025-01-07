@@ -1,7 +1,6 @@
 import os
 import re
 from os import path
-
 import requests
 from aiocache import cached
 from aiocache.serializers import PickleSerializer
@@ -21,27 +20,20 @@ async def api_data_to_dump(
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 
     for marketplace in api_json_data:
-        os.makedirs(
-            f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}",
-            exist_ok=True,
-        )
+        marketplace_path = f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}"
+        os.makedirs(marketplace_path, exist_ok=True)
         items: list = []
         for k, item in enumerate(api_json_data[marketplace]):
             if k <= int(max_size):
                 res_item = item
                 res_item["id"] = k
                 res_item["name"] = re.sub(r"[ /\\]", "_", item["name"])
-                hash_name = await req_to_hash(res_item["name"])
+                hash_name = await req_to_hash(res_item["image"])
                 items.append(res_item)
 
-                if res_item["image"] != "images/placeholder.png" and not path.isfile(
-                    f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{hash_name}.jpg"
-                ):
-                    data = requests.get(res_item["image"])
-                    with open(
-                        f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{hash_name}.jpg",
-                        "wb",
-                    ) as f:
+                if res_item["image"] != "images/placeholder.png" and not path.isfile(f"{marketplace_path}/{hash_name}.jpg"):
+                    data = requests.get(item["image"])
+                    with open(f"{marketplace_path}/{hash_name}.jpg", "wb") as f:
                         f.write(data.content)
             else:
                 break

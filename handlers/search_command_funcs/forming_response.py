@@ -2,7 +2,6 @@ import json
 import polib
 from aiogram.types import Message, InlineKeyboardButton, FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from database_func.actions_on_users import ActionsOnUsers
 from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
@@ -39,7 +38,7 @@ async def forming_response(
         link = item["link"]
         image_link = item["image"]
         name = item["name"]
-        name_hash = await req_to_hash(name)
+        name_hash = await req_to_hash(image_link)
         price = item["price"]
         ids = item["id"]
 

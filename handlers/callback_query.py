@@ -55,12 +55,10 @@ async def callback_query_swipe_items(callback: CallbackQuery,
         api_json_data: dict = json.load(response)
 
     current_item_link = api_json_data[current_marketplace][current_item_id]["link"]
-    current_item_image_link = api_json_data[current_marketplace][current_item_id][
-        "image"
-    ]
+    current_item_image_link = api_json_data[current_marketplace][current_item_id]["image"]
     current_item_price = api_json_data[current_marketplace][current_item_id]["price"]
     current_item_name = api_json_data[current_marketplace][current_item_id]["name"]
-    current_item_hash_name = await req_to_hash(current_item_name)
+    current_item_hash_image_link = await req_to_hash(current_item_image_link)
     size_of_products = len(api_json_data[current_marketplace])
 
     max_item_id = max([x["id"] for x in api_json_data[current_marketplace]])
@@ -121,7 +119,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
         image = FSInputFile("local_data/images/placeholder.jpg")
     else:
         image = FSInputFile(
-            f"local_data/images/{requestor_id}/{query_path_hash}/{current_marketplace}/{current_item_hash_name}.jpg"
+            f"local_data/images/{requestor_id}/{query_path_hash}/{current_marketplace}/{current_item_hash_image_link}.jpg"
         )
 
     res_name = await reformat_name(current_item_name.replace("_", " "), query)
