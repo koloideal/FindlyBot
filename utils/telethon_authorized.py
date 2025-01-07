@@ -7,10 +7,9 @@ action_logger: Logger = getLogger('action_logger')
 
 async def telethon_authorized(api_id, api_hash):
     client = TelegramClient("session", api_id=api_id, api_hash=api_hash)
+
     await client.start()
-
     await client.get_me()
-
     await client.disconnect()
 
     with open("secret_data/config.toml", "rb") as config:

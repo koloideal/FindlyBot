@@ -21,7 +21,7 @@ if typing.TYPE_CHECKING:
 en_msgs = polib.pofile("locales/en/wait_query_to_search.po")
 ru_msgs = polib.pofile("locales/ru/wait_query_to_search.po")
 
-main_logger: Logger = getLogger('main_logger')
+main_logger: Logger = getLogger('root')
 action_logger: Logger = getLogger('action_logger')
 
 
@@ -60,6 +60,13 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             price_filter=price_filter,
             name_filter=name_filter
         )
+        if not api_data:
+            action_logger.error(f"Unsuccessful /search request from a user with id $ {requestor_id} $")
+            main_logger.error(f"Unsuccessful /search request from a user with id $ {requestor_id} $")
+
+            await message.answer("Unsuccessful request, please wait or contact @kolo_id")
+            raise HTTPError('ConnectTimeout')
+
         api_data_to_json = api_data.json()
 
         products_data: dict[str, dict] = api_data_to_json["products_data"]
@@ -101,7 +108,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
     except HTTPError as e:
-        main_logger.error(e, exc_info=True)
+        main_logger.error(e)
     except TooLongQueryForSearchError as e:
         action_logger.error(f"{e} from user {requestor_id}")
         await message.answer(str(e))

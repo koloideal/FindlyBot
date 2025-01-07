@@ -1,17 +1,26 @@
-import logging
+from logging import (
+    Logger,
+    getLogger,
+    Formatter,
+    FileHandler,
+    WARNING,
+    ERROR,
+    StreamHandler
+)
 
 
-def create_main_logger() -> logging.Logger:
-    logger = logging.getLogger('main_logger')
-    logger.setLevel(logging.WARNING)
+def create_main_logger() -> Logger:
+    logger = getLogger('root')
+    logger.setLevel(WARNING)
 
-    fh = logging.FileHandler('secret_data/main_logs.log')
-    fh.setLevel(logging.WARNING)
+    fh = FileHandler('secret_data/main_logs.log')
+    fh.setLevel(WARNING)
 
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.ERROR)
+    ch = StreamHandler()
+    ch.setLevel(ERROR)
 
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s --- %(message)s\n\n')
+    formatter = Formatter('%(asctime)s - %(levelname)s\n'
+                          '%(message)s\n\n')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
 
@@ -21,17 +30,18 @@ def create_main_logger() -> logging.Logger:
     return logger
 
 
-def create_action_logger() -> logging.Logger:
-    logger = logging.getLogger('action_logger')
-    logger.setLevel(logging.WARNING)
+def create_action_logger() -> Logger:
+    logger = getLogger('action_logger')
+    logger.setLevel(WARNING)
 
-    fh = logging.FileHandler('secret_data/action_logs.log')
-    fh.setLevel(logging.WARNING)
+    fh = FileHandler('secret_data/action_logs.log')
+    fh.setLevel(WARNING)
 
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s\n'
-                                  '%(message)s\n\n')
+    formatter = Formatter('%(asctime)s - %(levelname)s\n'
+                          '%(message)s\n\n')
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
+    logger.propagate = False
     return logger
 

@@ -1,4 +1,4 @@
-from aiogram.exceptions import TelegramForbiddenError
+from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from database_func.actions_on_users import ActionsOnUsers
@@ -87,12 +87,15 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
             case _:
                 new_admin_msgs: POFile = en_msgs
         try:
-            await bot.send_message(user_id, new_admin_msgs.find("congratulations_msg").msgstr)
+            async with bot.session:
+                await bot.send_message(user_id, new_admin_msgs.find("congratulations_msg").msgstr)
         except TelegramForbiddenError:
             await message.answer(msgs.find("blocked_bot_msg").msgstr.format(
                     finished_input_username=finished_input_username
                 )
             )
+        except TelegramBadRequest:
+            pass
 
         await message.answer(
             msgs.find("new_admin_msg").msgstr.format(
