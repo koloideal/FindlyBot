@@ -27,15 +27,3 @@ class InitializeDatabaseDAO:
         DatabaseConnectionSingleton.__del__()
 
         return
-
-
-InitializeDatabaseDAO.create_database(host='127.0.0.1',
-                                      user='kolo',
-                                      password='DmitryShev2008')
-
-DatabaseConnectionSingleton(host='127.0.0.1',
-                            user='kolo',
-                            password='DmitryShev2008',
-                            database='FindlyBot')
-
-InitializeDatabaseDAO().create_tables()
