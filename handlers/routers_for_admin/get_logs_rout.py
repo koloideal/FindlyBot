@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.types import FSInputFile
 from datetime import datetime
 from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 import polib
 from polib import POFile
 

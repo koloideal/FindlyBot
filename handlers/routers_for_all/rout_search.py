@@ -1,5 +1,5 @@
 from aiogram.types import Message
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from aiogram.fsm.context import FSMContext
 from states.user_states import WaitQuery
 from utils.check_responses import check_responses

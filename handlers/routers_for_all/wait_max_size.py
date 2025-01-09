@@ -1,6 +1,6 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from html import escape
 import polib
 

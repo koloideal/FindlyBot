@@ -2,7 +2,7 @@ import json
 import polib
 from aiogram.types import Message, InlineKeyboardButton, FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from ..custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData

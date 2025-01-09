@@ -13,7 +13,7 @@ from utils.create_loggers import create_main_logger, create_action_logger
 
 config: dict = GetConfig.get_bot_config()
 is_authorized_telethon: bool = config["Config"]["is_authorized"]
-api_token: str = config["Config"]["api_token"]
+api_token: str = config["Config"]["test_api_token"]
 api_id: int = config["Settings"]["api_id"]
 api_hash: str = config["Settings"]["api_hash"]
 

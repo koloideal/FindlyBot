@@ -5,7 +5,7 @@ import requests
 from aiocache import cached
 from aiocache.serializers import PickleSerializer
 
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from utils.query_to_hash import req_to_hash
 
 

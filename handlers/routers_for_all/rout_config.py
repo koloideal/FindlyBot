@@ -1,7 +1,7 @@
 import polib
 from aiogram import types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 
 en_msgs = polib.pofile("locales/en/rout_config.po")
 ru_msgs = polib.pofile("locales/ru/rout_config.po")

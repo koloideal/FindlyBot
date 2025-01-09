@@ -1,6 +1,6 @@
 from aiogram.types import Message
-from database_func.actions_on_users import ActionsOnUsers
-from database_func.action_on_admin import ActionsOnAdmin
+from database_func.users_dao import ActionsOnUsers
+from database_func.admins_dao import ActionsOnAdmin
 from utils.get_config import GetConfig
 import polib
 

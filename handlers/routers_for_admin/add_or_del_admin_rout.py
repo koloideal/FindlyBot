@@ -1,7 +1,7 @@
 from aiogram import types
 from states.admin_states import AdminState
 from aiogram.fsm.context import FSMContext
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 import polib
 from polib import POFile
 

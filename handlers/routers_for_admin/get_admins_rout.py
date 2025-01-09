@@ -1,10 +1,10 @@
 import typing
-from database_func.action_on_admin import ActionsOnAdmin
+from database_func.admins_dao import ActionsOnAdmin
 from aiogram.types import FSInputFile, Message
 from datetime import datetime
 import json
 import os
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 import polib
 from polib import POFile
 

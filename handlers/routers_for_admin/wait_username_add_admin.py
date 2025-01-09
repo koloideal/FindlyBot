@@ -1,11 +1,11 @@
 from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameOccupiedError
-from database_func.action_on_admin import ActionsOnAdmin
+from database_func.admins_dao import ActionsOnAdmin
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
 import polib

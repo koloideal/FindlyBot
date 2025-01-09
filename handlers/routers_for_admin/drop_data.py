@@ -2,7 +2,7 @@ from logging import Logger
 from aiogram.types import Message
 from polib import POFile, pofile
 
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from utils.del_data_dirs import del_data_dirs
 from utils.make_dirs import make_dirs
 from utils.create_loggers import create_action_logger, create_main_logger

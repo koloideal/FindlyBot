@@ -8,8 +8,8 @@ from telethon.helpers import TotalList
 import polib
 from polib import POFile
 
-from database_func.actions_on_users import ActionsOnUsers
-from database_func.action_on_admin import ActionsOnAdmin
+from database_func.users_dao import ActionsOnUsers
+from database_func.admins_dao import ActionsOnAdmin
 from utils.get_config import GetConfig
 from utils.del_user_searching_data import del_user_searching_data
 from exceptions.users_exceptions import (

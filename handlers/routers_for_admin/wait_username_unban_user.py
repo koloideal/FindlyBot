@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameNotOccupiedError
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 from telethon.helpers import TotalList
 import polib
 from polib import POFile

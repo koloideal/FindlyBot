@@ -1,6 +1,6 @@
 import polib
 from aiogram import types
-from database_func.actions_on_users import ActionsOnUsers
+from database_func.users_dao import ActionsOnUsers
 
 en_msgs = polib.pofile("locales/en/unknown_command.po")
 ru_msgs = polib.pofile("locales/ru/unknown_command.po")
