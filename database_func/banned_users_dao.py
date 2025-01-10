@@ -1,4 +1,5 @@
 from database_func.connect_to_database import DatabaseConnectionSingleton
+from database_func.database_models import BannedUser
 
 
 class BannedUsersDAO:
@@ -15,17 +16,17 @@ class BannedUsersDAO:
 
         return banned_users_id
 
-    def ban_user(self,
-               user_id: int,
-               first_name: str,
-               username: str) -> None:
+    def ban_user(self, banned_user: BannedUser) -> None:
         query: str = '''INSERT OR IGNORE INTO banned_users(user_id, first_name, username) VALUES(?, ?, ?)'''
         with self.database as cursor:
-            cursor.execute(query, (user_id, first_name, username))
+            cursor.execute(query, (banned_user.user_id,
+                                   banned_user.first_name,
+                                   banned_user.username))
         return
 
-    def unban_user(self, user_id: int) -> bool:
+    def unban_user(self, user_id: int) -> None:
         query: str = '''DELETE FROM banned_users WHERE id = ?'''
         with self.database as cursor:
             cursor.execute(query, (user_id,))
-        return True
+
+        return

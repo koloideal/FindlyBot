@@ -1,11 +1,13 @@
+from typing import Any
 from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import Admin, UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameOccupiedError
-from database_func.admins_dao import ActionsOnAdmin
+from database_func.admins_dao import AdminsDAO
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
 import polib
@@ -38,40 +40,32 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
             else raw_input_username[1:]
         )
 
-        user: TotalList = await client.get_participants(finished_input_username)
+        admin: TotalList = await client.get_participants(finished_input_username)
+        admin: Any | Admin = admin[0]
+        admin_id = admin.user_id
 
-        if user[0].bot or len(user) != 1:
+        if admin.bot or len(admin) != 1:
             raise InvalidUsernameForAddAdmin(raw_input_username)
 
     except (UsernameInvalidError, UsernameOccupiedError, ValueError, InvalidUsernameForAddAdmin):
         await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     else:
-        user_id, username, first_name, last_name = (
-            user[0].id,
-            user[0].username,
-            user[0].first_name,
-            user[0].last_name,
-        )
 
-        await ActionsOnAdmin.add_admin(
-            future_admin={
-                "id": user_id,
-                "first_name": first_name,
-                "last_name": last_name,
-                "username": username,
-            },
-        )
+        AdminsDAO().add_admin(admin=admin)
+        user_config: UsersConfigDAO = UsersConfigDAO()
 
         my_id: int = message.from_user.id
-        my_config: dict = await ActionsOnUsers.get_all_configs(user_id=my_id)
-        lang: str = my_config["language"]
+        my_config: UserConfig = user_config.get_all_configs(user_id=my_id)
+        language: str = my_config.language
 
-        await ActionsOnUsers.config_user_to_database(user_id=user_id)
-        new_admin_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-        new_admin_lang: str = new_admin_config['language']
+        params: dict[str, str | int] = UserConfig.default_user_config(admin_id)
 
-        match lang:
+        user_config.config_user_to_database(params=params)
+        new_admin_config: UserConfig = user_config.get_all_configs(user_id=admin_id)
+        new_admin_lang: str = new_admin_config.language
+
+        match language:
             case "RU":
                 msgs: POFile = ru_msgs
             case "EN":
@@ -88,7 +82,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
                 new_admin_msgs: POFile = en_msgs
         try:
             async with bot.session:
-                await bot.send_message(user_id, new_admin_msgs.find("congratulations_msg").msgstr)
+                await bot.send_message(admin_id, new_admin_msgs.find("congratulations_msg").msgstr)
         except TelegramForbiddenError:
             await message.answer(msgs.find("blocked_bot_msg").msgstr.format(
                     finished_input_username=finished_input_username

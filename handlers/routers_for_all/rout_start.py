@@ -1,6 +1,8 @@
 from aiogram.types import Message
-from database_func.users_dao import ActionsOnUsers
-from database_func.admins_dao import ActionsOnAdmin
+from database_func.database_models import Admin, UserConfig, User
+from database_func.users_dao import UsersDAO
+from database_func.users_config_dao import UsersConfigDAO
+from database_func.admins_dao import AdminsDAO
 from utils.get_config import GetConfig
 import polib
 
@@ -9,14 +11,23 @@ ru_msgs = polib.pofile("locales/ru/rout_start.po")
 
 
 async def start_rout(message: Message) -> None:
-
+    users_config_dao: UsersConfigDAO = UsersConfigDAO()
     user_id: int = message.from_user.id
-    admins_ids: list = await ActionsOnAdmin.get_admins(only_ids=True)
+    admins: list[Admin] = AdminsDAO().get_admins()
+    admins_ids: list[int] = [x.user_id for x in admins]
     creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
 
-    await ActionsOnUsers.config_user_to_database(user_id)
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
+    params: dict[str, str | int] = {"id": user_id,
+                                    "only_new": "on",
+                                    "max_size": "10",
+                                    "language": "EN",
+                                    "price_filter": "on",
+                                    "name_filter": "on"}
+
+    users_config_dao.config_user_to_database(params=params)
+
+    user_config: UserConfig = users_config_dao.get_all_configs(user_id=user_id)
+    lang: str = user_config.language
 
     match lang:
         case "RU":
@@ -53,6 +64,8 @@ async def start_rout(message: Message) -> None:
     username = message.from_user.username
     first_name = message.from_user.first_name
 
-    await ActionsOnUsers.user_to_database(
-        user_id=user_id, first_name=first_name, username=username
+    UsersDAO().user_to_database(
+        User(user_id=user_id,
+             first_name=first_name,
+             username=username)
     )

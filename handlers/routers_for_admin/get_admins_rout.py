@@ -35,24 +35,14 @@ async def get_admins_rout(message: Message) -> None:
         await message.answer(msgs.find("empty_database_msg").msgstr)
         return
 
-    to_dump_data: dict = {}
+    file_name: str = "secret_data/admin_users.json"
 
-    for admin in all_admins:
-        to_dump_data[admin[3]]: dict = {
-            "admin_id": admin[0],
-            "admin_first_name": admin[1],
-            "admin_last_name": admin[2],
-            "admin_username": admin[3],
-        }
+    with open(file_name, "w", encoding="utf8") as file:  # type: SupportsWrite[str]
+        json.dump({'admins': all_admins}, file, indent=4, ensure_ascii=False)
 
-    full_file_name: str = "secret_data/admin_users.json"
-
-    with open(full_file_name, "w", encoding="utf8") as file:  # type: SupportsWrite[str]
-        json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
-
-    document: FSInputFile = FSInputFile(full_file_name)
+    document: FSInputFile = FSInputFile(file_name)
     caption: str = msgs.find("caption_msg").msgstr.format(
         date=datetime.now().strftime("%d-%m-%Y")
     )
     await message.answer_document(document=document, caption=caption)
-    os.remove(full_file_name)
+    os.remove(file_name)

@@ -1,11 +1,11 @@
 from logging import Logger, getLogger
-
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameNotOccupiedError
-from database_func.users_dao import ActionsOnUsers
+from database_func.banned_users_dao import BannedUsersDAO
+from database_func.users_config_dao import UsersConfigDAO
 from telethon.helpers import TotalList
 import polib
 from polib import POFile
@@ -25,7 +25,7 @@ action_logger: Logger = getLogger('action_logger')
 
 async def get_username_for_unban_user_rout(message: Message, state: FSMContext) -> None:
     admin_id: int = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
+    user_config: dict = UsersConfigDAO().get_all_configs(user_id=admin_id)
     lang: str = user_config["language"]
 
     match lang:
@@ -62,23 +62,20 @@ async def get_username_for_unban_user_rout(message: Message, state: FSMContext) 
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
-        is_banned: bool = await ActionsOnUsers.unban_user(
-            ex_ban_user={
-                "id": user_id,
-                "first_name": first_name,
-                "last_name": last_name,
-                "username": username,
-            },
-        )
+        banned_users_ids: list[int] = BannedUsersDAO().get_banned_users()
+        is_banned: bool = user_id in banned_users_ids
 
         if is_banned:
+
+            BannedUsersDAO().unban_user(user_id=user_id)
+
+            action_logger.warning(f"User $ @{username} $ unbanned by admin $ {user_id} $")
             await message.answer(
                 msgs.find("user_unban_msg").msgstr.format(
                     finished_input_username=finished_input_username
                 )
             )
         else:
-            action_logger.warning(f"User $ @{username} $ unbanned by admin $ {user_id} $")
             await message.answer(
                 msgs.find("user_not_ban_msg").msgstr.format(
                     finished_input_username=finished_input_username
