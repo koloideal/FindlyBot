@@ -1,11 +1,13 @@
+from typing import Any
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from polib import POFile
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig, Admin
+from database_func.users_config_dao import UsersConfigDAO
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
-from database_func.admins_dao import ActionsOnAdmin
+from database_func.admins_dao import AdminsDAO
 from telethon.helpers import TotalList
 import polib
 
@@ -23,10 +25,10 @@ client: TelegramClient = TelegramClient("session", int(api_id), api_hash)
 
 async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -> None:
     admin_id: int = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=admin_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs: POFile = ru_msgs
         case "EN":
@@ -34,7 +36,9 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
         case _:
             msgs: POFile = en_msgs
     try:
-        admin_ids: list[int] = await ActionsOnAdmin.get_admins(only_ids=True)
+        admins: list[Admin] = AdminsDAO().get_admins()
+        admin_ids: list[int] = [admin.user_id for admin in admins]
+
         await client.start()
 
         if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):
@@ -45,9 +49,10 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
         )
 
         user: TotalList = await client.get_participants(ex_admin_username)
+        ex_admin: Any = user[0]
 
-        admin_id: int = user[0].id
-        admin_username: str = user[0].username
+        admin_id: int = ex_admin.id
+        admin_username: str = ex_admin.username
 
         if len(user) != 1:
             raise ValueError
@@ -62,9 +67,8 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
         await message.answer(msgs.find("not_admin_msg").msgstr)
 
     else:
-        await ActionsOnAdmin.del_admin(
-            ex_admin={"id": admin_id, "username": admin_username},
-        )
+        AdminsDAO().del_admin(admin_id=admin_id)
+
         await message.answer(
             msgs.find("admin_del_msg").msgstr.format(admin_username=admin_username)
         )

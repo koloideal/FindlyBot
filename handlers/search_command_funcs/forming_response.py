@@ -2,7 +2,9 @@ import json
 import polib
 from aiogram.types import Message, InlineKeyboardButton, FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from database_func.users_dao import ActionsOnUsers
+
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from ..custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
@@ -15,10 +17,10 @@ async def forming_response(
     message: Message, query_path_hash: str, query: str, wait_message: Message
 ):
     requestor_id: int = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=requestor_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs = ru_msgs
         case "EN":

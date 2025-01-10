@@ -4,11 +4,12 @@ import re
 import time
 import typing
 import polib
+from database_func.database_models import UserConfig
 from exceptions.request_exceptions import TooLongQueryForSearchError
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
 from aiogram.types import Message
-from database_func.users_dao import ActionsOnUsers
+from database_func.users_config_dao import UsersConfigDAO
 from aiogram.fsm.context import FSMContext
 from httpx import Response, HTTPError
 from get_api_data.get_api_data import get_api_data
@@ -32,10 +33,10 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         if len(query) > 25:
             raise TooLongQueryForSearchError(len(query))
         query_with_plus: str = re.sub(r" ", "+", query)
-        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-        lang: str = user_config["language"]
+        user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=requestor_id)
+        language: str = user_config.language
 
-        match lang:
+        match language:
             case "RU":
                 msgs = ru_msgs
             case "EN":

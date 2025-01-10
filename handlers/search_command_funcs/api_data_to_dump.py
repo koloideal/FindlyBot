@@ -5,17 +5,18 @@ import requests
 from aiocache import cached
 from aiocache.serializers import PickleSerializer
 
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 from utils.query_to_hash import req_to_hash
 
 
 @cached(ttl=5 * 60, serializer=PickleSerializer())
-async def api_data_to_dump(
-    api_json_data: dict, requestor_id: int, query_path_hash
-) -> dict:
+async def api_data_to_dump(api_json_data: dict,
+                           requestor_id: int,
+                           query_path_hash: str) -> dict:
     to_dump_data: dict = {}
-    all_configs: dict = await ActionsOnUsers.get_all_configs(requestor_id)
-    max_size: int = all_configs["max_size"]
+    all_configs: UserConfig = UsersConfigDAO().get_all_configs(requestor_id)
+    max_size: int = all_configs.max_size
 
     os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 

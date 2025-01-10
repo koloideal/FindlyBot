@@ -7,9 +7,7 @@ class UsersConfigDAO:
         self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
 
     def config_user_to_database(self, params: dict[str, str | int]) -> None:
-        query: str = '''INSERT OR IGNORE INTO 
-                        users_config(id, only_new, max_size, language, price_filter, name_filter) 
-                        VALUES(?, ?, ?, ?, ?, ?)'''
+        query: str = '''INSERT IGNORE INTO users_config(user_id, only_new, max_size, language, price_filter, name_filter) VALUES(?, ?, ?, ?, ?, ?)'''
         with self.database as cursor:
             cursor.execute(query, params)
 

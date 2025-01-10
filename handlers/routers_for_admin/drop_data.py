@@ -2,7 +2,8 @@ from logging import Logger
 from aiogram.types import Message
 from polib import POFile, pofile
 
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 from utils.del_data_dirs import del_data_dirs
 from utils.make_dirs import make_dirs
 from utils.create_loggers import create_action_logger, create_main_logger
@@ -14,10 +15,10 @@ ru_msgs: POFile = pofile("locales/ru/drop_data.po")
 
 async def drop_data_rout(message: Message) -> None:
     user_id: int = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs: POFile = ru_msgs
         case "EN":
@@ -26,8 +27,8 @@ async def drop_data_rout(message: Message) -> None:
             msgs: POFile = en_msgs
 
     try:
-        await del_data_dirs()
-        await make_dirs()
+        del_data_dirs()
+        make_dirs()
     except FileNotFoundError:
         pass
     else:

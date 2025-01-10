@@ -8,6 +8,7 @@ from aiogram import Bot, Dispatcher
 import asyncio
 from utils.telethon_authorized import telethon_authorized
 from utils.get_config import GetConfig
+from utils.initial_database_setup import initial_database_setup
 from utils.create_loggers import create_main_logger, create_action_logger
 
 
@@ -27,7 +28,8 @@ action_logger: Logger = create_action_logger()
 
 
 async def main() -> None:
-    await make_dirs()
+    make_dirs()
+    initial_database_setup()
 
     if not is_authorized_telethon:
         await telethon_authorized(api_id, api_hash)

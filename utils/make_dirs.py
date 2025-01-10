@@ -1,7 +1,7 @@
 import os
 
 
-async def make_dirs() -> None:
+def make_dirs() -> None:
     paths = (
         "database",
         "local_data/images",

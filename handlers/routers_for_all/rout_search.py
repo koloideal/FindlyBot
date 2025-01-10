@@ -1,5 +1,6 @@
 from aiogram.types import Message
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 from aiogram.fsm.context import FSMContext
 from states.user_states import WaitQuery
 from utils.check_responses import check_responses
@@ -11,11 +12,10 @@ ru_msgs = polib.pofile("locales/ru/rout_search.po")
 
 async def search_rout(message: Message, state: FSMContext) -> None:
     user_id = message.from_user.id
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    language: str = user_config.language
 
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
-
-    match lang:
+    match language:
         case "RU":
             msgs = ru_msgs
         case "EN":

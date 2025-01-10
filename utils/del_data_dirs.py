@@ -2,7 +2,7 @@ import shutil
 import os
 
 
-async def del_data_dirs() -> None:
+def del_data_dirs() -> None:
     paths = ["database", "local_data/products_data"]
     folders = [
         f"local_data/images/{e}"

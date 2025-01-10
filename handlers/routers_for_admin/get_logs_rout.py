@@ -3,7 +3,8 @@ from aiogram.types import Message
 from aiogram.types import FSInputFile
 from datetime import datetime
 from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 import polib
 from polib import POFile
 
@@ -17,10 +18,10 @@ action_logger: Logger = getLogger('action_logger')
 async def get_logs_rout(message: Message) -> None:
     user_id: int = message.from_user.id
     command: str = message.text.strip()
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs: POFile = ru_msgs
         case "EN":
