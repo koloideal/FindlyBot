@@ -50,7 +50,7 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
             msgs: POFile = en_msgs
         case _:
             msgs: POFile = en_msgs
-    admins_id: list[int] = await ActionsOnAdmin.get_admins()
+    admins_id: list[int] = await ActionsOnAdmin.get_admins(only_ids=True)
     try:
         await client.start()
 

@@ -34,7 +34,7 @@ async def get_username_for_del_admin_rout(message: Message, state: FSMContext) -
         case _:
             msgs: POFile = en_msgs
     try:
-        admin_ids: list[int] = await ActionsOnAdmin.get_admins()
+        admin_ids: list[int] = await ActionsOnAdmin.get_admins(only_ids=True)
         await client.start()
 
         if message.text.startswith("t.me/") or message.text.startswith("https://t.me/"):

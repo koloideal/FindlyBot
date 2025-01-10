@@ -29,7 +29,7 @@ async def get_admins_rout(message: Message) -> None:
         case _:
             msgs: POFile = en_msgs
 
-    all_admins: list[tuple] = await ActionsOnAdmin.get_admins(False)
+    all_admins: list[dict[str | int]] = await ActionsOnAdmin.get_admins(only_ids=False)
 
     if not all_admins:
         await message.answer(msgs.find("empty_database_msg").msgstr)

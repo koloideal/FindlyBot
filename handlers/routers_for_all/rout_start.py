@@ -11,7 +11,7 @@ ru_msgs = polib.pofile("locales/ru/rout_start.po")
 async def start_rout(message: Message) -> None:
 
     user_id: int = message.from_user.id
-    admins_ids: list = await ActionsOnAdmin.get_admins()
+    admins_ids: list = await ActionsOnAdmin.get_admins(only_ids=True)
     creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
 
     await ActionsOnUsers.config_user_to_database(user_id)
