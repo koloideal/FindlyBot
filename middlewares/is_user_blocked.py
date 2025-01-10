@@ -1,7 +1,9 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig, BannedUser
+from database_func.users_config_dao import UsersConfigDAO
+from database_func.banned_users_dao import BannedUsersDAO
 import polib
 
 en_msgs = polib.pofile("locales/en/is_user_blocked.po")
@@ -15,14 +17,17 @@ class RejectBlockedUserMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
-        banned_users_ids = await ActionsOnUsers.get_banned_users()
-        user_id = event.from_user.id
-        await ActionsOnUsers.config_user_to_database(user_id)
+        banned_users: list[BannedUser] = BannedUsersDAO().get_banned_users()
+        banned_users_ids: list[int] = [banned_user.user_id for banned_user in banned_users]
+        user_id: int = event.from_user.id
 
-        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-        lang: str = user_config["language"]
+        params: dict[str, int | str] = UserConfig.get_default_user_config(user_id=user_id)
+        UsersConfigDAO().config_user_to_database(params=params)
 
-        match lang:
+        user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+        language: str = user_config.language
+
+        match language:
             case "RU":
                 msgs = ru_msgs
             case "EN":

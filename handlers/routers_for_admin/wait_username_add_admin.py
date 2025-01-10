@@ -59,7 +59,7 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
         my_config: UserConfig = user_config.get_all_configs(user_id=my_id)
         language: str = my_config.language
 
-        params: dict[str, str | int] = UserConfig.default_user_config(admin_id)
+        params: dict[str, str | int] = UserConfig.get_default_user_config(admin_id)
 
         user_config.config_user_to_database(params=params)
         new_admin_config: UserConfig = user_config.get_all_configs(user_id=admin_id)

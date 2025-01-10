@@ -1,6 +1,7 @@
 from logging import Logger, getLogger
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from database_func.database_models import BannedUser, UserConfig
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameNotOccupiedError
@@ -25,8 +26,8 @@ action_logger: Logger = getLogger('action_logger')
 
 async def get_username_for_unban_user_rout(message: Message, state: FSMContext) -> None:
     admin_id: int = message.from_user.id
-    user_config: dict = UsersConfigDAO().get_all_configs(user_id=admin_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=admin_id)
+    lang: str = user_config.language
 
     match lang:
         case "RU":
@@ -62,7 +63,8 @@ async def get_username_for_unban_user_rout(message: Message, state: FSMContext) 
         await message.answer(msgs.find("invalid_username_msg").msgstr)
 
     else:
-        banned_users_ids: list[int] = BannedUsersDAO().get_banned_users()
+        banned_users: list[BannedUser] = BannedUsersDAO().get_banned_users()
+        banned_users_ids: list[int] = [banned_user.user_id for banned_user in banned_users]
         is_banned: bool = user_id in banned_users_ids
 
         if is_banned:

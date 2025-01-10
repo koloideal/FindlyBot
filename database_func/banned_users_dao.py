@@ -6,15 +6,19 @@ class BannedUsersDAO:
     def __init__(self):
         self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
 
-    def get_banned_users(self) -> list[int]:
-        query: str = '''SELECT id FROM banned_users'''
+    def get_banned_users(self) -> list[BannedUser]:
+        query: str = '''SELECT user_id, first_name, username FROM banned_users'''
         with self.database as cursor:
             cursor.execute(query)
-            banned_users_id = cursor.fetchall()
+            banned_users_data = cursor.fetchall()
 
-        banned_users_id = [x[0] for x in banned_users_id]
+        banned_users: list[BannedUser] = [
+            BannedUser(user_id=banned_user[0],
+                       first_name=banned_user[1],
+                       username=banned_user[2]) for banned_user in banned_users_data
+        ]
 
-        return banned_users_id
+        return banned_users
 
     def ban_user(self, banned_user: BannedUser) -> None:
         query: str = '''INSERT OR IGNORE INTO banned_users(user_id, first_name, username) VALUES(?, ?, ?)'''

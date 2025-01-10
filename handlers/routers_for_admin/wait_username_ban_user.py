@@ -1,5 +1,4 @@
 from logging import Logger, getLogger
-
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from telethon.sync import TelegramClient
@@ -7,9 +6,10 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.helpers import TotalList
 import polib
 from polib import POFile
-
-from database_func.users_dao import ActionsOnUsers
-from database_func.admins_dao import ActionsOnAdmin
+from database_func.banned_users_dao import BannedUsersDAO
+from database_func.database_models import UserConfig, Admin, BannedUser
+from database_func.users_config_dao import UsersConfigDAO
+from database_func.admins_dao import AdminsDAO
 from utils.get_config import GetConfig
 from utils.del_user_searching_data import del_user_searching_data
 from exceptions.users_exceptions import (
@@ -34,8 +34,8 @@ action_logger: Logger = getLogger('action_logger')
 async def get_username_for_ban_user_rout(message: Message, state: FSMContext) -> None:
     raw_input_username: str = message.text.strip()
     admin_id: int = message.from_user.id
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=admin_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=admin_id)
+    language: str = user_config.language
 
     finished_input_username: str = (
         raw_input_username
@@ -43,14 +43,15 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
         else raw_input_username[1:]
     )
 
-    match lang:
+    match language:
         case "RU":
             msgs: POFile = ru_msgs
         case "EN":
             msgs: POFile = en_msgs
         case _:
             msgs: POFile = en_msgs
-    admins_id: list[int] = await ActionsOnAdmin.get_admins(only_ids=True)
+    admins: list[Admin] = AdminsDAO().get_admins()
+    admins_id: list[int] = [admin.user_id for admin in admins]
     try:
         await client.start()
 
@@ -86,22 +87,18 @@ async def get_username_for_ban_user_rout(message: Message, state: FSMContext) ->
     else:
         await del_user_searching_data(user_id)
         if user_id in admins_id:
-            await ActionsOnAdmin.del_admin(
-                ex_admin={"id": user_id, "username": username},
-            )
+            AdminsDAO().del_admin(admin_id=user_id)
             await message.answer(
                 msgs.find("del_admin_msg").msgstr.format(
                     finished_input_username=finished_input_username
                 )
             )
-        await ActionsOnUsers.ban_user(
-            future_ban_user={
-                "id": user_id,
-                "first_name": first_name,
-                "last_name": last_name,
-                "username": username,
-            },
-        )
+
+        banned_user: BannedUser = BannedUser(user_id=user_id,
+                                             first_name=first_name,
+                                             username=username)
+        BannedUsersDAO().ban_user(banned_user=banned_user)
+
         action_logger.warning(f"User $ @{finished_input_username} $ banned by admin $ {admin_id} $")
         await message.answer(
             msgs.find("user_banned_msg").msgstr.format(

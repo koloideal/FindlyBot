@@ -1,7 +1,8 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message
-from database_func.users_dao import ActionsOnUsers
+from database_func.database_models import UserConfig
+from database_func.users_config_dao import UsersConfigDAO
 import polib
 from utils.get_config import GetConfig
 
@@ -19,13 +20,15 @@ class RejectNotCreatorMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
+
         user_id = event.from_user.id
-        await ActionsOnUsers.config_user_to_database(user_id)
+        params: dict[str, int | str] = UserConfig.get_default_user_config(user_id=user_id)
+        UsersConfigDAO().config_user_to_database(params=params)
 
-        user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-        lang: str = user_config["language"]
+        user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+        language: str = user_config.language
 
-        match lang:
+        match language:
             case "RU":
                 msgs = ru_msgs
             case "EN":

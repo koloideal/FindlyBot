@@ -10,38 +10,31 @@ class UsersConfigDAO:
         query: str = '''INSERT OR IGNORE INTO 
                         users_config(id, only_new, max_size, language, price_filter, name_filter) 
                         VALUES(?, ?, ?, ?, ?, ?)'''
-
         with self.database as cursor:
             cursor.execute(query, params)
 
         return
 
-    def change_only_new_config(self, callback_data: str, user_id: int) -> None:
-        only_new: str = callback_data.split('_')[-1].lower()
-
+    def change_only_new_config(self, only_new: str, user_id: int) -> None:
         query: str = '''UPDATE users_config SET only_new = ? WHERE user_id = ?'''
-
         with self.database as cursor:
             cursor.execute(query, (only_new, user_id))
 
-    def change_name_filter_config(self, callback_data: str, user_id: int) -> None:
-        name_filter: str = callback_data.split('_')[-1].lower()
+    def change_name_filter_config(self, name_filter: str, user_id: int) -> None:
         query: str = '''UPDATE users_config SET name_filter = ? WHERE user_id = ?'''
         with self.database as cursor:
             cursor.execute(query, (name_filter, user_id))
 
         return
 
-    def change_price_filter_config(self, callback_data: str, user_id: int) -> None:
-        price_filter: str = callback_data.split('_')[-1].lower()
+    def change_price_filter_config(self, price_filter: str, user_id: int) -> None:
         query: str = '''UPDATE users_config SET price_filter = ? WHERE user_id = ?'''
         with self.database as cursor:
             cursor.execute(query, (price_filter, user_id))
 
         return
 
-    def change_lang_config(self, callback_data: str, user_id: int) -> None:
-        language: str = callback_data.split('_')[-1]
+    def change_lang_config(self, language: str, user_id: int) -> None:
         query: str = '''UPDATE users_config SET language = ? WHERE user_id = ?'''
         with self.database as cursor:
             cursor.execute(query, (language, user_id))

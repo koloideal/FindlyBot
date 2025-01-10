@@ -42,7 +42,7 @@ class UserConfig:
         self.name_filter: str = name_filter
 
     @staticmethod
-    def default_user_config(user_id) -> dict[str, str | int]:
+    def get_default_user_config(user_id) -> dict[str, str | int]:
         params: dict[str, str | int] = {"id": user_id,
                                         "only_new": "on",
                                         "max_size": "10",

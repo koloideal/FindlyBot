@@ -1,5 +1,7 @@
 import json
 import os
+from html import escape
+import polib
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
@@ -10,13 +12,13 @@ from aiogram.types import (
     InlineKeyboardMarkup,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+from database_func.database_models import UserConfig
 from states.user_states import WaitMaxSize
-from database_func.users_dao import ActionsOnUsers
+from database_func.users_config_dao import UsersConfigDAO
 from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
-from html import escape
-import polib
 
 
 en_msgs = polib.pofile("locales/en/callback_query.po")
@@ -38,10 +40,10 @@ async def callback_query_swipe_items(callback: CallbackQuery,
     )[0][:-5]
     query = callback_data.query
 
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=requestor_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=requestor_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs = ru_msgs
         case "EN":
@@ -143,19 +145,24 @@ async def callback_query_swipe_items(callback: CallbackQuery,
 async def callback_query_change_config(callback: CallbackQuery):
     callback_data = callback.data
     user_id = callback.from_user.id
+    user_config: UsersConfigDAO = UsersConfigDAO()
     match '_'.join(callback_data.split('_')[:-1]):
         case 'only_new':
-            await ActionsOnUsers.change_only_new_config(callback_data=callback_data,
-                                                        user_id=user_id)
+            only_new: str = callback_data.split('_')[-1].lower()
+            user_config.change_only_new_config(only_new=only_new,
+                                               user_id=user_id)
         case 'lang':
-            await ActionsOnUsers.change_lang_config(callback_data=callback_data,
-                                                    user_id=user_id)
+            language: str = callback_data.split('_')[-1]
+            user_config.change_lang_config(language=language,
+                                           user_id=user_id)
         case 'name_filter':
-            await ActionsOnUsers.change_name_filter_config(callback_data=callback_data,
-                                                           user_id=user_id)
+            name_filter: str = callback_data.split('_')[-1].lower()
+            user_config.change_name_filter_config(name_filter=name_filter,
+                                                  user_id=user_id)
         case 'price_filter':
-            await ActionsOnUsers.change_price_filter_config(callback_data=callback_data,
-                                                            user_id=user_id)
+            price_filter: str = callback_data.split('_')[-1].lower()
+            user_config.change_price_filter_config(price_filter=price_filter,
+                                                   user_id=user_id)
 
     on_or_off: dict = {
         'ON': 'OFF',
@@ -166,10 +173,10 @@ async def callback_query_change_config(callback: CallbackQuery):
         'RU': 'lang_EN'
     }
 
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = user_config.get_all_configs(user_id=user_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs = ru_msgs
         case "EN":
@@ -178,21 +185,21 @@ async def callback_query_change_config(callback: CallbackQuery):
             msgs = en_msgs
 
     lang_msg = msgs.find(f"lang_msg").msgstr
-    lang_callback_data = en_or_ru[lang]
+    lang_callback_data = en_or_ru[language]
 
-    only_new: str = user_config["only_new"]
+    only_new: str = user_config.only_new
     only_new_msg = msgs.find(f"only_new_{only_new}_msg").msgstr
     only_new_callback_data = "only_new_" + on_or_off[only_new.upper()]
 
-    name_filter: str = user_config["name_filter"]
+    name_filter: str = user_config.name_filter
     name_filter_msg = msgs.find(f"name_filter_{name_filter}_msg").msgstr
     name_filter_callback_data = "name_filter_" + on_or_off[name_filter.upper()]
 
-    price_filter: str = user_config["price_filter"]
+    price_filter: str = user_config.price_filter
     price_filter_msg = msgs.find(f"price_filter_{price_filter}_msg").msgstr
     price_filter_callback_data = "price_filter_" + on_or_off[price_filter.upper()]
 
-    max_size: int = user_config["max_size"]
+    max_size: int = user_config.max_size
     max_size_msg = msgs.find("ch_max_size_msg").msgstr
 
     buttons: list = [
@@ -231,10 +238,10 @@ async def callback_query_change_config(callback: CallbackQuery):
 async def callback_query_max_size(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size <= 40")
     user_id = int(callback.from_user.id)
-    user_config: dict = await ActionsOnUsers.get_all_configs(user_id=user_id)
-    lang: str = user_config["language"]
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    language: str = user_config.language
 
-    match lang:
+    match language:
         case "RU":
             msgs = ru_msgs
         case "EN":
