@@ -5,8 +5,8 @@ import requests
 from aiocache import cached
 from aiocache.serializers import PickleSerializer
 
-from database_func.database_models import UserConfig
-from database_func.users_config_dao import UsersConfigDAO
+from database.database_models import UserConfig
+from database.dao.users_config_dao import UsersConfigDAO
 from utils.query_to_hash import req_to_hash
 
 

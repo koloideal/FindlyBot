@@ -1,12 +1,12 @@
 from logging import Logger, getLogger
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database_func.database_models import BannedUser, UserConfig
+from database.database_models import BannedUser, UserConfig
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameNotOccupiedError
-from database_func.banned_users_dao import BannedUsersDAO
-from database_func.users_config_dao import UsersConfigDAO
+from database.dao.banned_users_dao import BannedUsersDAO
+from database.dao.users_config_dao import UsersConfigDAO
 from telethon.helpers import TotalList
 import polib
 from polib import POFile

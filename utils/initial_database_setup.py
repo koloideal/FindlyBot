@@ -1,5 +1,5 @@
-from database_func.initialize_database_dao import InitializeDatabaseDAO
-from database_func.connect_to_database import DatabaseConnectionSingleton
+from database.dao.initialize_database_dao import InitializeDatabaseDAO
+from database.connect_to_database import DatabaseConnectionSingleton
 from utils.get_config import GetConfig
 
 

@@ -13,9 +13,9 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from database_func.database_models import UserConfig
+from database.database_models import UserConfig
 from states.user_states import WaitMaxSize
-from database_func.users_config_dao import UsersConfigDAO
+from database.dao.users_config_dao import UsersConfigDAO
 from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData

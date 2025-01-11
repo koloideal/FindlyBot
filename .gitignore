@@ -5,7 +5,7 @@ handlers/routers_for_all/__pycache__
 handlers/routers_for_admin/__pycache__
 handlers/__pycache__
 get_api_data/__pycache__
-database_func/__pycache__
+database/__pycache__
 states/__pycache__
 session.session
 secret_data/main_logs.log

@@ -4,12 +4,12 @@ import re
 import time
 import typing
 import polib
-from database_func.database_models import UserConfig
+from database.database_models import UserConfig
 from exceptions.request_exceptions import TooLongQueryForSearchError
 from ..search_command_funcs.api_data_to_dump import api_data_to_dump
 from ..search_command_funcs.forming_response import forming_response
 from aiogram.types import Message
-from database_func.users_config_dao import UsersConfigDAO
+from database.dao.users_config_dao import UsersConfigDAO
 from aiogram.fsm.context import FSMContext
 from httpx import Response, HTTPError
 from get_api_data.get_api_data import get_api_data
