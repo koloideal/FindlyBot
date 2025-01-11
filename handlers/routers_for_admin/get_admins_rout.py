@@ -6,9 +6,9 @@ from datetime import datetime
 import json
 import os
 
-from database_func.database_models import UserConfig, Admin, SerializerDatabaseModels
-from database_func.users_config_dao import UsersConfigDAO
-from database_func.admins_dao import AdminsDAO
+from database.database_models import UserConfig, Admin, SerializerDatabaseModels
+from database.dao.users_config_dao import UsersConfigDAO
+from database.dao.admins_dao import AdminsDAO
 
 if typing.TYPE_CHECKING:
     from _typeshed import SupportsWrite

@@ -1,13 +1,13 @@
-from typing import Any
 from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database_func.database_models import Admin, UserConfig
-from database_func.users_config_dao import UsersConfigDAO
+from telethon.tl.types import User
+from database.database_models import UserConfig, Admin
+from database.dao.users_config_dao import UsersConfigDAO
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError, UsernameOccupiedError
-from database_func.admins_dao import AdminsDAO
+from database.dao.admins_dao import AdminsDAO
 from telethon.helpers import TotalList
 from exceptions.users_exceptions import InvalidUsernameForAddAdmin
 import polib
@@ -40,29 +40,33 @@ async def get_username_for_add_admin_rout(message: Message, state: FSMContext) -
             else raw_input_username[1:]
         )
 
-        admin: TotalList = await client.get_participants(finished_input_username)
-        admin: Any | Admin = admin[0]
-        admin_id = admin.user_id
+        tl_admins: TotalList = await client.get_participants(finished_input_username)
+        tl_admin: User = tl_admins[0]
 
-        if admin.bot or len(admin) != 1:
+        if tl_admin.bot or len(tl_admins) != 1:
             raise InvalidUsernameForAddAdmin(raw_input_username)
 
     except (UsernameInvalidError, UsernameOccupiedError, ValueError, InvalidUsernameForAddAdmin):
         await message.answer(en_msgs.find("invalid_username_msg").msgstr)
 
     else:
+        admin_id = tl_admin.id
+        admin = Admin(user_id=admin_id,
+                      first_name=tl_admin.first_name,
+                      last_name=tl_admin.last_name,
+                      username=tl_admin.username)
 
         AdminsDAO().add_admin(admin=admin)
-        user_config: UsersConfigDAO = UsersConfigDAO()
+        user_config_dao: UsersConfigDAO = UsersConfigDAO()
 
         my_id: int = message.from_user.id
-        my_config: UserConfig = user_config.get_all_configs(user_id=my_id)
+        my_config: UserConfig = user_config_dao.get_all_configs(user_id=my_id)
         language: str = my_config.language
 
-        params: dict[str, str | int] = UserConfig.get_default_user_config(admin_id)
+        params: tuple = UserConfig.get_default_user_config(admin_id)
 
-        user_config.config_user_to_database(params=params)
-        new_admin_config: UserConfig = user_config.get_all_configs(user_id=admin_id)
+        user_config_dao.config_user_to_database(params=params)
+        new_admin_config: UserConfig = user_config_dao.get_all_configs(user_id=admin_id)
         new_admin_lang: str = new_admin_config.language
 
         match language:

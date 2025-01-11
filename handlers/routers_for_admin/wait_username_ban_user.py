@@ -6,10 +6,10 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.helpers import TotalList
 import polib
 from polib import POFile
-from database_func.banned_users_dao import BannedUsersDAO
-from database_func.database_models import UserConfig, Admin, BannedUser
-from database_func.users_config_dao import UsersConfigDAO
-from database_func.admins_dao import AdminsDAO
+from database.dao.banned_users_dao import BannedUsersDAO
+from database.database_models import UserConfig, Admin, BannedUser
+from database.dao.users_config_dao import UsersConfigDAO
+from database.dao.admins_dao import AdminsDAO
 from utils.get_config import GetConfig
 from utils.del_user_searching_data import del_user_searching_data
 from exceptions.users_exceptions import (

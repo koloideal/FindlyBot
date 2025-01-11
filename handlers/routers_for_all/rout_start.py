@@ -1,8 +1,8 @@
 from aiogram.types import Message
-from database_func.database_models import Admin, UserConfig, User
-from database_func.users_dao import UsersDAO
-from database_func.users_config_dao import UsersConfigDAO
-from database_func.admins_dao import AdminsDAO
+from database.database_models import Admin, UserConfig, User
+from database.dao.users_dao import UsersDAO
+from database.dao.users_config_dao import UsersConfigDAO
+from database.dao.admins_dao import AdminsDAO
 from utils.get_config import GetConfig
 import polib
 
@@ -17,13 +17,7 @@ async def start_rout(message: Message) -> None:
     admins_ids: list[int] = [x.user_id for x in admins]
     creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
 
-    params: dict[str, str | int] = {"id": user_id,
-                                    "only_new": "on",
-                                    "max_size": "10",
-                                    "language": "EN",
-                                    "price_filter": "on",
-                                    "name_filter": "on"}
-
+    params: tuple = UserConfig.get_default_user_config(user_id)
     users_config_dao.config_user_to_database(params=params)
 
     user_config: UserConfig = users_config_dao.get_all_configs(user_id=user_id)
