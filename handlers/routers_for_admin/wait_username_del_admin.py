@@ -2,12 +2,12 @@ from typing import Any
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from polib import POFile
-from database_func.database_models import UserConfig, Admin
-from database_func.users_config_dao import UsersConfigDAO
+from database.database_models import UserConfig, Admin
+from database.dao.users_config_dao import UsersConfigDAO
 from utils.get_config import GetConfig
 from telethon.sync import TelegramClient
 from telethon.errors.rpcerrorlist import UsernameInvalidError
-from database_func.admins_dao import AdminsDAO
+from database.dao.admins_dao import AdminsDAO
 from telethon.helpers import TotalList
 import polib
 

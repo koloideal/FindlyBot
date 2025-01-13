@@ -1,9 +1,9 @@
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject, Message
-from database_func.database_models import UserConfig, BannedUser
-from database_func.users_config_dao import UsersConfigDAO
-from database_func.banned_users_dao import BannedUsersDAO
+from database.database_models import UserConfig, BannedUser
+from database.dao.users_config_dao import UsersConfigDAO
+from database.dao.banned_users_dao import BannedUsersDAO
 import polib
 
 en_msgs = polib.pofile("locales/en/is_user_blocked.po")
@@ -21,7 +21,7 @@ class RejectBlockedUserMiddleware(BaseMiddleware):
         banned_users_ids: list[int] = [banned_user.user_id for banned_user in banned_users]
         user_id: int = event.from_user.id
 
-        params: dict[str, int | str] = UserConfig.get_default_user_config(user_id=user_id)
+        params: tuple = UserConfig.get_default_user_config(user_id=user_id)
         UsersConfigDAO().config_user_to_database(params=params)
 
         user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)

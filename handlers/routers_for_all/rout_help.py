@@ -1,7 +1,7 @@
 from aiogram.types import Message
 import polib
-from database_func.database_models import UserConfig
-from database_func.users_config_dao import UsersConfigDAO
+from database.database_models import UserConfig
+from database.dao.users_config_dao import UsersConfigDAO
 
 en_msgs = polib.pofile("locales/en/rout_help.po")
 ru_msgs = polib.pofile("locales/ru/rout_help.po")

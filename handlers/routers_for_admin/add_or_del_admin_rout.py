@@ -1,8 +1,8 @@
 from aiogram import types
-from database_func.database_models import UserConfig
+from database.database_models import UserConfig
 from states.admin_states import AdminState
 from aiogram.fsm.context import FSMContext
-from database_func.users_config_dao import UsersConfigDAO
+from database.dao.users_config_dao import UsersConfigDAO
 import polib
 from polib import POFile
 
