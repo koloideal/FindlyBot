@@ -10,7 +10,6 @@ states/__pycache__
 session.session
 secret_data/main_logs.log
 secret_data/action_logs.log
-database
 local_data/images/*
 local_data/products_data/*
 handlers/search_command_funcs/__pycache__/
