@@ -8,15 +8,18 @@ host: str = config["host"]
 user: int = config["user"]
 password: str = config["password"]
 database: str = config["database"]
+port: int = config["port"]
 
 
 def initial_database_setup() -> None:
     InitializeDatabaseDAO.create_database(host=host,
                                           user=user,
-                                          password=password)
+                                          password=password,
+                                          port=port)
     DatabaseConnectionSingleton(host=host,
                                 user=user,
                                 password=password,
-                                database=database)
+                                database=database,
+                                port=port)
     InitializeDatabaseDAO().create_tables()
 
