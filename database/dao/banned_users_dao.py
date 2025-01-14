@@ -1,5 +1,6 @@
 from database.connect_to_database import DatabaseConnectionSingleton
 from database.database_models import BannedUser
+from database.dto.banned_users_dto import BannedUsersDTO
 
 
 class BannedUsersDAO:
@@ -12,13 +13,7 @@ class BannedUsersDAO:
             cursor.execute(query)
             banned_users_data = cursor.fetchall()
 
-        banned_users: list[BannedUser] = [
-            BannedUser(user_id=banned_user[0],
-                       first_name=banned_user[1],
-                       username=banned_user[2]) for banned_user in banned_users_data
-        ]
-
-        return banned_users
+        return BannedUsersDTO.get_admins(banned_users_data=banned_users_data)
 
     def ban_user(self, banned_user: BannedUser) -> None:
         query: str = '''INSERT IGNORE INTO banned_users(user_id, first_name, username) VALUES(?, ?, ?)'''

@@ -1,5 +1,6 @@
 from database.connect_to_database import DatabaseConnectionSingleton
 from database.database_models import UserConfig
+from database.dto.users_config_dto import UsersConfigDTO
 
 
 class UsersConfigDAO:
@@ -45,16 +46,7 @@ class UsersConfigDAO:
             cursor.execute(query, (user_id,))
             config = cursor.fetchone()
 
-        user_config = UserConfig(
-            user_id = user_id,
-            only_new = config[0],
-            max_size = config[1],
-            language = config[2],
-            price_filter = config[3],
-            name_filter = config[4]
-        )
-
-        return user_config
+        return UsersConfigDTO.get_all_configs(config=config, user_id=user_id)
 
     def change_max_size_config(self, user_id: int, max_size: int) -> None:
         query: str = '''UPDATE users_config SET max_size = ? WHERE user_id = ?'''

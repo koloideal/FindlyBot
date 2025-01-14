@@ -1,5 +1,6 @@
 from database.connect_to_database import DatabaseConnectionSingleton
 from database.database_models import Admin
+from database.dto.admins_dto import AdminsDTO
 
 
 class AdminsDAO:
@@ -29,11 +30,4 @@ class AdminsDAO:
             cursor.execute(query)
             admins_data = cursor.fetchall()
 
-        admins: list[Admin] = [
-            Admin(user_id = admin[0],
-                  first_name = admin[1],
-                  last_name = admin[2],
-                  username = admin[3]) for admin in admins_data
-        ]
-
-        return admins
+        return AdminsDTO.get_admins(admins_data=admins_data)
