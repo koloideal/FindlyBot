@@ -12,9 +12,12 @@ class DatabaseConnectionSingleton:
     _instance = None
 
     def __new__(cls, **kwargs):
-
         if cls._instance is None:
-            if not all(kwargs.values()) or (len(set(kwargs.keys()) - {'host', 'password', 'user', 'database', 'port'}) > 0):
+            if not all(kwargs.values()) or (len(set(kwargs.keys()) - {'host',
+                                                                      'password',
+                                                                      'user',
+                                                                      'database',
+                                                                      'port'}) > 0):
                 raise TypeError("Incorrect arguments in initializing")
             else:
                 cls._kwargs = kwargs
@@ -33,6 +36,7 @@ class DatabaseConnectionSingleton:
         return cls._instance
 
     def __enter__(self):
+        print("entering")
         self.connection = mysql.connector.connect(**DatabaseConnectionSingleton._kwargs)
         self.cursor = self.connection.cursor()
         return self.cursor

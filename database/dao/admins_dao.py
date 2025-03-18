@@ -8,7 +8,7 @@ class AdminsDAO:
         self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
 
     def add_admin(self, admin: Admin) -> None:
-        query: str = '''INSERT IGNORE INTO admins(user_id, first_name, last_name, username) VALUES(?, ?, ?, ?)'''
+        query: str = '''INSERT IGNORE INTO admins(user_id, first_name, last_name, username) VALUES(%s, %s, %s, %s)'''
         with self.database as cursor:
             cursor.execute(query, (admin.user_id,
                                    admin.first_name,
@@ -18,7 +18,7 @@ class AdminsDAO:
         return
 
     def del_admin(self, admin_id: int) -> None:
-        query: str = '''DELETE FROM admins WHERE user_id = ?'''
+        query: str = '''DELETE FROM admins WHERE user_id = %s'''
         with self.database as cursor:
             cursor.execute(query, (admin_id,))
 

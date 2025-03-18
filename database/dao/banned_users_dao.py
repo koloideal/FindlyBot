@@ -16,7 +16,7 @@ class BannedUsersDAO:
         return BannedUsersDTO.get_admins(banned_users_data=banned_users_data)
 
     def ban_user(self, banned_user: BannedUser) -> None:
-        query: str = '''INSERT IGNORE INTO banned_users(user_id, first_name, username) VALUES(?, ?, ?)'''
+        query: str = '''INSERT IGNORE INTO banned_users(user_id, first_name, username) VALUES(%s, %s, %s)'''
         with self.database as cursor:
             cursor.execute(query, (banned_user.user_id,
                                    banned_user.first_name,
@@ -24,7 +24,7 @@ class BannedUsersDAO:
         return
 
     def unban_user(self, user_id: int) -> None:
-        query: str = '''DELETE FROM banned_users WHERE user_id = ?'''
+        query: str = '''DELETE FROM banned_users WHERE user_id = %s'''
         with self.database as cursor:
             cursor.execute(query, (user_id,))
 

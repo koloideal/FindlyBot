@@ -48,10 +48,10 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
         os.makedirs(f"local_data/products_data/{requestor_id}", exist_ok=True)
         os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
 
-        max_size: int = user_config["max_size"]
-        only_new: str = user_config["only_new"]
-        price_filter: str = user_config["price_filter"]
-        name_filter: str = user_config["name_filter"]
+        max_size: int = user_config.max_size
+        only_new: str = user_config.only_new
+        price_filter: str = user_config.price_filter
+        name_filter: str = user_config.name_filter
 
 
         api_data: Response = await get_api_data(
