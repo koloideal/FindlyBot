@@ -1,31 +1,29 @@
-from database.connect_to_database import DatabaseConnectionSingleton
+from database.connect_to_database import DatabaseConnection
 from database.database_models import BannedUser
 from database.dto.banned_users_dto import BannedUsersDTO
 
 
 class BannedUsersDAO:
     def __init__(self):
-        self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
+        self.database: DatabaseConnection = DatabaseConnection()
 
     def get_banned_users(self) -> list[BannedUser]:
-        query: str = '''SELECT user_id, first_name, username FROM banned_users'''
+        query: str = '''SELECT username FROM banned_users'''
         with self.database as cursor:
             cursor.execute(query)
-            banned_users_data = cursor.fetchall()
+            banned_users_data: list[tuple] = cursor.fetchall()
 
         return BannedUsersDTO.get_admins(banned_users_data=banned_users_data)
 
     def ban_user(self, banned_user: BannedUser) -> None:
-        query: str = '''INSERT IGNORE INTO banned_users(user_id, first_name, username) VALUES(%s, %s, %s)'''
+        query: str = '''INSERT IGNORE INTO banned_users(username) VALUES(%s)'''
         with self.database as cursor:
-            cursor.execute(query, (banned_user.user_id,
-                                   banned_user.first_name,
-                                   banned_user.username))
+            cursor.execute(query, (banned_user.username,))
         return
 
-    def unban_user(self, user_id: int) -> None:
-        query: str = '''DELETE FROM banned_users WHERE user_id = %s'''
+    def unban_user(self, username: str) -> None:
+        query: str = '''DELETE FROM banned_users WHERE username = %s'''
         with self.database as cursor:
-            cursor.execute(query, (user_id,))
+            cursor.execute(query, (username,))
 
         return

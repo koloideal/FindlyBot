@@ -6,6 +6,7 @@ from database.dao.users_config_dao import UsersConfigDAO
 from database.dao.banned_users_dao import BannedUsersDAO
 import polib
 
+
 en_msgs = polib.pofile("locales/en/is_user_blocked.po")
 ru_msgs = polib.pofile("locales/ru/is_user_blocked.po")
 
@@ -18,13 +19,13 @@ class RejectBlockedUserMiddleware(BaseMiddleware):
             data: Dict[str, Any]
     ) -> Any:
         banned_users: list[BannedUser] = BannedUsersDAO().get_banned_users()
-        banned_users_ids: list[int] = [banned_user.user_id for banned_user in banned_users]
-        user_id: int = event.from_user.id
+        banned_users_usernames: list[str] = [banned_user.username for banned_user in banned_users]
+        username: str = event.from_user.username
 
-        params: tuple = UserConfig.get_default_user_config(user_id=user_id)
+        params: tuple = UserConfig.get_default_user_config(username=username)
         UsersConfigDAO().config_user_to_database(params=params)
 
-        user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+        user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
         language: str = user_config.language
 
         match language:
@@ -35,7 +36,7 @@ class RejectBlockedUserMiddleware(BaseMiddleware):
             case _:
                 msgs = en_msgs
 
-        if user_id in banned_users_ids:
+        if username in banned_users_usernames:
             await event.answer(
                 msgs.find("banned_user_case_msg").msgstr,
                 disable_web_page_preview=True,

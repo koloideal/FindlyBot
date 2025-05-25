@@ -1,33 +1,30 @@
-from database.connect_to_database import DatabaseConnectionSingleton
+from database.connect_to_database import DatabaseConnection
 from database.database_models import Admin
 from database.dto.admins_dto import AdminsDTO
 
 
 class AdminsDAO:
     def __init__(self):
-        self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
+        self.database: DatabaseConnection = DatabaseConnection()
 
     def add_admin(self, admin: Admin) -> None:
-        query: str = '''INSERT IGNORE INTO admins(user_id, first_name, last_name, username) VALUES(%s, %s, %s, %s)'''
+        query: str = '''INSERT IGNORE INTO admins(username) VALUES(%s)'''
         with self.database as cursor:
-            cursor.execute(query, (admin.user_id,
-                                   admin.first_name,
-                                   admin.last_name,
-                                   admin.username))
+            cursor.execute(query, (admin.username,))
 
         return
 
-    def del_admin(self, admin_id: int) -> None:
-        query: str = '''DELETE FROM admins WHERE user_id = %s'''
+    def del_admin(self, username: str) -> None:
+        query: str = '''DELETE FROM admins WHERE username = %s'''
         with self.database as cursor:
-            cursor.execute(query, (admin_id,))
+            cursor.execute(query, (username,))
 
         return
 
     def get_admins(self) -> list[Admin]:
-        query: str = '''SELECT user_id, first_name, last_name, username FROM admins'''
+        query: str = '''SELECT username FROM admins'''
         with self.database as cursor:
             cursor.execute(query)
-            admins_data = cursor.fetchall()
+            admins_data: list[tuple] = cursor.fetchall()
 
         return AdminsDTO.get_admins(admins_data=admins_data)

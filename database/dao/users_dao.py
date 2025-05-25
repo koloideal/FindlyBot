@@ -1,10 +1,10 @@
-from database.connect_to_database import DatabaseConnectionSingleton
+from database.connect_to_database import DatabaseConnection
 from database.database_models import User
 
 
 class UsersDAO:
     def __init__(self):
-        self.database: DatabaseConnectionSingleton = DatabaseConnectionSingleton()
+        self.database: DatabaseConnection = DatabaseConnection()
 
     def user_to_database(self, user: User) -> None:
         query: str = '''INSERT IGNORE INTO users(user_id, first_name, username) VALUES(%s, %s, %s)'''

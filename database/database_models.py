@@ -1,11 +1,5 @@
 class Admin:
-    def __init__(self, user_id: int,
-                 first_name: str,
-                 last_name: str,
-                 username: str):
-        self.user_id: int = user_id
-        self.first_name: str = first_name
-        self.last_name: str = last_name
+    def __init__(self, username: str):
         self.username: str = username
 
 
@@ -19,22 +13,18 @@ class User:
 
 
 class BannedUser:
-    def __init__(self, user_id: int,
-                 first_name: str,
-                 username: str):
-        self.user_id: int = user_id
-        self.first_name: str = first_name
+    def __init__(self, username: str):
         self.username: str = username
 
 
 class UserConfig:
-    def __init__(self, user_id: int,
+    def __init__(self, username: str,
                  only_new: str,
                  max_size: int,
                  language: str,
                  price_filter: str,
                  name_filter: str):
-        self.user_id: int = user_id
+        self.username: str = username
         self.only_new: str = only_new
         self.max_size: int = max_size
         self.language: str = language
@@ -42,8 +32,8 @@ class UserConfig:
         self.name_filter: str = name_filter
 
     @staticmethod
-    def get_default_user_config(user_id) -> tuple:
-        params:tuple = (user_id, "on", 10, "EN", "on", "on")
+    def get_default_user_config(username: str) -> tuple:
+        params:tuple = (username, "on", 10, "EN", "on", "on")
         return params
 
 
@@ -53,9 +43,6 @@ class SerializerDatabaseModels:
         admins_dict: dict[str, list] = {'admins': []}
         for admin in list_of_admins:
             admins_dict['admins'].append({
-                'user_id': admin.user_id,
-                'first_name': admin.first_name,
-                'last_name': admin.last_name,
                 'username': admin.username
             })
 
@@ -78,8 +65,6 @@ class SerializerDatabaseModels:
         banned_users_dict: dict[str, list] = {'banned_users': []}
         for banned_user in list_of_banned_users:
             banned_users_dict['banned_users'].append({
-                'user_id': banned_user.user_id,
-                'first_name': banned_user.first_name,
                 'username': banned_user.username
             })
 

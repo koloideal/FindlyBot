@@ -9,18 +9,21 @@ import polib
 en_msgs = polib.pofile("locales/en/rout_start.po")
 ru_msgs = polib.pofile("locales/ru/rout_start.po")
 
+config = GetConfig.get_bot_config()
+creator_username: str = config["Settings"]["creator_username"]
+
 
 async def start_rout(message: Message) -> None:
     users_config_dao: UsersConfigDAO = UsersConfigDAO()
+    username: str = message.from_user.username
     user_id: int = message.from_user.id
     admins: list[Admin] = AdminsDAO().get_admins()
-    admins_ids: list[int] = [x.user_id for x in admins]
-    creator_id: int = int(GetConfig.get_bot_config()["Settings"]["creator_id"])
+    admins_usernames: list[str] = [x.username for x in admins]
 
-    params: tuple = UserConfig.get_default_user_config(user_id)
+    params: tuple = UserConfig.get_default_user_config(username)
     users_config_dao.config_user_to_database(params=params)
 
-    user_config: UserConfig = users_config_dao.get_all_configs(user_id=user_id)
+    user_config: UserConfig = users_config_dao.get_all_configs(username=username)
     lang: str = user_config.language
 
     match lang:
@@ -31,10 +34,10 @@ async def start_rout(message: Message) -> None:
         case _:
             msgs = en_msgs
 
-    case1: bool = user_id in admins_ids and user_id == creator_id
-    case2: bool = user_id not in admins_ids and user_id == creator_id
-    case3: bool = user_id in admins_ids and user_id != creator_id
-    case4: bool = user_id not in admins_ids and user_id != creator_id
+    case1: bool = username in admins_usernames and username == creator_username
+    case2: bool = username not in admins_usernames and username == creator_username
+    case3: bool = username in admins_usernames and username != creator_username
+    case4: bool = username not in admins_usernames and username != creator_username
 
     creator_case: bool = case1 or case2
     admin_case: bool = case3 and not (case1 or case2)

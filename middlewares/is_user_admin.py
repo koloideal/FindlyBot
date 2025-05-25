@@ -11,7 +11,7 @@ from utils.get_config import GetConfig
 config: dict = GetConfig.get_bot_config()
 en_msgs = polib.pofile("locales/en/is_user_admin.po")
 ru_msgs = polib.pofile("locales/ru/is_user_admin.po")
-creator_id: int = config["Settings"]["creator_id"]
+creator_username: str = config["Settings"]["creator_username"]
 
 
 class RejectNotAdminMiddleware(BaseMiddleware):
@@ -21,14 +21,14 @@ class RejectNotAdminMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
-        admin_ids: list[Admin] = AdminsDAO().get_admins()
-        admin_ids: list[int] = [x.user_id for x in admin_ids]
-        user_id = event.from_user.id
+        admins: list[Admin] = AdminsDAO().get_admins()
+        admins_usernames: list[str] = [x.username for x in admins]
+        username: str = event.from_user.username
 
-        params: tuple = UserConfig.get_default_user_config(user_id=user_id)
+        params: tuple = UserConfig.get_default_user_config(username=username)
         UsersConfigDAO().config_user_to_database(params=params)
 
-        user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+        user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
         language: str = user_config.language
 
         match language:
@@ -40,7 +40,7 @@ class RejectNotAdminMiddleware(BaseMiddleware):
                 msgs = en_msgs
         admin_commands = ['/ban_user', '/unban_user', '/get_main_logs', '/get_action_logs']
         if event.text.strip() in admin_commands:
-            if user_id in admin_ids or user_id == creator_id:
+            if username in admins_usernames or username == creator_username:
                 return await handler(event, data)
             else:
                 await event.answer(msgs.find("unknown_command_msg").msgstr)

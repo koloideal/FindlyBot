@@ -14,8 +14,8 @@ ru_msgs: POFile = polib.pofile("locales/ru/add_or_del_admin_rout.po")
 async def add_or_del_admin_rout(
     message: types.Message, del_or_add: str, state: FSMContext
 ) -> None:
-    user_id: int = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

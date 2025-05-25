@@ -1,5 +1,5 @@
 from database.dao.initialize_database_dao import InitializeDatabaseDAO
-from database.connect_to_database import DatabaseConnectionSingleton
+from database.connect_to_database import DatabaseConnection
 from utils.get_config import GetConfig
 
 
@@ -16,10 +16,10 @@ def initial_database_setup() -> None:
                                           user=user,
                                           password=password,
                                           port=port)
-    DatabaseConnectionSingleton(host=host,
-                                user=user,
-                                password=password,
-                                database=database,
-                                port=port)
+    DatabaseConnection(host=host,
+                       user=user,
+                       password=password,
+                       database=database,
+                       port=port)
     InitializeDatabaseDAO().create_tables()
 
