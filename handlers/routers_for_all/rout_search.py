@@ -11,8 +11,8 @@ ru_msgs = polib.pofile("locales/ru/rout_search.po")
 
 
 async def search_rout(message: Message, state: FSMContext) -> None:
-    user_id = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:
@@ -23,7 +23,7 @@ async def search_rout(message: Message, state: FSMContext) -> None:
         case _:
             msgs = en_msgs
 
-    is_full_responses = await check_responses(user_id)
+    is_full_responses = await check_responses(username)
     if is_full_responses:
         await message.answer(msgs.find("full_responses_msg").msgstr)
     await message.answer(msgs.find("enter_query_msg").msgstr)

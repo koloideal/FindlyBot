@@ -16,9 +16,9 @@ action_logger: Logger = getLogger('action_logger')
 
 
 async def get_logs_rout(message: Message) -> None:
-    user_id: int = message.from_user.id
+    username: str = message.from_user.username
     command: str = message.text.strip()
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

@@ -14,8 +14,8 @@ ru_msgs: POFile = pofile("locales/ru/drop_data.po")
 
 
 async def drop_data_rout(message: Message) -> None:
-    user_id: int = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

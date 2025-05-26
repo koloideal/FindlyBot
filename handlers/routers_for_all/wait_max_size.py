@@ -10,8 +10,8 @@ ru_msgs = polib.pofile("locales/ru/wait_max_size.po")
 
 
 async def get_max_size_rout(message: Message, state: FSMContext) -> None:
-    user_id = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:
@@ -29,8 +29,7 @@ async def get_max_size_rout(message: Message, state: FSMContext) -> None:
         text: str = escape("0 < max_size <= 40")
         await message.answer(msgs.find("incorrect_value_msg").msgstr.format(text=text))
     else:
-        user_id = message.from_user.id
-        UsersConfigDAO().change_max_size_config(user_id=user_id, max_size=max_size)
+        UsersConfigDAO().change_max_size_config(username=username, max_size=max_size)
         await message.answer(
             msgs.find("change_max_size_msg").msgstr.format(max_size=max_size)
         )

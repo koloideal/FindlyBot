@@ -19,8 +19,8 @@ ru_msgs: POFile = polib.pofile("locales/ru/get_admins_rout.po")
 
 
 async def get_admins_rout(message: Message) -> None:
-    user_id: int = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

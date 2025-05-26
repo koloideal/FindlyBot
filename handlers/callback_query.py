@@ -29,18 +29,19 @@ async def callback_query_swipe_items(callback: CallbackQuery,
                                      callback_data: SwipeItemsCallbackData):
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
-    requestor_id = callback.from_user.id
+    requestor_username = callback.from_user.username
+    requestor_username_hash = await req_to_hash(requestor_username)
 
     part_of_query_path_hash = callback_data.part_of_query_path_hash
     query_path_hash = list(
         filter(
             lambda x: x.startswith(part_of_query_path_hash),
-            os.listdir(f"local_data/products_data/{requestor_id}"),
+            os.listdir(f"local_data/products_data/{requestor_username_hash}"),
         )
     )[0][:-5]
     query = callback_data.query
 
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=requestor_id)
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=requestor_username)
     language: str = user_config.language
 
     match language:
@@ -52,7 +53,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
             msgs = en_msgs
 
     with open(
-        f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
+        f"local_data/products_data/{requestor_username_hash}/{query_path_hash}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -121,7 +122,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
         image = FSInputFile("local_data/images/placeholder.jpg")
     else:
         image = FSInputFile(
-            f"local_data/images/{requestor_id}/{query_path_hash}/{current_marketplace}/{current_item_hash_image_link}.jpg"
+            f"local_data/images/{requestor_username_hash}/{query_path_hash}/{current_marketplace}/{current_item_hash_image_link}.jpg"
         )
 
     res_name = await reformat_name(current_item_name.replace("_", " "), query)
@@ -144,25 +145,25 @@ async def callback_query_swipe_items(callback: CallbackQuery,
 
 async def callback_query_change_config(callback: CallbackQuery):
     callback_data = callback.data
-    user_id = callback.from_user.id
+    username: str = callback.from_user.username
     user_config: UsersConfigDAO = UsersConfigDAO()
     match '_'.join(callback_data.split('_')[:-1]):
         case 'only_new':
             only_new: str = callback_data.split('_')[-1].lower()
             user_config.change_only_new_config(only_new=only_new,
-                                               user_id=user_id)
+                                               username=username)
         case 'lang':
             language: str = callback_data.split('_')[-1]
             user_config.change_lang_config(language=language,
-                                           user_id=user_id)
+                                           username=username)
         case 'name_filter':
             name_filter: str = callback_data.split('_')[-1].lower()
             user_config.change_name_filter_config(name_filter=name_filter,
-                                                  user_id=user_id)
+                                                  username=username)
         case 'price_filter':
             price_filter: str = callback_data.split('_')[-1].lower()
             user_config.change_price_filter_config(price_filter=price_filter,
-                                                   user_id=user_id)
+                                                   username=username)
 
     on_or_off: dict = {
         'ON': 'OFF',
@@ -173,7 +174,7 @@ async def callback_query_change_config(callback: CallbackQuery):
         'RU': 'lang_EN'
     }
 
-    user_config: UserConfig = user_config.get_all_configs(user_id=user_id)
+    user_config: UserConfig = user_config.get_all_configs(username=username)
     language: str = user_config.language
 
     match language:
@@ -237,8 +238,8 @@ async def callback_query_change_config(callback: CallbackQuery):
 
 async def callback_query_max_size(callback: CallbackQuery, state: FSMContext):
     text: str = escape("0 < max_size <= 40")
-    user_id = int(callback.from_user.id)
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = callback.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

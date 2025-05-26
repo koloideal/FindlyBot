@@ -22,9 +22,6 @@ class RejectNotCreatorMiddleware(BaseMiddleware):
     ) -> Any:
 
         username: str = event.from_user.username
-        params: tuple = UserConfig.get_default_user_config(username=username)
-        UsersConfigDAO().config_user_to_database(params=params)
-
         user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
         language: str = user_config.language
 

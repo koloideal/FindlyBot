@@ -12,16 +12,17 @@ from utils.query_to_hash import req_to_hash
 
 @cached(ttl=5 * 60, serializer=PickleSerializer())
 async def api_data_to_dump(api_json_data: dict,
-                           requestor_id: int,
+                           requestor_username: str,
                            query_path_hash: str) -> dict:
     to_dump_data: dict = {}
-    all_configs: UserConfig = UsersConfigDAO().get_all_configs(requestor_id)
+    requestor_username_hash: str = await req_to_hash(requestor_username)
+    all_configs: UserConfig = UsersConfigDAO().get_all_configs(requestor_username)
     max_size: int = all_configs.max_size
 
-    os.makedirs(f"local_data/images/{requestor_id}", exist_ok=True)
+    os.makedirs(f"local_data/images/{requestor_username_hash}", exist_ok=True)
 
     for marketplace in api_json_data:
-        marketplace_path = f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}"
+        marketplace_path = f"local_data/images/{requestor_username_hash}/{query_path_hash}/{marketplace}"
         os.makedirs(marketplace_path, exist_ok=True)
         items: list = []
         for k, item in enumerate(api_json_data[marketplace]):

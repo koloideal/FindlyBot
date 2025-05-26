@@ -9,8 +9,8 @@ ru_msgs = polib.pofile("locales/ru/rout_config.po")
 
 
 async def config_rout(message: types.Message) -> None:
-    user_id = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     on_or_off: dict = {

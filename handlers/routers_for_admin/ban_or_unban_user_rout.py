@@ -14,8 +14,8 @@ ru_msgs: POFile = polib.pofile("locales/ru/ban_or_unban_user_rout.po")
 async def ban_or_unban_user_rout(
     message: types.Message, ban_or_unban: str, state: FSMContext
 ) -> None:
-    user_id: int = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=user_id)
+    username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
     language: str = user_config.language
 
     match language:

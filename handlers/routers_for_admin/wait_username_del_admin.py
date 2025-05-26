@@ -1,4 +1,3 @@
-from typing import Any
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from polib import POFile

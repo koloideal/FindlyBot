@@ -20,9 +20,6 @@ async def start_rout(message: Message) -> None:
     admins: list[Admin] = AdminsDAO().get_admins()
     admins_usernames: list[str] = [x.username for x in admins]
 
-    params: tuple = UserConfig.get_default_user_config(username)
-    users_config_dao.config_user_to_database(params=params)
-
     user_config: UserConfig = users_config_dao.get_all_configs(username=username)
     lang: str = user_config.language
 
