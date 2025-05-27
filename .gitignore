@@ -9,3 +9,4 @@ secret_data/config.toml
 identifier.sqlite
 test.py
 poetry.lock
+local_test.py

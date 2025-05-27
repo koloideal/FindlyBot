@@ -1,5 +1,4 @@
 import json
-import os
 from html import escape
 import polib
 
@@ -16,7 +15,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database.database_models import UserConfig
 from states.user_states import WaitMaxSize
 from database.dao.users_config_dao import UsersConfigDAO
-from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from .custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 
@@ -30,15 +28,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
     current_marketplace = callback_data.marketplace
     current_item_id = callback_data.current_item_id
     requestor_username = callback.from_user.username
-    requestor_username_hash = await req_to_hash(requestor_username)
 
-    part_of_query_path_hash = callback_data.part_of_query_path_hash
-    query_path_hash = list(
-        filter(
-            lambda x: x.startswith(part_of_query_path_hash),
-            os.listdir(f"local_data/products_data/{requestor_username_hash}"),
-        )
-    )[0][:-5]
     query = callback_data.query
 
     user_config: UserConfig = UsersConfigDAO().get_all_configs(username=requestor_username)
@@ -53,7 +43,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
             msgs = en_msgs
 
     with open(
-        f"local_data/products_data/{requestor_username_hash}/{query_path_hash}.json", "r"
+        f"local_data/products_data/{requestor_username}/{query}.json", "r"
     ) as response:
         api_json_data: dict = json.load(response)
 
@@ -61,7 +51,6 @@ async def callback_query_swipe_items(callback: CallbackQuery,
     current_item_image_link = api_json_data[current_marketplace][current_item_id]["image"]
     current_item_price = api_json_data[current_marketplace][current_item_id]["price"]
     current_item_name = api_json_data[current_marketplace][current_item_id]["name"]
-    current_item_hash_image_link = await req_to_hash(current_item_image_link)
     size_of_products = len(api_json_data[current_marketplace])
 
     max_item_id = max([x["id"] for x in api_json_data[current_marketplace]])
@@ -75,7 +64,6 @@ async def callback_query_swipe_items(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id - 1,
-                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query,
                 ).pack(),
             ),
@@ -86,7 +74,6 @@ async def callback_query_swipe_items(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=current_item_id + 1,
-                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query,
                 ).pack(),
             ),
@@ -99,7 +86,6 @@ async def callback_query_swipe_items(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=1,
-                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query,
                 ).pack(),
             ),
@@ -112,7 +98,6 @@ async def callback_query_swipe_items(callback: CallbackQuery,
                 callback_data=SwipeItemsCallbackData(
                     marketplace=current_marketplace,
                     current_item_id=max_item_id - 1,
-                    part_of_query_path_hash=part_of_query_path_hash,
                     query=query,
                 ).pack(),
             ),
@@ -122,7 +107,7 @@ async def callback_query_swipe_items(callback: CallbackQuery,
         image = FSInputFile("local_data/images/placeholder.jpg")
     else:
         image = FSInputFile(
-            f"local_data/images/{requestor_username_hash}/{query_path_hash}/{current_marketplace}/{current_item_hash_image_link}.jpg"
+            f"local_data/images/{requestor_username}/{query}/{current_marketplace}/{current_item_name}.jpg"
         )
 
     res_name = await reformat_name(current_item_name.replace("_", " "), query)

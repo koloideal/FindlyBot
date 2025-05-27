@@ -13,7 +13,6 @@ from database.dao.users_config_dao import UsersConfigDAO
 from aiogram.fsm.context import FSMContext
 from httpx import Response, HTTPError
 from get_api_data.get_api_data import get_api_data
-from utils.query_to_hash import req_to_hash
 import json
 if typing.TYPE_CHECKING:
     from _typeshed import SupportsWrite
@@ -29,7 +28,6 @@ action_logger: Logger = getLogger('action_logger')
 async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     query: str = message.text.strip()
     requestor_username: str = message.from_user.username
-    hash_username: str = await req_to_hash(requestor_username)
     try:
         if len(query) > 25:
             raise TooLongQueryForSearchError(len(query))
@@ -46,8 +44,8 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
                 msgs = en_msgs
         wait_message: Message = await message.answer(msgs.find("search_in_progress").msgstr)
 
-        os.makedirs(f"local_data/products_data/{hash_username}", exist_ok=True)
-        os.makedirs(f"local_data/images/{hash_username}", exist_ok=True)
+        os.makedirs(f"local_data/products_data/{requestor_username}", exist_ok=True)
+        os.makedirs(f"local_data/images/{requestor_username}", exist_ok=True)
 
         max_size: int = user_config.max_size
         only_new: str = user_config.only_new
@@ -67,7 +65,6 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             main_logger.error(f"Unsuccessful /search request from a user with username $ @{requestor_username} $")
 
             await message.answer("Unsuccessful request, please wait or contact @kolo_id")
-            raise HTTPError('ConnectTimeout')
 
         api_data_to_json = api_data.json()
 
@@ -76,48 +73,43 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
         action_logger.warning(f"Request from $ @{requestor_username} $ with $ {metadata['size_of_products']['all']} $ products")
 
-        raw_query_path: str = metadata["request_url"]
-        query_path = raw_query_path[raw_query_path.find("?") :]
-        query_path_hash = await req_to_hash(query_path)
-
         if not products_data:
             await message.answer(msgs.find("empty_response").msgstr)
             await state.clear()
             return
         else:
-            current_response = {"name": query_path_hash, "date": time.time()}
-            if os.path.exists(f"local_data/images/{hash_username}/responses.json"):
-                data = json.load(open(f"local_data/images/{hash_username}/responses.json"))
+            current_response = {"name": metadata["request_args"]["query"], "date": time.time()}
+            if os.path.exists(f"local_data/images/{requestor_username}/responses.json"):
+                data = json.load(open(f"local_data/images/{requestor_username}/responses.json"))
                 data["responses"].append(current_response)
                 with open(
-                    f"local_data/images/{hash_username}/responses.json", "w"
+                    f"local_data/images/{requestor_username}/responses.json", "w"
                 ) as file: # type: SupportsWrite[str]
                     json.dump(data, file, indent=4)
             else:
                 with open(
-                    f"local_data/images/{hash_username}/responses.json", "w"
+                    f"local_data/images/{requestor_username}/responses.json", "w"
                 ) as file: # type: SupportsWrite[str]
                     data = {"responses": [current_response]}
                     json.dump(data, file, indent=4)
 
             to_dump_data: dict = await api_data_to_dump(
-                products_data, hash_username, query_path_hash
+                products_data, requestor_username, metadata["request_args"]["query"]
             )
 
             with open(
-                f"local_data/products_data/{hash_username}/{query_path_hash}.json", "w"
+                f"local_data/products_data/{requestor_username}/{metadata["request_args"]["query"]}.json", "w"
             ) as file: # type: SupportsWrite[str]
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
     except HTTPError as e:
         main_logger.error(e)
     except TooLongQueryForSearchError as e:
-        action_logger.error(f"{e} from user {hash_username}")
+        action_logger.error(f"{e} from user {requestor_username}")
         await message.answer(str(e))
     else:
         await forming_response(
             message=message,
-            query_path_hash=query_path_hash,
             query=metadata["request_args"]["query"],
             wait_message=wait_message,
         )

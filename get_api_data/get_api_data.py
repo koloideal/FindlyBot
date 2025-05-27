@@ -28,12 +28,12 @@ async def get_api_data(
     if exclusion_words:
         api_url += f"&ew={exclusion_words}"
 
-    async with AsyncClient(timeout=10) as client:
+    async with AsyncClient(timeout=15) as client:
         try:
             api_data: Response = await client.get(api_url)
-        except ConnectTimeout:
-            main_logger.error("Unsuccessful API request, ConnectTimeout error was intercepted")
-            action_logger.error("Unsuccessful API request, ConnectTimeout error was intercepted")
+        except Exception as e:
+            main_logger.error(f"Unsuccessful API request, {e} error was intercepted")
+            action_logger.error(f"Unsuccessful API request, {e} error was intercepted")
             return False
         else:
             main_logger.warning(f"Successful API request, url: $ {api_url} $")

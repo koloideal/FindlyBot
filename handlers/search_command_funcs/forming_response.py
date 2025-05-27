@@ -5,7 +5,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from database.database_models import UserConfig
 from database.dao.users_config_dao import UsersConfigDAO
-from utils.query_to_hash import req_to_hash
 from utils.reformat_name import reformat_name
 from ..custom_callback_data.swipe_items_callback_data import SwipeItemsCallbackData
 
@@ -14,10 +13,10 @@ ru_msgs = polib.pofile("locales/ru/forming_response.po")
 
 
 async def forming_response(
-    message: Message, query_path_hash: str, query: str, wait_message: Message
+    message: Message, query: str, wait_message: Message
 ):
-    requestor_id: int = message.from_user.id
-    user_config: UserConfig = UsersConfigDAO().get_all_configs(user_id=requestor_id)
+    requestor_username: str = message.from_user.username
+    user_config: UserConfig = UsersConfigDAO().get_all_configs(username=requestor_username)
     language: str = user_config.language
 
     match language:
@@ -28,9 +27,7 @@ async def forming_response(
         case _:
             msgs = en_msgs
 
-    with open(
-        f"local_data/products_data/{requestor_id}/{query_path_hash}.json", "r"
-    ) as response:
+    with open(f"local_data/products_data/{requestor_username}/{query}.json", "r") as response:
         api_json_data: dict = json.load(response)
 
     await wait_message.delete()
@@ -40,7 +37,6 @@ async def forming_response(
         link = item["link"]
         image_link = item["image"]
         name = item["name"]
-        name_hash = await req_to_hash(image_link)
         price = item["price"]
         ids = item["id"]
 
@@ -50,7 +46,7 @@ async def forming_response(
             image = FSInputFile("local_data/images/placeholder.jpg")
         else:
             image = FSInputFile(
-                f"local_data/images/{requestor_id}/{query_path_hash}/{marketplace}/{name_hash}.jpg"
+                f"local_data/images/{requestor_username}/{query}/{marketplace}/{name}.jpg"
             )
 
         size_of_products = len(api_json_data[marketplace])
@@ -63,7 +59,6 @@ async def forming_response(
                     callback_data=SwipeItemsCallbackData(
                         marketplace=marketplace,
                         current_item_id=int(ids) + 1,
-                        part_of_query_path_hash=query_path_hash[:10],
                         query=query,
                     ).pack(),
                 ),
