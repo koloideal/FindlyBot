@@ -20,7 +20,8 @@ class RejectNotCreatorMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
-
+        if not event.text:
+            return
         username: str = event.from_user.username
         user_config: UserConfig = UsersConfigDAO().get_all_configs(username=username)
         language: str = user_config.language

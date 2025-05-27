@@ -66,10 +66,11 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
 
             await message.answer("Unsuccessful request, please wait or contact @kolo_id")
 
-        api_data_to_json = api_data.json()
+        response_data = api_data.json()
 
-        products_data: dict[str, dict] = api_data_to_json["products_data"]
-        metadata: dict[str | dict] = api_data_to_json["request_metadata"]
+        products_data: dict[str, dict] = response_data["products_data"]
+        metadata: dict[str | dict] = response_data["request_metadata"]
+        escaping_query: str = re.sub(r"[ /\\]", "_", metadata["request_args"]["query"])
 
         action_logger.warning(f"Request from $ @{requestor_username} $ with $ {metadata['size_of_products']['all']} $ products")
 
@@ -78,7 +79,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
             await state.clear()
             return
         else:
-            current_response = {"name": metadata["request_args"]["query"], "date": time.time()}
+            current_response = {"name": escaping_query, "date": time.time()}
             if os.path.exists(f"local_data/images/{requestor_username}/responses.json"):
                 data = json.load(open(f"local_data/images/{requestor_username}/responses.json"))
                 data["responses"].append(current_response)
@@ -94,11 +95,11 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
                     json.dump(data, file, indent=4)
 
             to_dump_data: dict = await api_data_to_dump(
-                products_data, requestor_username, metadata["request_args"]["query"]
+                products_data, requestor_username, escaping_query
             )
 
             with open(
-                f"local_data/products_data/{requestor_username}/{metadata["request_args"]["query"]}.json", "w"
+                f"local_data/products_data/{requestor_username}/{escaping_query}.json", "w"
             ) as file: # type: SupportsWrite[str]
                 json.dump(to_dump_data, file, indent=4, ensure_ascii=False)
 
@@ -110,7 +111,7 @@ async def get_query_to_search_rout(message: Message, state: FSMContext) -> None:
     else:
         await forming_response(
             message=message,
-            query=metadata["request_args"]["query"],
+            query=escaping_query,
             wait_message=wait_message,
         )
     finally:

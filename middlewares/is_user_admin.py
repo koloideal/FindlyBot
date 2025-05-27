@@ -21,6 +21,8 @@ class RejectNotAdminMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
+        if not event.text:
+            return
         admins: list[Admin] = AdminsDAO().get_admins()
         admins_usernames: list[str] = [x.username for x in admins]
         username: str = event.from_user.username

@@ -18,5 +18,4 @@ async def reformat_name(name: str, query: str) -> str:
         res = " ".join(spl_name[: idx_max + 2])
     else:
         res = " ".join(spl_name[: idx_max + 1])
-
     return res

@@ -18,6 +18,8 @@ class RejectBlockedUserMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
+        if not event.text:
+            return
         banned_users: list[BannedUser] = BannedUsersDAO().get_banned_users()
         banned_users_usernames: list[str] = [banned_user.username for banned_user in banned_users]
         username: str = event.from_user.username

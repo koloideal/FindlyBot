@@ -12,9 +12,7 @@ en_msgs = polib.pofile("locales/en/forming_response.po")
 ru_msgs = polib.pofile("locales/ru/forming_response.po")
 
 
-async def forming_response(
-    message: Message, query: str, wait_message: Message
-):
+async def forming_response(message: Message, query: str, wait_message: Message):
     requestor_username: str = message.from_user.username
     user_config: UserConfig = UsersConfigDAO().get_all_configs(username=requestor_username)
     language: str = user_config.language
@@ -40,7 +38,7 @@ async def forming_response(
         price = item["price"]
         ids = item["id"]
 
-        res_name = await reformat_name(name.replace("_", " "), query)
+        res_name = await reformat_name(name.replace("_", " "), query.replace("_", " "))
 
         if image_link == "images/placeholder.png":
             image = FSInputFile("local_data/images/placeholder.jpg")
