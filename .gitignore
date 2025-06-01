@@ -8,5 +8,5 @@ local_data/products_data/*
 secret_data/config.toml
 identifier.sqlite
 test.py
-poetry.lock
+uv.lock
 local_test.py

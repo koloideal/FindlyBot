@@ -1,13 +1,17 @@
-FROM python:3.13
-LABEL authors="kolo"
+FROM python:3.12-slim
 
-WORKDIR /src
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY poetry.lock pyproject.toml /src/
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install
+WORKDIR /app
 
-COPY . /src
+COPY pyproject.toml uv.lock ./
 
-CMD ["/bin/bash", "-c", "python main.py"]
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project
+
+COPY . .
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
+
+CMD ["uv", "run", "python", "main.py"]

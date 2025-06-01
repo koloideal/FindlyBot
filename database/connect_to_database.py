@@ -14,8 +14,6 @@ class DatabaseConnection(Generic[DatabaseConnectionType]):
     _kwargs: dict[str, str] | None = None
     _instance: DatabaseConnectionType | None = None
 
-    _x = 0
-
     def __new__(cls, **kwargs):
         if cls._instance is None:
             cls._kwargs = kwargs
@@ -33,9 +31,6 @@ class DatabaseConnection(Generic[DatabaseConnectionType]):
         return cls._instance
 
     def __enter__(self) -> MySQLCursorAbstract:
-        print(f'Connecting to database: x{self._x}')
-        self._x += 1
-
         self.connection = mysql.connector.connect(**DatabaseConnection._kwargs)
         self.cursor = self.connection.cursor()
         return self.cursor

@@ -1,29 +1,45 @@
-[tool.poetry]
+[project]
 name = "findlybot"
 version = "0.1.0"
 description = "telegram bot for findly"
-authors = ["koloideal <sabatt148@gmail.com>"]
-license = "MIT"
+authors = [{ name = "koloideal", email = "sabatt148@gmail.com" }]
+requires-python = "~=3.11"
 readme = "README.md"
+license = "MIT"
+dependencies = [
+    "aiogram>=3.13.1,<4",
+    "httpx>=0.27.2,<0.28",
+    "aiocache>=0.12.3,<0.13",
+    "requests>=2.32.3,<3",
+    "polib>=1.2.0,<2",
+    "mysql-connector-python>=9.1.0,<10",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-aiogram = "^3.13.1"
-httpx = "^0.27.2"
-telethon = "^1.37.0"
-aiocache = "^0.12.3"
-requests = "^2.32.3"
-polib = "^1.2.0"
-mysql-connector-python = "^9.1.0"
+[dependency-groups]
+dev = ["ruff>=0.8.6,<0.9"]
+intest = ["tomlkit>=0.13.2,<0.14"]
 
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.8.6"
-
-
-[tool.poetry.group.intest.dependencies]
-tomlkit = "^0.13.2"
+[tool.uv]
+default-groups = [
+    "dev",
+    "intest",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "main.py",
+    "README.md",
+    "database/",
+    "exceptions/",
+    "get_api_data/",
+    "handlers/",
+    "local_data/",
+    "locales/",
+    "middlewares/",
+    "states/",
+    "utils/"
+]
