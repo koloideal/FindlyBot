@@ -8,5 +8,4 @@ local_data/products_data/*
 secret_data/config.toml
 identifier.sqlite
 test.py
-uv.lock
 local_test.py
