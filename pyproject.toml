@@ -30,16 +30,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-include = [
-    "main.py",
-    "README.md",
-    "database/",
-    "exceptions/",
-    "get_api_data/",
-    "handlers/",
-    "local_data/",
-    "locales/",
-    "middlewares/",
-    "states/",
-    "utils/"
-]
+packages = ["src/findlybot"]
