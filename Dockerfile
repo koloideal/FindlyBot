@@ -14,4 +14,4 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
 
-CMD ["uv", "run", "python", "main.py"]
+CMD ["python", "-m", "src.findlybot.main"]
