@@ -1,7 +1,5 @@
--- Инициализация базы данных FindlyBot
 USE FindlyBot;
 
--- Создание таблиц (если они не существуют)
 CREATE TABLE IF NOT EXISTS users_config(
     username VARCHAR(50) NOT NULL UNIQUE, 
     only_new VARCHAR(3), 
@@ -25,6 +23,5 @@ CREATE TABLE IF NOT EXISTS admins(
     username VARCHAR(50) NOT NULL
 );
 
--- Предоставление прав пользователю findlybot_user
-GRANT ALL PRIVILEGES ON FindlyBot.* TO 'findlybot_user'@'%';
+GRANT ALL PRIVILEGES ON FindlyBot.* TO 'kolo'@'%';
 FLUSH PRIVILEGES; 

@@ -1,0 +1,14 @@
+FROM python:3.12-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+
+COPY . .
+
+RUN uv pip install -e . --system
+RUN uv pip install .[dev] --system
+
+CMD ["watchfiles", "python -m src.findlybot.main", "./src/findlybot"]

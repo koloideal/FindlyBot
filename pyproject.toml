@@ -10,19 +10,14 @@ dependencies = [
     "aiogram>=3.13.1,<4",
     "httpx>=0.27.2,<0.28",
     "aiocache>=0.12.3,<0.13",
-    "requests>=2.32.3,<3",
     "polib>=1.2.0,<2",
     "mysql-connector-python>=9.1.0,<10",
 ]
 
-[dependency-groups]
-dev = ["ruff>=0.8.6,<0.9"]
-intest = ["tomlkit>=0.13.2,<0.14"]
 
-[tool.uv]
-default-groups = [
-    "dev",
-    "intest",
+[project.optional-dependencies]
+dev = [
+    "watchfiles>=0.21.0",
 ]
 
 [build-system]

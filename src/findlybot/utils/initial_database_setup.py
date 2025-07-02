@@ -12,10 +12,6 @@ port: int = config["port"]
 
 
 def initial_database_setup() -> None:
-    InitializeDatabaseDAO.create_database(host=host,
-                                          user=user,
-                                          password=password,
-                                          port=port)
     DatabaseConnection(host=host,
                        user=user,
                        password=password,
