@@ -16,14 +16,3 @@ class InitializeDatabaseDAO:
 
         return
 
-    @staticmethod
-    def create_database(**kwargs) -> None:
-        connection: DatabaseConnection = DatabaseConnection(**kwargs)
-        query: str = '''CREATE DATABASE IF NOT EXISTS FindlyBot'''
-
-        with connection as cursor:
-            cursor.execute(query)
-
-        DatabaseConnection.__del__()
-
-        return

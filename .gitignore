@@ -1,5 +1,6 @@
 .idea
 venv
+.venv
 *__pycache__/
 session.session
 secret_data/*.log
@@ -9,3 +10,4 @@ secret_data/config.toml
 identifier.sqlite
 test.py
 local_test.py
+.env

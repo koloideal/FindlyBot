@@ -1,66 +1,59 @@
-version: '3.8'
-
 services:
-  # MySQL база данных
   mysql:
     image: mysql:8.0
     container_name: findlybot_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: FindlyBot
-      MYSQL_USER: findlybot_user
-      MYSQL_PASSWORD: findlybot_password
+      - MYSQL_DATABASE=${DB_DB}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3333:3333"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql_init:/docker-entrypoint-initdb.d
+      - ./secret_data/config.toml:/app/config.toml:ro
     networks:
       - findlybot_network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      timeout: 5s
+      retries: 3
 
-  # Основной сервис бота
   findlybot:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: findlybot_app
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
     volumes:
-      - ./src/findlybot/secret_data:/app/src/findlybot/secret_data
-      - ./src/findlybot/local_data:/app/src/findlybot/local_data
-      - ./src/findlybot/locales:/app/src/findlybot/locales
-      - ./src/findlybot/session.session:/app/src/findlybot/session.session
+      - ./src:/app/src
     networks:
       - findlybot_network
     profiles:
       - production
 
-  # Сервис для разработки
   findlybot_dev:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: findlybot_dev
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
     volumes:
       - ./src:/app/src
-      - ./pyproject.toml:/app/pyproject.toml
-      - ./uv.lock:/app/uv.lock
+      - ./locales:/app/locales
     networks:
       - findlybot_network
     profiles:
