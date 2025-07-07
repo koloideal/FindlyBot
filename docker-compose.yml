@@ -4,15 +4,16 @@ services:
     container_name: findlybot_mysql
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_DATABASE=${DB_DB}
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3333:3333"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql_init:/docker-entrypoint-initdb.d
+      - ./secret_data/config.toml:/app/config.toml:ro
     networks:
       - findlybot_network
     healthcheck:
@@ -31,7 +32,6 @@ services:
         condition: service_healthy
     environment:
       - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app/src
     volumes:
       - ./src:/app/src
     networks:
@@ -51,7 +51,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - WATCHFILES_FORCE_POLLING=true
-      - PYTHONPATH=/app/src
     volumes:
       - ./src:/app/src
       - ./locales:/app/locales
