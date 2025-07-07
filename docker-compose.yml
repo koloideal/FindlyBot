@@ -4,14 +4,11 @@ services:
     container_name: findlybot_mysql
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=${DB_DB}
-      - MYSQL_USER=${DB_USER}
+      - MYSQL_DATABASE=FindlyBot
+      - MYSQL_USER=FindlyUser
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "3333:3333"
     volumes:
-      - mysql_data:/var/lib/mysql
       - ./mysql_init:/docker-entrypoint-initdb.d
       - ./secret_data/config.toml:/app/config.toml:ro
     networks:
