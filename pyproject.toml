@@ -12,6 +12,7 @@ dependencies = [
     "aiocache>=0.12.3,<0.13",
     "polib>=1.2.0,<2",
     "mysql-connector-python>=9.1.0,<10",
+    "dotenv>=0.9.9",
 ]
 
 
