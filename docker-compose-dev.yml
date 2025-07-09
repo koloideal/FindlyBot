@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: findlybot_mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=FindlyBot
+      - MYSQL_USER=FindlyUser
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - ./mysql_init:/docker-entrypoint-initdb.d
+      - ./secret_data/config.toml:/app/config.toml:ro
+    networks:
+      - findlybot_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 3
+
+  findlybot-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: findlybot_app.dev
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+      - MYSQL_PASSWORD
+    volumes:
+      - ./src:/app/src
+    networks:
+      - findlybot_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  findlybot_network:
+    driver: bridge

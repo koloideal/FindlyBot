@@ -1,4 +1,9 @@
 import tomllib
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
 
 
 class GetConfig:
@@ -20,5 +25,7 @@ class GetConfig:
     def get_database_config() -> dict:
         with open("secret_data/config.toml", "rb") as config:
             config = tomllib.load(config)["Database"]
+
+        config['password'] = os.getenv('MYSQL_PASSWORD')
 
         return config

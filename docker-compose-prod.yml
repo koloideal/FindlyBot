@@ -6,8 +6,8 @@ services:
     environment:
       - MYSQL_DATABASE=FindlyBot
       - MYSQL_USER=FindlyUser
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - ./mysql_init:/docker-entrypoint-initdb.d
       - ./secret_data/config.toml:/app/config.toml:ro
@@ -18,43 +18,22 @@ services:
       timeout: 5s
       retries: 3
 
-  findlybot:
+  findlybot-prod:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: findlybot_app
+    container_name: findlybot_app.prod
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     environment:
       - PYTHONUNBUFFERED=1
+      - MYSQL_PASSWORD
     volumes:
       - ./src:/app/src
     networks:
       - findlybot_network
-    profiles:
-      - production
-
-  findlybot_dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: findlybot_dev
-    restart: unless-stopped
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      - PYTHONUNBUFFERED=1
-      - WATCHFILES_FORCE_POLLING=true
-    volumes:
-      - ./src:/app/src
-      - ./locales:/app/locales
-    networks:
-      - findlybot_network
-    profiles:
-      - development
 
 volumes:
   mysql_data:

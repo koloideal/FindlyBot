@@ -1,40 +1,62 @@
 DC = docker-compose
 
-.PHONY: build up down logs stop restart prune ps help
+.PHONY: build up down logs help
 
-build-dev:
-	$(DC) --profile development build
 
-up-dev:
-	$(DC) --profile development up -d
+ifeq ($(OS), Windows_NT)
+    CLEAR_COMMAND = type nul > .env
+else
+    CLEAR_COMMAND = rm .env
+endif
 
-down-dev:
-	$(DC) --profile development down
 
-logs-dev:
-	$(DC) --profile development logs -f
-
+# --- Production Commands ---
 
 build-prod:
-	$(DC) --profile production build
+	-$(CLEAR_COMMAND)
+	echo MYSQL_PASSWORD=$(shell openssl rand -base64 32) >> .env
+	$(DC) -f docker-compose-prod.yml build
 
 up-prod:
-	$(DC) --profile production up -d
+	$(DC) -f docker-compose-prod.yml up -d
 
 down-prod:
-	$(DC) --profile production down
+	$(DC) -f docker-compose-prod.yml down
 
 logs-prod:
-	$(DC) --profile production logs -f
+	$(DC) -f docker-compose-prod.yml logs -f
+
+
+# --- Development Commands ---
+
+build-dev:
+	-$(CLEAR_COMMAND)
+	echo MYSQL_PASSWORD=$(shell openssl rand -base64 32) >> .env
+	$(DC) -f docker-compose-dev.yml build
+
+up-dev:
+	$(DC) -f docker-compose-dev.yml up
+
+down-dev:
+	$(DC) -f docker-compose-dev.yml down
+
+logs-dev:
+	$(DC) -f docker-compose-dev.yml logs -f
+
+
+# --- Help ---
 
 help:
 	@echo "Available commands:"
-	@echo "  make build-dev     — build containers (development profile)"
-	@echo "  make up-dev        — start containers in background (development profile)"
-	@echo "  make down-dev      — stop and remove containers (development profile)"
-	@echo "  make logs-dev      — show container logs (development profile)"
-	@echo "  make build-prod    — build containers (production profile)"
-	@echo "  make up-prod       — start containers in background (production profile)"
-	@echo "  make down-prod     — stop and remove containers (production profile)"
-	@echo "  make logs-prod     — show container logs (production profile)"
-	@echo "  make help          — this help message"
+	@echo " make build-prod - Build production containers"
+	@echo " make up-prod    - Deploy production stack to Swarm"
+	@echo " make down-prod  - Remove production stack"
+	@echo " make logs-prod  - Show production logs"
+	@echo ""
+	@echo " make build-dev  - Build development containers"
+	@echo " make up-dev     - Start development containers"
+	@echo " make down-dev   - Stop and remove development containers"
+	@echo " make logs-dev   - Show development logs"
+	@echo ""
+	@echo " make help       - Show this help message"
+
